@@ -1,0 +1,18 @@
+{
+  "name": "cobra-handlebars-example",
+  "version": "1.0.0",
+  "description": "An example project running Cobra Handlebars Hot Server",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "hhr serve"
+  },
+  "author": "Jair Milanes Junior",
+  "license": "MIT",
+  "dependencies": {
+    "@jmilanes/handlebars-hot-server": "file:.."
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^8.5.0"
+  }
+}
