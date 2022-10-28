@@ -22,6 +22,7 @@
     "lint": "eslint src/ --fix",
     "format": "prettier . --write",
     "release": "release-please github-release --token=%GITHUB_REPO_TOKEN% --repo-url=jairmilanes/hotbars",
+    "release-pr": "release-please release-pr --token=%GITHUB_REPO_TOKEN% --repo-url=jairmilanes/hotbars",
     "postbuild": "npm run copy"
   },
   "dependencies": {
