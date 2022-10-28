@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.1.0...hotbars-v1.2.0) (2022-10-28)
+
+
+### Features
+
+* fized missing id from workflows configuration for NPM publishing ([759e6f9](https://github.com/jairmilanes/hotbars/commit/759e6f98bdfa4a07d6816ab5c270a330fafc1953))
+
 ## [1.1.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.0.0...hotbars-v1.1.0) (2022-10-28)
 
 
