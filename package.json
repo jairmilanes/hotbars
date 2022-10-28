@@ -21,6 +21,7 @@
     "watch": "node ./scripts/watch.js watch",
     "lint": "eslint src/ --fix",
     "format": "prettier . --write",
+    "release": "release-please github-release --token=%GITHUB_REPO_TOKEN% --repo-url=jairmilanes/hotbars",
     "postbuild": "npm run copy"
   },
   "dependencies": {
