@@ -1,6 +1,7 @@
 {
   "packages": {
     ".": {
+      "token": "secrets.TOKEN",
       "changelog-path": "CHANGELOG.md",
       "package-name": "hotbars",
       "release-type": "node",
