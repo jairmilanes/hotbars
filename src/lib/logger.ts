@@ -2,7 +2,7 @@ import createLogger, { Debugger } from "debug";
 import { writeFileSync } from "fs";
 import { resolvePath } from "../utils/path";
 
-export const log = createLogger("hhr");
+export const log = createLogger("hotbars");
 
 const levels: { [level: string]: Debugger } = {};
 
@@ -18,11 +18,11 @@ for (const level in levelNames) {
 }
 
 export const setLogLevel = (level: number) => {
-  let enabledStr = "hhr:*";
+  let enabledStr = "hotbars:*";
 
   for (let i = 1; i <= 4; i++) {
     if (i < level) {
-      enabledStr += `,-hhr:${levelNames[i]}`;
+      enabledStr += `,-hotbars:${levelNames[i]}`;
     }
   }
 
@@ -34,6 +34,10 @@ levels["info"].color = `${4}`;
 levels["warn"].color = `${11}`;
 levels["error"].color = `${1}`;
 
+const request = log.extend('request')
+
+request.color = `${202}`
+
 const logName = "logs/debug.txt";
 
 export const logger = {
@@ -41,6 +45,7 @@ export const logger = {
   info: levels["info"],
   warn: levels["warn"],
   error: levels["error"],
+  request,
   file: (...messages: any[]) => {
     const msg = messages.reduce((m, ms) => {
       if (typeof ms === "string") {

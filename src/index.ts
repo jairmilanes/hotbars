@@ -6,8 +6,10 @@ import { Command } from "commander";
 const program = new Command();
 
 program
-  .name("hhr")
-  .description("Handlebars hot reload")
+  .name("hotbars")
+  .alias("htbs")
+  .version('1.3.0') // x-release-please-version
+  .description("Hotbars - Web building platform.")
   .executableDir("commands")
   .command("serve", "Start the development server");
 

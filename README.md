@@ -44,12 +44,16 @@ npm install -D @jmilanes/hotbars
 To run the development server use:
 
 ```shell
-Usage: hhr serve
-
-Options:
-      --help          Show help                                        [boolean]
-      --version       Show version number                              [boolean]
-  -p, --port          HTTP Port you want to serve the file              [number]
+Usage: hotbars serve [options]                                                                                                                                                                                                       
+                                                                                                                                                                                                                                     
+Options:                                                                                                                                                                                                                             
+  -e, --env <number>           Environment name (choices: "development", "production", default: "development", env: PORT)                                                                                                            
+  -p, --port <number>          HTTP Port you want to serve the file (default: 3000, env: PORT)                                                                                                                                       
+  -sp, --socketPort <number>   Socket port for hot reloading (default: 5001, env: PORT)                                                                                                                                              
+  -c, --configName <filePath>  Config file name to load, defaults to hotbarsrc, and must be placed in the root of your project, it may also start with a dot ".hotbarsrc"" and or end with .js, .json or .cjs. (default: "hotbarsrc")
+  -l, --logLevel <number>      Log level, must be a number between 1 and 4 (1: debug, 2: info, 3: warn, 4: error) (choices: "1", "2", "3", "4", "5", default: 1)                                                                     
+  --browser                    Browser to open (choices: "msedge", "chrome", "firefox")                                                                                                                                              
+  -h, --help                   display help for command
 ```
 
 This will start you dev server at `http://localhost:3000` unless you have provided a custom port number, and that's it, start

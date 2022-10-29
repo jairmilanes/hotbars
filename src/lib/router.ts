@@ -50,7 +50,7 @@ export class Router {
     }
 
     this.app.use(express.json());
-    this.app.use(express.urlencoded());
+    // this.app.use(express.urlencoded());
     this.app.use(express.raw());
 
     this.logger();
@@ -87,7 +87,7 @@ export class Router {
 
   private logger(): void {
     this.app.use((req, res, next) => {
-      logger.info(
+      logger.request(
         `${req.xhr ? `XHR:` : ""}${req.method.toUpperCase()}:${req.url}`,
         req.params
       );

@@ -126,7 +126,7 @@ export const parseConfig = (argv: CliOptions): Config => {
     socket_port: 5001,
     extname: "hbs",
     source: "src",
-    configName: argv.config || `${privateOptions.moduleName}rc`,
+    configName: argv.config,
     routesConfigName: `routes.${privateOptions.moduleName}`,
     data: "data/**/*.{json,js,cjs}",
     helpers: "helpers/**/*.{js,cjs}",
