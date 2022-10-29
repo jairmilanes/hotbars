@@ -6,36 +6,55 @@ import { callbackify } from "util";
 import { App } from "../lib/app";
 import { parseConfig } from "../lib/config";
 import { logger, setLogLevel } from "../lib/logger";
+import { Browser } from "../types";
 
 const program = new Command();
 
 program
   .addOption(
+    new Option("-e, --env <number>", "Environment name")
+      .env("PORT")
+      .choices(['development', 'production'])
+      .default('development')
+  )
+  .addOption(
     new Option("-p, --port <number>", "HTTP Port you want to serve the file")
       .env("PORT")
-      .argParser(parseInt)
+      .default(3000)
+      .argParser((value => parseInt(value, 10)))
+  )
+  .addOption(
+    new Option("-sp, --socketPort <number>", "Socket port for hot reloading")
+      .env("PORT")
+      .default(5001)
+      .argParser((value => parseInt(value, 10)))
   )
   .addOption(
     new Option(
-      "-c, --config <filePath>",
-      "Config file to load, defaults to one of (.hhrrc, .hhrrc.json, .hhrrc.js, .hhrrc.cjs, hhrrc.json, hhrrc.js, hhrrc.cjs) in the root of your project."
-    )
+      "-c, --configName <filePath>",
+      "Config file name to load, defaults to hotbarsrc, and must be placed in the root of your project, it may also start with a dot \".hotbarsrc\"\" and or end with .js, .json or .cjs."
+    ).default('hotbarsrc')
   )
   .addOption(
     new Option(
       "-l, --logLevel <number>",
       "Log level, must be a number between 1 and 4 (1: debug, 2: info, 3: warn, 4: error)"
-    ).default(1, "Defaults o debug level and above.")
+    )
+      .choices(['1', '2', '3', '4', '5'])
+      .default(1)
+      .argParser((value => parseInt(value, 10)))
   )
-  // .addOption(new Option('-o, --outputPath <string>', 'Save the created html output to given path'))
-  // .addOption(new Option('-s, --saveOutput', 'Whether to save the created html output to the same directory as the template, this will override the -o / --outputPath option'))
-  .showSuggestionAfterError(false)
-  .action(async (args, options) => {
-    setLogLevel(options.logLevel);
+  .addOption(
+    new Option('--browser', 'Browser to open')
+      .choices([Browser.Edge, Browser.Chrome, Browser.Firefox])
+  )
+  // .showSuggestionAfterError(false)
+  .action(async (args) => {
+    setLogLevel(args.logLevel);
 
     const config = parseConfig({
       watch: args,
-      ...options,
+      ...args,
     });
 
     logger.info(`Initializing server...`);

@@ -35,7 +35,7 @@ export class RouteManager {
   }
 
   generate(): string[] {
-    logger.info(
+    logger.debug(
       "-- User views: ",
       `${this.config.views}/**/*.${this.config.extname}`
     );

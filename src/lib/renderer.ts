@@ -86,7 +86,9 @@ export class Renderer {
         const js = await this.preCompile(templates);
 
         if (this.config.env === "development") {
-          return prettify.format(js);
+          return prettify.format(js, {
+            parser: "glimmer"
+          });
         } else {
           const ugly = uglify.minify(js);
 

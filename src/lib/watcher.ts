@@ -62,7 +62,7 @@ export class Watcher {
       .on("addDir", this.handleChange.bind(this))
       .on("unlinkDir", this.handleChange.bind(this))
       .on("ready", () => {
-        logger.info(`Watching for changes on ${this.config.watch}`);
+        logger.debug(`Watching for changes on ${this.config.watch}`);
         callback();
       })
       .on("error", function (err) {

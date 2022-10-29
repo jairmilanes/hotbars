@@ -4,7 +4,8 @@
   "version": "1.3.0",
   "main": "dist/index.js",
   "bin": {
-    "hhr": "dist/index.js"
+    "hotbars": "dist/index.js",
+    "htbs": "dist/index.js"
   },
   "author": "Jair Milanes",
   "license": "MIT",
@@ -14,22 +15,20 @@
     "url": "https://github.com/jairmilanes/hotbars"
   },
   "scripts": {
-    "start": "node .",
-    "dev": "ts-node-dev -P ./tsconfig.dev.json ./src/index.ts",
     "copy": "copyfiles -u 1 ./src/partials/**/*.hbs ./src/views/**/*.hbs  dist",
     "build": "tsc",
     "watch": "node ./scripts/watch.js watch",
     "lint": "eslint src/ --fix",
     "format": "prettier . --write",
-    "release": "release-please github-release --token=%GITHUB_REPO_TOKEN% --repo-url=jairmilanes/hotbars",
-    "release-pr": "release-please release-pr --token=%GITHUB_REPO_TOKEN% --repo-url=jairmilanes/hotbars",
     "postbuild": "npm run copy"
   },
   "dependencies": {
     "apicache": "^1.6.3",
+    "app-root-path": "^3.1.0",
     "chokidar": "^3.5.3",
     "commander": "^9.4.1",
     "cors": "^2.8.5",
+    "cosmiconfig": "^7.0.1",
     "debug": "^4.3.4",
     "express": "4.18.2",
     "express-handlebars": "^6.0.6",
@@ -82,9 +81,7 @@
     "@types/yargs": "^17.0.13",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
-    "app-root-path": "^3.1.0",
     "copyfiles": "^2.4.1",
-    "cosmiconfig": "^7.0.1",
     "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
     "ts-node": "^10.9.1",
