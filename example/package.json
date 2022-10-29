@@ -10,7 +10,7 @@
   "author": "Jair Milanes Junior",
   "license": "MIT",
   "dependencies": {
-    "@jmilanes/handlebars-hot-server": "file:.."
+    "@jmilanes/hotbars": "^1.2.0"
   },
   "devDependencies": {
     "eslint-config-prettier": "^8.5.0"

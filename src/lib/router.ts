@@ -1,17 +1,14 @@
 import express, { Request, Response } from "express";
 import expressWs, { Application } from "express-ws";
+import cors from "cors";
+import { joinPath } from "../utils/path";
+import { mapEndpoints } from "../utils/endpoint-mapper";
 import { Config, loadConfig } from "./config";
 import { logger } from "./logger";
-import { joinPath } from "../utils/path";
 import { Renderer } from "./renderer";
 import { RouteManager } from "./route-manager";
-import { mapEndpoints } from "../utils/endpoint-mapper";
-import {
-  RequestError,
-  RouteMap,
-  RouterMap,
-  UserRoutesCallback,
-} from "../types";
+import { RequestError, UserRoutesCallback } from "../types";
+import { UploadsManager } from "./uploads-manager";
 
 export class Router {
   private readonly config: Config;
@@ -47,8 +44,20 @@ export class Router {
 
     this.manager.clear(this.app._router?.stack);
 
+    if (this.config.cors.enabled) {
+      this.app.use(cors());
+      logger.debug("-- CORS has been enabled");
+    }
+
+    this.app.use(express.json());
+    this.app.use(express.urlencoded());
+    this.app.use(express.raw());
+
     this.logger();
     this.static();
+
+    this.form();
+
     this.user();
     this.manager.generate();
     this.partial();
@@ -96,6 +105,14 @@ export class Router {
       logger.debug(`Adding user routes...`);
       userRoutesCallback(this.app, express.Router, this.config);
     }
+  }
+
+  private form(): void {
+    const uploads = new UploadsManager(this.config);
+
+    this.app.get("/_form/*", uploads.configure(), async (req, res, next) => {
+      next();
+    });
   }
 
   private preCompiler(): void {

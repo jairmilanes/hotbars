@@ -1,7 +1,6 @@
 import { AstPath, Doc, Parser, Printer, SupportLanguage } from "prettier";
 import * as handlebars from "@handlebars/parser";
 import { builders } from "prettier/doc";
-import concat = builders.concat;
 
 function locStart(node: any) {
   return node.start;
