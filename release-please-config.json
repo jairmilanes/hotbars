@@ -12,7 +12,7 @@
       "prerelease": false,
       "initial-version": "1.0.0",
       "extra-files": [
-          "./src/index.js"
+          "src/index.js"
       ]
     }
   },
