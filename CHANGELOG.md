@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.3.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.2.0...hotbars-v1.3.0) (2022-10-29)
+
+
+### Features
+
+* adds support to form data processing ([19099bf](https://github.com/jairmilanes/hotbars/commit/19099bfff4368426483a2e9b029ae41d0255a19b))
+* **uploads:** Implemented Multer for upload processing ([19099bf](https://github.com/jairmilanes/hotbars/commit/19099bfff4368426483a2e9b029ae41d0255a19b))
+
+
+### Bug Fixes
+
+* added build step to release workflow ([8410416](https://github.com/jairmilanes/hotbars/commit/84104168e57dc0dfccb403d2dd5e7feb49b6a674))
+* configured github access token for release please ([aafe8bc](https://github.com/jairmilanes/hotbars/commit/aafe8bca458e86595158cf2fd9aa7985092baf14))
+* created a npm manual publish action workflow ([8b2155f](https://github.com/jairmilanes/hotbars/commit/8b2155f385c969f3b14e0f86e4eed2e5d20ad0e8))
+* fixed npm publishing as public for scoped package ([92c48d4](https://github.com/jairmilanes/hotbars/commit/92c48d4b5ef61ae0f2fc34157ca74a4cc1eec53c))
+* fixed type on release please config file ([36f0235](https://github.com/jairmilanes/hotbars/commit/36f0235501c7bbd805d090eda787d11efdeddac1))
+* reseting deployment version to 1.0.0 ([13c1c74](https://github.com/jairmilanes/hotbars/commit/13c1c742dacdc581ef02d8642cc4b811d1944ba3))
+
 ## [1.2.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.1.0...hotbars-v1.2.0) (2022-10-28)
 
 ### Features
