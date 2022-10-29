@@ -14,6 +14,28 @@ interface PrivateOptions {
   serverStyles: string;
 }
 
+interface UploadField {
+  name: string;
+  maxCount?: number;
+}
+
+interface UploadsConfig {
+  enabled: boolean;
+  path: string;
+  limit: number;
+  maxFileSize: number;
+  types: string[] | UploadField[];
+}
+
+interface CorsConfig {
+  enabled: boolean;
+}
+
+interface ConfigControls {
+  cors: boolean | SafeObject;
+  uploads: boolean | SafeObject;
+}
+
 interface Options {
   logLevel: number;
   encoding: BufferEncoding;
@@ -38,8 +60,8 @@ interface Options {
   partialsOptions: any;
   ignore: string[];
   ignorePattern?: RegExp;
-  saveOutput: boolean;
-  outputPath?: string;
+  uploads: UploadsConfig;
+  cors: CorsConfig;
   env: string;
 }
 
@@ -118,8 +140,16 @@ export const parseConfig = (argv: CliOptions): Config => {
     partialsOptions: {},
     ignore: [],
     ignorePattern: undefined,
-    saveOutput: false,
-    outputPath: undefined,
+    uploads: {
+      enabled: true,
+      path: "uploads/",
+      limit: 10,
+      maxFileSize: 1048576,
+      types: [],
+    },
+    cors: {
+      enabled: true,
+    },
     env: process.env?.NODE_ENV || "development",
   };
 
