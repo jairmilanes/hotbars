@@ -1,62 +1,61 @@
 function refreshStylesheets() {
   const sheets = [].slice.call(document.getElementsByTagName("link"));
-  const head = document.getElementsByTagName("head")[0];
 
   for (let i = 0; i < sheets.length; ++i) {
     const elem = sheets[i];
 
-    head.removeChild(elem);
+    if (!elem.href) continue;
 
-    const rel = elem.rel;
-
-    if (
-      (elem.href && typeof rel != "string") ||
-      rel.length == 0 ||
-      rel.toLowerCase() == "stylesheet"
-    ) {
-      const url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, "");
-
-      elem.href =
-        url +
-        (url.indexOf("?") >= 0 ? "&" : "?") +
-        "_cacheOverride=" +
-        new Date().valueOf();
+    if (elem.href.indexOf(window.location.host) < 0) {
+      continue;
     }
 
-    head.appendChild(elem);
+    if (!elem.rel || elem.rel.toLowerCase() === "stylesheet") {
+      const time = new Date().valueOf();
+      const prefix = elem.href.indexOf("?") >= 0 ? "&" : "?";
+      const key = "_cacheOverride"
+
+      if (elem.href.indexOf(key) < 0) {
+        elem.href = `${elem.href}${prefix}${key}=${time}`;
+      } else {
+        elem.href = elem.href.replace(
+          /_cacheOverride=\d+/,
+          "_cacheOverride=" + time
+        )
+      }
+    }
   }
 }
 
 if ("WebSocket" in window) {
   (function () {
     const protocol = window.location.protocol === "http:" ? "ws://" : "wss://";
-    const pathname = window.location.pathname.replace(new RegExp("/$"), "");
-    const address = protocol + window.location.host + pathname + "/ws/_connect";
+    const address = protocol + window.location.host + "/ws/_connect";
     const socket = new WebSocket(address);
 
-    socket.onopen = function (socket) {
+    socket.onopen = (socket) => {
       console.info(`Hot reload server connected at: ${address}`);
     };
 
-    socket.onerror = function (err) {
+    socket.onerror = (err) => {
       console.error("Failed to connect", err);
     };
 
-    socket.onmessage = function (event) {
-      console.debug("Socket message", event.data);
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
 
-      if (event.data === "close") {
+      if (data === "close") {
         return window.close();
       }
 
-      if (["css", "scss"].indexOf(event.data) > -1) {
-        return refreshStylesheets();
+      if (data.type === "css") {
+        return refreshStylesheets(data.file);
       }
 
       return window.location.reload();
     };
 
-    socket.onclose = function (err) {
+    socket.onclose = (err) => {
       if (err) {
         console.error("Connection closed error:", err);
       }
