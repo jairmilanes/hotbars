@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.3.0...hotbars-v1.3.1) (2022-10-29)
+
+
+### Bug Fixes
+
+* **cli:** added more command options ([e7804b9](https://github.com/jairmilanes/hotbars/commit/e7804b952a5bafcaa0ace807a26366d99cabd537))
+* **cli:** fixed int parser on cli definition ([e7804b9](https://github.com/jairmilanes/hotbars/commit/e7804b952a5bafcaa0ace807a26366d99cabd537))
+* fixed invalid path for extra files in release please config ([8392b66](https://github.com/jairmilanes/hotbars/commit/8392b664ce34dc2b6a3b98886a6f7eda87e34bf9))
+* improved log messages ([e7804b9](https://github.com/jairmilanes/hotbars/commit/e7804b952a5bafcaa0ace807a26366d99cabd537))
+
 ## [1.3.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.2.0...hotbars-v1.3.0) (2022-10-29)
 
 
