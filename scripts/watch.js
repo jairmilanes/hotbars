@@ -12,7 +12,7 @@ program
   .command("watch")
   .description("Start the development server")
   .action(async (args, options) => {
-    const srcPath = "src";
+    const srcPath = "src/client/**/*";
     const distPath = "dist";
 
     const copy = (file) => {
@@ -21,7 +21,7 @@ program
       });
     };
 
-    const watcher = chokidar.watch([path.join(srcPath, "views", "**/*")]);
+    const watcher = chokidar.watch([srcPath]);
 
     watcher
       .on("change", copy)

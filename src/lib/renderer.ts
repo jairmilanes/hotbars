@@ -8,11 +8,12 @@ import { HandlebarsWax, InjectionData, SafeObject } from "../types";
 import { configureHandlebars } from "./handlebars";
 import { Config } from "./config";
 import { logger } from "./logger";
+import { HandlebarsException } from "./exeptions/handlebars.exception";
 
 export class Renderer {
   private readonly config: Config;
 
-  private readonly hbs: HandlebarsWax;
+  private hbs?: HandlebarsWax;
 
   private injections: InjectionData[] = [
     {
@@ -39,19 +40,30 @@ export class Renderer {
 
   constructor(config: Config) {
     this.config = config;
-    this.hbs = configureHandlebars(this.config);
+  }
+
+  configure(data: SafeObject): void {
+    const { instance, error } = configureHandlebars(this.config, data);
+
+    if ((error || !instance) && !this.hbs) {
+      throw new HandlebarsException('Failed to initialize Handlebars', error);
+    }
+
+    if (instance) {
+      this.hbs = instance;
+    }
   }
 
   async engine(
     path: string,
     options: object,
-    callback: (e: any, rendered?: string) => void
+    callback: (e?: Error, rendered?: string) => void
   ): Promise<void> {
     logger.debug(`-- Views path: ${path}`);
 
     const html = await this.render(path, options);
 
-    callback(null, html);
+    callback(undefined, html);
   }
 
   async render(path: string, options: object): Promise<string> {
@@ -65,14 +77,14 @@ export class Renderer {
       logger.debug(`-- FrontMatter attributes:`, attributes);
     }
 
-    const html = this.hbs.compile(body)({
+    const html = this.hbs?.compile(body)({
       env: this.config.env,
       config: this.config as unknown as SafeObject,
       attributes: attributes as SafeObject,
       ...(options || {}),
     });
 
-    return this.inject(html);
+    return this.inject(html as string);
   }
 
   async preRender(): Promise<string> {
@@ -100,8 +112,8 @@ export class Renderer {
           return ugly.code;
         }
       }
-    } catch (err: any) {
-      return `console.error("${err.message}");`;
+    } catch (err) {
+      return `console.error("${(err as Error).message}");`;
     }
 
     return `console.error("No templates found in ${this.config.precompile}");`;
@@ -117,20 +129,20 @@ export class Renderer {
                 const { name, template } = await this.loadTemplate(
                   templatePath
                 );
-                const code = this.hbs.handlebars.precompile(template);
+                const code = this.hbs?.handlebars.precompile(template);
                 return `
                         templates["${name}"] = template(${code});\r\n
                     `;
               })
             )}
           })();`;
-    } catch (err: any) {
-      return `console.error("${err.message}");`;
+    } catch (err) {
+      return `console.error("${(err as Error).message}");`;
     }
   }
 
   private inject(html: string): string {
-    const template = this.hbs.compile(
+    const template = this.hbs?.compile(
       this.injections.reduce(
         (injectedHtml, injection) =>
           this.injectScripts(injectedHtml, injection),
@@ -138,7 +150,11 @@ export class Renderer {
       )
     );
 
-    return template(this.data);
+    if (template) {
+      return template(this.data);
+    }
+
+    return '';
   }
 
   private injectScripts(html: string, injection: InjectionData): string {

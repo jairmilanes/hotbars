@@ -51,6 +51,7 @@ export const logger = {
       if (typeof ms === "string") {
         return m.concat(" ", ms);
       }
+
       return m.concat("\r\n", JSON.stringify(ms, null, 4));
     }, "");
 

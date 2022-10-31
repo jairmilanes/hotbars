@@ -2,31 +2,29 @@ import expressWs from "express-ws";
 import { Config } from "./config";
 import { logger } from "./logger";
 import { Router } from "./router";
-import { Watcher } from "./watcher";
-import { WatcherChange, WatcherChangeType, WatcherEventType } from "../types";
+import { SafeObject } from "../types";
 import { Renderer } from "./renderer";
 
 export class Server {
   private readonly config: Config;
 
-  private readonly router: Router;
-
   private readonly instance: expressWs.Instance;
 
-  private readonly watcher: Watcher;
+  readonly renderer: Renderer;
 
-  private readonly renderer: Renderer;
+  readonly router: Router;
 
-  constructor(config: Config, instance: expressWs.Instance, watcher: Watcher) {
+  constructor(config: Config, instance: expressWs.Instance) {
     this.config = config;
     this.instance = instance;
-    this.watcher = watcher;
     this.renderer = new Renderer(config);
     this.router = new Router(this.config, this.instance, this.renderer);
   }
 
-  configure(instance: expressWs.Instance) {
+  configure(instance: expressWs.Instance, data: SafeObject) {
     logger.debug(`Configuring the view's engine...`);
+
+    this.renderer.configure(data);
 
     instance.app.engine(
       this.config.extname,
@@ -36,11 +34,5 @@ export class Server {
     instance.app.set("views", this.config.views);
 
     this.router.configure();
-
-    this.watcher.on(WatcherEventType.Changed, (change: WatcherChange) => {
-      if (change.type === WatcherChangeType.Routes) {
-        this.router.configure();
-      }
-    });
   }
 }

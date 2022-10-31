@@ -12,12 +12,15 @@ export type SafeAny =
   | number[]
   | boolean[]
   | SafeObject
+  | SafeArray
   | null
   | undefined;
 
 export interface SafeObject {
   [key: string | number]: SafeAny;
 }
+
+export type SafeArray = SafeObject[] | SafeAny[];
 
 export type AnymatchFn = (testString: string) => boolean;
 
@@ -74,6 +77,11 @@ export interface HandlebarsWax {
   ): HandlebarsTemplateDelegate<T>;
 }
 
+export interface HandlebarsConfigureResponse {
+  instance?: HandlebarsWax;
+  error?: Error;
+}
+
 export enum Browser {
   Chrome = "chrome",
   Firefox = "firefox",
@@ -85,6 +93,10 @@ export type UserRoutesCallback = (
   router: typeof express.Router,
   config: Config
 ) => void;
+
+export type UserBootstrapCallback = (
+  config: Config
+) => SafeObject;
 
 export enum WatcherChangeType {
   Routes = "routes",

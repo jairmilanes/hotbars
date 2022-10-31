@@ -62,6 +62,7 @@ export class Watcher {
       .on("addDir", this.handleChange.bind(this))
       .on("unlinkDir", this.handleChange.bind(this))
       .on("ready", () => {
+        this.recompileSass();
         logger.debug(`Watching for changes on ${this.config.watch}`);
         callback();
       })
@@ -95,6 +96,7 @@ export class Watcher {
   }
 
   async close(): Promise<void> {
+    this.listeners = {};
     return this.watcher?.close();
   }
 
@@ -112,7 +114,8 @@ export class Watcher {
 
     // Recompile scss before broadcasting to clients
     if (type === WatcherChangeType.Scss) {
-      return this.recompileSass();
+      console.log('-- Changed path', changePath);
+      this.recompileSass();
     }
 
     const { clients } = this.instance.getWss();
@@ -121,7 +124,7 @@ export class Watcher {
 
     clients.forEach((ws) => {
       if (ws) {
-        ws.send(type, (error) => {
+        ws.send(JSON.stringify({ type, file: changePath }), (error) => {
           if (error) {
             logger.error("Websocket error:", error);
           }
@@ -178,3 +181,4 @@ export class Watcher {
     return WatcherChangeType.File;
   }
 }
+

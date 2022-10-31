@@ -47,6 +47,7 @@ program
   .addOption(
     new Option('--browser', 'Browser to open')
       .choices([Browser.Edge, Browser.Chrome, Browser.Firefox])
+      .default(Browser.Edge)
   )
   // .showSuggestionAfterError(false)
   .action(async (args) => {
@@ -59,30 +60,40 @@ program
 
     logger.info(`Initializing server...`);
 
-    const server = new App(config);
+    try {
+      const server = new App(config);
 
-    await server.start();
+      await server.start();
 
-    const close = callbackify(server.close);
+      const close = callbackify(server.close);
 
-    process.on("SIGTERM", () => {
-      logger.debug("SIGTERM signal received.");
+      process.on("SIGTERM", () => {
+        logger.debug("SIGTERM signal received.");
 
-      close((error: Error, code: number) => {
-        process.exit(code);
+        close((error: Error, code: number) => {
+          process.exit(code);
+        });
       });
-    });
 
-    process.stdin.resume();
+      process.stdin.resume();
 
-    process.on("SIGINT", () => {
-      logger.debug("SIGINT signal received");
+      process.on("SIGINT", () => {
+        logger.debug("SIGINT signal received");
 
-      close((error: Error, code: number) => {
-        logger.debug("Done!");
-        process.exit(code);
+        close((error: Error, code: number) => {
+          logger.debug("Done!");
+          process.exit(code);
+        });
       });
-    });
+    } catch(e) {
+      if (args.logLevel > 1) {
+        logger.error(
+          'Failed to initialize server, use debug logging level to find out more.'
+        )
+      } else {
+        logger.error(e)
+      }
+    }
   });
 
 program.parse(process.argv);
