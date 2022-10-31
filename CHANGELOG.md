@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.3.1...hotbars-v1.4.0) (2022-10-31)
+
+
+### Features
+
+* added json-server support for local development ([95016a7](https://github.com/jairmilanes/hotbars/commit/95016a7074ffdfc65ad14e1a989ff8afd0975f72))
+
+
+### Bug Fixes
+
+* fixed client connector not reloading proper files ([394f027](https://github.com/jairmilanes/hotbars/commit/394f027cb553b021f47d3ed39dc0878a484b7daf))
+* improved error handling and recovery ([fcb8ad7](https://github.com/jairmilanes/hotbars/commit/fcb8ad71abf3b481643d50f2db5731402b709d41))
+
 ## [1.3.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.3.0...hotbars-v1.3.1) (2022-10-29)
 
 
