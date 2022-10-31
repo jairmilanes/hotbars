@@ -47,7 +47,9 @@ interface Options {
   extname: string;
   source: string;
   configName: string;
+  bootstrapName: string;
   routesConfigName: string;
+  fakeDb?: string;
   data: string;
   helpers: string;
   layouts: string;
@@ -66,9 +68,12 @@ interface Options {
 }
 
 interface CliOptions {
+  env: string;
   port: number;
-  config: string;
+  socketPort: number;
+  configName: string;
   logLevel: number;
+  browser: string;
 }
 
 export type Config = Options & PrivateOptions;
@@ -121,13 +126,15 @@ export const parseConfig = (argv: CliOptions): Config => {
     encoding: "utf-8",
     protocol: "http",
     host: "127.0.0.1",
-    browser: Browser.Edge,
+    browser: argv.browser as Browser,
     port: argv.port || 3000,
-    socket_port: 5001,
+    socket_port: argv.socketPort || 5001,
     extname: "hbs",
     source: "src",
-    configName: argv.config,
+    configName: argv.configName,
+    bootstrapName: `${privateOptions.moduleName}`,
     routesConfigName: `routes.${privateOptions.moduleName}`,
+    fakeDb: undefined,
     data: "data/**/*.{json,js,cjs}",
     helpers: "helpers/**/*.{js,cjs}",
     layouts: "layouts/**/*.{html,hbs,handlebars}",
