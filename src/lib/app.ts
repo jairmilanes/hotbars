@@ -8,7 +8,8 @@ import { Server } from "./server";
 import { Config } from "./config";
 import { logger } from "./logger";
 import { Watcher } from "./watcher";
-import { ServerError, TrackedSocket } from "../types";
+import { ServerError, TrackedSocket, WatcherChange, WatcherChangeType, WatcherEventType } from "../types";
+import { bootstrap } from "./bootstrap";
 
 export class App {
   private readonly config: Config;
@@ -42,13 +43,25 @@ export class App {
 
     this.watcher = new Watcher(this.config, this.instance);
 
-    this.server = new Server(this.config, this.instance, this.watcher);
+    this.server = new Server(this.config, this.instance);
   }
 
   async start(): Promise<void> {
     logger.debug(`Creating express websocket server...`);
 
-    this.server.configure(this.instance);
+    const bootstrapData = await bootstrap(this.config);
+
+    this.server.configure(this.instance, bootstrapData);
+
+    this.watcher.on(WatcherEventType.Changed, (change: WatcherChange) => {
+      if (change.type === WatcherChangeType.Routes) {
+        this.server.router.configure();
+      }
+
+      if (change.type === WatcherChangeType.File) {
+        this.server.renderer.configure(bootstrapData);
+      }
+    });
 
     this.listen();
   }
@@ -103,7 +116,7 @@ export class App {
 
   private async launch(): Promise<void> {
     if (this.serveURL) {
-      logger.info(`Launching ${this.config.browser}...`, open.apps.chrome);
+      logger.info(`Launching ${this.config.browser}...`);
       await open(this.serveURL, { app: { name: this.config.browser } });
     }
   }

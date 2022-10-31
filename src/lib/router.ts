@@ -1,14 +1,16 @@
 import express, { Request, Response } from "express";
 import expressWs, { Application } from "express-ws";
 import cors from "cors";
+import jsonRouter from "json-server";
+import { RequestError, UserRoutesCallback } from "../types";
 import { joinPath } from "../utils/path";
 import { mapEndpoints } from "../utils/endpoint-mapper";
 import { Config, loadConfig } from "./config";
 import { logger } from "./logger";
 import { Renderer } from "./renderer";
 import { RouteManager } from "./route-manager";
-import { RequestError, UserRoutesCallback } from "../types";
 import { UploadsManager } from "./uploads-manager";
+import { mapDatabaseFiles } from "../utils/map-db-files";
 
 export class Router {
   private readonly config: Config;
@@ -45,7 +47,7 @@ export class Router {
     this.manager.clear(this.app._router?.stack);
 
     if (this.config.cors.enabled) {
-      this.app.use(cors());
+      this.app.use(cors({ origin: true, credentials: true }));
       logger.debug("-- CORS has been enabled");
     }
 
@@ -55,10 +57,9 @@ export class Router {
 
     this.logger();
     this.static();
-
     this.form();
-
     this.user();
+    this.api();
     this.manager.generate();
     this.partial();
     this.preCompiler();
@@ -113,6 +114,13 @@ export class Router {
     this.app.get("/_form/*", uploads.configure(), async (req, res, next) => {
       next();
     });
+  }
+
+  private api() {
+    if(this.config.fakeDb) {
+      const db = mapDatabaseFiles(this.config);
+      this.app.use('/api', jsonRouter.router(db));
+    }
   }
 
   private preCompiler(): void {
