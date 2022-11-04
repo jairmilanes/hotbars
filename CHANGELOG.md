@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.5](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.4...hotbars-v1.4.5) (2022-11-04)
+
+
+### Bug Fixes
+
+* added verbose flag to copy files command ([49b01a2](https://github.com/jairmilanes/hotbars/commit/49b01a2f3eff31eb7f36436b91bc9ed275dee166))
+
 ## [1.4.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.3...hotbars-v1.4.4) (2022-11-04)
 
 
