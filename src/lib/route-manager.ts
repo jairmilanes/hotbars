@@ -53,6 +53,7 @@ export class RouteManager {
 
       this.app.get(route, (req, res) => {
         res.status(200).render(view, {
+          url: req.url,
           query: { ...req.query },
           params: { ...req.params },
           secure: req.secure,
