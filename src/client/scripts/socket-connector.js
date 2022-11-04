@@ -48,6 +48,10 @@ if ("WebSocket" in window) {
         return window.close();
       }
 
+      if (data.type === "scss") {
+        return;
+      }
+
       if (data.type === "css") {
         return refreshStylesheets(data.file);
       }
