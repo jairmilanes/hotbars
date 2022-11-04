@@ -13,7 +13,7 @@ function refreshStylesheets() {
     if (!elem.rel || elem.rel.toLowerCase() === "stylesheet") {
       const time = new Date().valueOf();
       const prefix = elem.href.indexOf("?") >= 0 ? "&" : "?";
-      const key = "_cacheOverride"
+      const key = "_cacheOverride";
 
       if (elem.href.indexOf(key) < 0) {
         elem.href = `${elem.href}${prefix}${key}=${time}`;
@@ -21,7 +21,7 @@ function refreshStylesheets() {
         elem.href = elem.href.replace(
           /_cacheOverride=\d+/,
           "_cacheOverride=" + time
-        )
+        );
       }
     }
   }
@@ -46,6 +46,10 @@ if ("WebSocket" in window) {
 
       if (data === "close") {
         return window.close();
+      }
+
+      if (data.type === "scss") {
+        return;
       }
 
       if (data.type === "css") {

@@ -3,7 +3,6 @@ import { SafeObject, UserBootstrapCallback } from "../types";
 import { joinPath } from "../utils/path";
 import { logger } from "./logger";
 
-
 export const bootstrap = async (config: Config): Promise<SafeObject> => {
   const bootstrapFile = joinPath(config.source, config.bootstrapName);
 
@@ -16,7 +15,9 @@ export const bootstrap = async (config: Config): Promise<SafeObject> => {
     logger.debug(`Bootstraping...`);
     return userBootstrapCallback(config);
   } else {
-    logger.debug(`No bootstrap file named ${bootstrapFile} was found, skipping...`);
+    logger.debug(
+      `No bootstrap file named ${bootstrapFile} was found, skipping...`
+    );
   }
 
   return {};

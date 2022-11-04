@@ -1,7 +1,7 @@
 import chokidar from "chokidar";
 import { spawnSync } from "node:child_process";
 import expressWs from "express-ws";
-import { basename, extname, joinPath } from "../utils/path";
+import { basename, extname, joinPath, slash } from "../utils/path";
 import {
   AnymatchPattern,
   WatcherChange,
@@ -56,17 +56,27 @@ export class Watcher {
     this.watcher = chokidar.watch(this.config.watch, options);
 
     this.watcher
-      .on("change", this.handleChange.bind(this))
-      .on("add", this.handleChange.bind(this))
-      .on("unlink", this.handleChange.bind(this))
-      .on("addDir", this.handleChange.bind(this))
-      .on("unlinkDir", this.handleChange.bind(this))
-      .on("ready", () => {
+      .on(WatcherEventType.Change, (path: string) =>
+        this.handleChange(WatcherEventType.Change, path)
+      )
+      .on(WatcherEventType.Add, (path: string) =>
+        this.handleChange(WatcherEventType.Add, path)
+      )
+      .on(WatcherEventType.AddDir, (path: string) =>
+        this.handleChange(WatcherEventType.AddDir, path)
+      )
+      .on(WatcherEventType.Unlink, (path: string) =>
+        this.handleChange(WatcherEventType.Unlink, path)
+      )
+      .on(WatcherEventType.UnlinkDir, (path: string) =>
+        this.handleChange(WatcherEventType.UnlinkDir, path)
+      )
+      .on(WatcherEventType.Ready, () => {
         this.recompileSass();
         logger.debug(`Watching for changes on ${this.config.watch}`);
         callback();
       })
-      .on("error", function (err) {
+      .on(WatcherEventType.Error, function (err) {
         logger.error(`Watcher error:`, err);
       });
   }
@@ -79,18 +89,24 @@ export class Watcher {
     this.listeners[eventName].push(callback);
   }
 
-  off(eventName: string, callback: () => void): void {
-    if (Array.isArray(this.listeners[eventName])) {
-      this.listeners[eventName] = this.listeners[eventName].filter(
+  off(eventType: string, callback: () => void): void {
+    if (Array.isArray(this.listeners[eventType])) {
+      this.listeners[eventType] = this.listeners[eventType].filter(
         (cb) => cb !== callback
       );
     }
   }
 
-  dispatch(eventName: WatcherEventType, change: WatcherChange): void {
-    if (Array.isArray(this.listeners[eventName])) {
-      this.listeners[eventName].forEach((callback) => {
-        callback(change);
+  dispatch(eventType: WatcherEventType, change: WatcherChange): void {
+    if (Array.isArray(this.listeners[eventType])) {
+      this.listeners[eventType].forEach((callback) => {
+        callback(eventType, change);
+      });
+    }
+
+    if (Array.isArray(this.listeners[WatcherEventType.All])) {
+      this.listeners[WatcherEventType.All].forEach((callback) => {
+        callback(eventType, change);
       });
     }
   }
@@ -100,12 +116,13 @@ export class Watcher {
     return this.watcher?.close();
   }
 
-  private handleChange(changePath: string): void {
-    const type = this.resolveChangeType(changePath);
+  private handleChange(eventType: WatcherEventType, changePath: string): void {
+    const posixPath = slash(changePath);
+    const type = this.resolveChangeType(posixPath);
 
     logger.debug(`-- Change type is "${type}"`);
 
-    this.dispatch(WatcherEventType.Changed, { type, path: changePath });
+    this.dispatch(eventType, { type, path: posixPath });
 
     // No need to broadcast route configuration changes
     if (type === WatcherChangeType.Routes) {
@@ -114,7 +131,6 @@ export class Watcher {
 
     // Recompile scss before broadcasting to clients
     if (type === WatcherChangeType.Scss) {
-      console.log('-- Changed path', changePath);
       this.recompileSass();
     }
 
@@ -124,7 +140,7 @@ export class Watcher {
 
     clients.forEach((ws) => {
       if (ws) {
-        ws.send(JSON.stringify({ type, file: changePath }), (error) => {
+        ws.send(JSON.stringify({ type, file: posixPath }), (error) => {
           if (error) {
             logger.error("Websocket error:", error);
           }
@@ -145,7 +161,7 @@ export class Watcher {
     const path = `${sourcePath}:${destPath}`;
 
     logger.info(`Recompiling sass files...`);
-    logger.debug(`-- paths: ${sourcePath}:${destPath}`);
+    logger.debug(`paths:`, `${sourcePath}:${destPath}`);
 
     try {
       const result = spawnSync("sass", [path, "--style", "expanded"], {
@@ -154,12 +170,27 @@ export class Watcher {
       });
 
       if (result.error) {
-        logger.debug("-- stderr:", result?.stderr.toString());
+        const stderr = result?.stderr.toString().trim();
+        if (stderr.length) {
+          logger.debug("error:", result?.stderr.toString());
+        }
       } else {
-        logger.debug("-- stdout:", result?.stdout.toString());
+        const stdout = result?.stdout.toString().trim();
+
+        if (stdout.length) {
+          logger.debug("out:", result?.stdout.toString());
+        }
+      }
+
+      const output = result?.output.toString().trim();
+
+      if (output.length) {
+        output.split(/\r?\n|\r|\n/g).forEach((line) => {
+          logger.debug("output:", line.replace(",,", ""));
+        });
       }
     } catch (e) {
-      logger.error("-- sass error", e);
+      logger.error("error:", e);
     }
   }
 
@@ -178,7 +209,10 @@ export class Watcher {
       return WatcherChangeType.Scss;
     }
 
+    if (changePath.indexOf(joinPath("/", this.config.views)) > -1) {
+      return WatcherChangeType.Page;
+    }
+
     return WatcherChangeType.File;
   }
 }
-
