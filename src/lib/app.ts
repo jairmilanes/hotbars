@@ -53,8 +53,9 @@ export class App {
 
     this.server.configure(this.instance, bootstrapData);
 
-    this.watcher.on(WatcherEventType.Changed, (change: WatcherChange) => {
-      if (change.type === WatcherChangeType.Routes) {
+    this.watcher.on(WatcherEventType.All, (eventType, change) => {
+      if (change.type === WatcherChangeType.Routes
+        || eventType !== WatcherEventType.Change) {
         this.server.router.configure();
       }
 
