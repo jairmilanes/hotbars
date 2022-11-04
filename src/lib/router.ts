@@ -117,9 +117,9 @@ export class Router {
   }
 
   private api() {
-    if(this.config.fakeDb) {
+    if (this.config.fakeDb) {
       const db = mapDatabaseFiles(this.config);
-      this.app.use('/api', jsonRouter.router(db));
+      this.app.use("/api", jsonRouter.router(db));
     }
   }
 

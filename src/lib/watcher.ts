@@ -8,7 +8,7 @@ import {
   WatcherChangeType,
   WatcherEventCallback,
   WatcherEventType,
-  WatcherListeners
+  WatcherListeners,
 } from "../types";
 import { Config } from "./config";
 import { logger } from "./logger";
@@ -56,11 +56,21 @@ export class Watcher {
     this.watcher = chokidar.watch(this.config.watch, options);
 
     this.watcher
-      .on(WatcherEventType.Change, (path: string) => this.handleChange(WatcherEventType.Change, path))
-      .on(WatcherEventType.Add, (path: string) => this.handleChange(WatcherEventType.Add, path))
-      .on(WatcherEventType.AddDir, (path: string) => this.handleChange(WatcherEventType.AddDir, path))
-      .on(WatcherEventType.Unlink, (path: string) => this.handleChange(WatcherEventType.Unlink, path))
-      .on(WatcherEventType.UnlinkDir, (path: string) => this.handleChange(WatcherEventType.UnlinkDir, path))
+      .on(WatcherEventType.Change, (path: string) =>
+        this.handleChange(WatcherEventType.Change, path)
+      )
+      .on(WatcherEventType.Add, (path: string) =>
+        this.handleChange(WatcherEventType.Add, path)
+      )
+      .on(WatcherEventType.AddDir, (path: string) =>
+        this.handleChange(WatcherEventType.AddDir, path)
+      )
+      .on(WatcherEventType.Unlink, (path: string) =>
+        this.handleChange(WatcherEventType.Unlink, path)
+      )
+      .on(WatcherEventType.UnlinkDir, (path: string) =>
+        this.handleChange(WatcherEventType.UnlinkDir, path)
+      )
       .on(WatcherEventType.Ready, () => {
         this.recompileSass();
         logger.debug(`Watching for changes on ${this.config.watch}`);
@@ -175,9 +185,9 @@ export class Watcher {
       const output = result?.output.toString().trim();
 
       if (output.length) {
-        output.split(/\r?\n|\r|\n/g).forEach(line => {
-          logger.debug("output:", line.replace(',,', ''));
-        })
+        output.split(/\r?\n|\r|\n/g).forEach((line) => {
+          logger.debug("output:", line.replace(",,", ""));
+        });
       }
     } catch (e) {
       logger.error("error:", e);
@@ -206,4 +216,3 @@ export class Watcher {
     return WatcherChangeType.File;
   }
 }
-

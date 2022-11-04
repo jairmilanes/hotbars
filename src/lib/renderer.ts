@@ -4,7 +4,12 @@ import { readFile } from "fs/promises";
 import prettier from "prettier";
 import uglify from "uglify-js";
 import { basename } from "../utils/path";
-import { HandlebarsWax, InjectionData, SafeObject, WatcherChangeType } from "../types";
+import {
+  HandlebarsWax,
+  InjectionData,
+  SafeObject,
+  WatcherChangeType,
+} from "../types";
 import { configureHandlebars } from "./handlebars";
 import { Config } from "./config";
 import { logger } from "./logger";
@@ -46,7 +51,7 @@ export class Renderer {
     const { instance, error } = configureHandlebars(this.config, data);
 
     if ((error || !instance) && !this.hbs) {
-      throw new HandlebarsException('Failed to initialize Handlebars', error);
+      throw new HandlebarsException("Failed to initialize Handlebars", error);
     }
 
     if (instance) {
@@ -99,7 +104,7 @@ export class Renderer {
 
         if (this.config.env === "development") {
           return prettier.format(js, {
-            parser: "babel"
+            parser: "babel",
           });
         } else {
           const ugly = uglify.minify(js);
@@ -130,10 +135,10 @@ export class Renderer {
                 );
 
                 const code = this.hbs?.handlebars.precompile(template);
-                
+
                 return `Handlebars.templates["${name}"] = Handlebars.template(${code});`;
               })
-            ).then(rs => rs.join('\r\n'))}
+            ).then((rs) => rs.join("\r\n"))}
           })();`;
     } catch (err) {
       return `console.error("${(err as Error).message}");`;
@@ -153,7 +158,7 @@ export class Renderer {
       return template(this.data);
     }
 
-    return '';
+    return "";
   }
 
   private injectScripts(html: string, injection: InjectionData): string {

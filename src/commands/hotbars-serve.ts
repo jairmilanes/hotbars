@@ -14,38 +14,38 @@ program
   .addOption(
     new Option("-e, --env <number>", "Environment name")
       .env("PORT")
-      .choices(['development', 'production'])
-      .default('development')
+      .choices(["development", "production"])
+      .default("development")
   )
   .addOption(
     new Option("-p, --port <number>", "HTTP Port you want to serve the file")
       .env("PORT")
       .default(3000)
-      .argParser((value => parseInt(value, 10)))
+      .argParser((value) => parseInt(value, 10))
   )
   .addOption(
     new Option("-sp, --socketPort <number>", "Socket port for hot reloading")
       .env("PORT")
       .default(5001)
-      .argParser((value => parseInt(value, 10)))
+      .argParser((value) => parseInt(value, 10))
   )
   .addOption(
     new Option(
       "-c, --configName <filePath>",
-      "Config file name to load, defaults to hotbarsrc, and must be placed in the root of your project, it may also start with a dot \".hotbarsrc\"\" and or end with .js, .json or .cjs."
-    ).default('hotbarsrc')
+      'Config file name to load, defaults to hotbarsrc, and must be placed in the root of your project, it may also start with a dot ".hotbarsrc"" and or end with .js, .json or .cjs.'
+    ).default("hotbarsrc")
   )
   .addOption(
     new Option(
       "-l, --logLevel <number>",
       "Log level, must be a number between 1 and 4 (1: debug, 2: info, 3: warn, 4: error)"
     )
-      .choices(['1', '2', '3', '4', '5'])
+      .choices(["1", "2", "3", "4", "5"])
       .default(1)
-      .argParser((value => parseInt(value, 10)))
+      .argParser((value) => parseInt(value, 10))
   )
   .addOption(
-    new Option('--browser', 'Browser to open')
+    new Option("--browser", "Browser to open")
       .choices([Browser.Edge, Browser.Chrome, Browser.Firefox])
       .default(Browser.Edge)
   )
@@ -85,13 +85,13 @@ program
           process.exit(code);
         });
       });
-    } catch(e) {
+    } catch (e) {
       if (args.logLevel > 1) {
         logger.error(
-          'Failed to initialize server, use debug logging level to find out more.'
-        )
+          "Failed to initialize server, use debug logging level to find out more."
+        );
       } else {
-        logger.error(e)
+        logger.error(e);
       }
     }
   });

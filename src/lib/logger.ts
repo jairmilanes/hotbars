@@ -34,9 +34,9 @@ levels["info"].color = `${4}`;
 levels["warn"].color = `${11}`;
 levels["error"].color = `${1}`;
 
-const request = log.extend('request')
+const request = log.extend("request");
 
-request.color = `${202}`
+request.color = `${202}`;
 
 const logName = "logs/debug.txt";
 

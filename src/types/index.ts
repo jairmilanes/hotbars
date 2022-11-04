@@ -94,9 +94,7 @@ export type UserRoutesCallback = (
   config: Config
 ) => void;
 
-export type UserBootstrapCallback = (
-  config: Config
-) => SafeObject;
+export type UserBootstrapCallback = (config: Config) => SafeObject;
 
 export enum WatcherChangeType {
   Routes = "routes",
@@ -115,10 +113,13 @@ export enum WatcherEventType {
   UnlinkDir = "unlinkDir",
   Ready = "ready",
   Error = "error",
-  All = "all"
+  All = "all",
 }
 
-export type WatcherEventCallback = (event: WatcherEventType, change: WatcherChange) => void;
+export type WatcherEventCallback = (
+  event: WatcherEventType,
+  change: WatcherChange
+) => void;
 
 export type WatcherListeners = {
   [eventName: string]: Array<WatcherEventCallback>;

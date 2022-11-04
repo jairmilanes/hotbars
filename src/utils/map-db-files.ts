@@ -5,14 +5,13 @@ import { SafeArray, SafeObject } from "../types";
 import { logger } from "../lib/logger";
 import { joinPath, pathSep } from "./path";
 
-
 export const mapDatabaseFiles = (config: Config): SafeObject => {
   if (!config.fakeDb) {
     return {};
   }
 
   const paths = glob.sync(
-    joinPath(config.source, config.fakeDb, '**', '*.json'),
+    joinPath(config.source, config.fakeDb, "**", "*.json"),
     { nodir: true, cwd: config.root }
   );
 
@@ -26,9 +25,13 @@ export const mapDatabaseFiles = (config: Config): SafeObject => {
   const data: SafeObject = {};
 
   paths.map((path) => {
-    const base = path.replace(joinPath(config.source, config.fakeDb as string, "/"), "");
-    const table = base.indexOf(pathSep) > -1 ? base.split(pathSep)[0] : base.split('.')[0];
-    const content = readFileSync(path, {encoding: config.encoding });
+    const base = path.replace(
+      joinPath(config.source, config.fakeDb as string, "/"),
+      ""
+    );
+    const table =
+      base.indexOf(pathSep) > -1 ? base.split(pathSep)[0] : base.split(".")[0];
+    const content = readFileSync(path, { encoding: config.encoding });
     const jsonData = JSON.parse(content.toString()) as SafeObject;
 
     if (base.indexOf(pathSep) > -1) {
@@ -36,11 +39,11 @@ export const mapDatabaseFiles = (config: Config): SafeObject => {
         data[table] = [];
       }
 
-      (data[table] as SafeArray).push(jsonData)
+      (data[table] as SafeArray).push(jsonData);
     } else {
       data[table] = jsonData;
     }
   });
 
   return data;
-}
+};

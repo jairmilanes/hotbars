@@ -8,7 +8,13 @@ import { Server } from "./server";
 import { Config } from "./config";
 import { logger } from "./logger";
 import { Watcher } from "./watcher";
-import { ServerError, TrackedSocket, WatcherChange, WatcherChangeType, WatcherEventType } from "../types";
+import {
+  ServerError,
+  TrackedSocket,
+  WatcherChange,
+  WatcherChangeType,
+  WatcherEventType,
+} from "../types";
 import { bootstrap } from "./bootstrap";
 
 export class App {
@@ -54,8 +60,10 @@ export class App {
     this.server.configure(this.instance, bootstrapData);
 
     this.watcher.on(WatcherEventType.All, (eventType, change) => {
-      if (change.type === WatcherChangeType.Routes
-        || eventType !== WatcherEventType.Change) {
+      if (
+        change.type === WatcherChangeType.Routes ||
+        eventType !== WatcherEventType.Change
+      ) {
         this.server.router.configure();
       }
 

@@ -19,4 +19,3 @@ export const resolvePath = (...paths: string[]): string => {
 export const basename = path.basename;
 export const extname = path.extname;
 export const pathSep = path.posix.sep;
-
