@@ -71,7 +71,7 @@ export class Router {
 
     const routeMap = mapEndpoints(this.app._router?.stack);
 
-    logger.file(routeMap);
+    // logger.file(routeMap);
   }
 
   private static(): void {
