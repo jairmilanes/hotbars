@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.3...hotbars-v1.4.4) (2022-11-04)
+
+
+### Bug Fixes
+
+* fixed copy command to copy whole ./client directory ([db4e3d3](https://github.com/jairmilanes/hotbars/commit/db4e3d3909fc916f6a1f59bbf33b4f51ade790bd))
+
 ## [1.4.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.2...hotbars-v1.4.3) (2022-11-04)
 
 
