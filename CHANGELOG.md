@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.1...hotbars-v1.4.2) (2022-11-04)
+
+
+### Bug Fixes
+
+* moved json-server from dev dependencies to dependencies ([cae81a8](https://github.com/jairmilanes/hotbars/commit/cae81a83bddb578b3fafcf7cc574d7c31b591a89))
+
 ## [1.4.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.0...hotbars-v1.4.1) (2022-11-04)
 
 
