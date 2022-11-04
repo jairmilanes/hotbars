@@ -100,16 +100,25 @@ export type UserBootstrapCallback = (
 
 export enum WatcherChangeType {
   Routes = "routes",
+  Page = "page",
+  Script = "script",
   Scss = "scss",
   css = "css",
   File = "file",
 }
 
 export enum WatcherEventType {
-  Changed = "changed",
+  Change = "change",
+  Add = "add",
+  AddDir = "addDir",
+  Unlink = "unlink",
+  UnlinkDir = "unlinkDir",
+  Ready = "ready",
+  Error = "error",
+  All = "all"
 }
 
-export type WatcherEventCallback = (change: WatcherChange) => void;
+export type WatcherEventCallback = (event: WatcherEventType, change: WatcherChange) => void;
 
 export type WatcherListeners = {
   [eventName: string]: Array<WatcherEventCallback>;
