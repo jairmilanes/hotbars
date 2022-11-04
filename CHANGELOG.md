@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.2...hotbars-v1.4.3) (2022-11-04)
+
+
+### Bug Fixes
+
+* removed file logger temporarily for improvements ([63df840](https://github.com/jairmilanes/hotbars/commit/63df8407c728f6fb36da1fca38fe4df0502a4db0))
+
 ## [1.4.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.1...hotbars-v1.4.2) (2022-11-04)
 
 
