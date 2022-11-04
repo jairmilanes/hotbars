@@ -1,10 +1,10 @@
 import frontMatter from "front-matter";
 import glob from "glob";
 import { readFile } from "fs/promises";
-import prettify from "prettier";
+import prettier from "prettier";
 import uglify from "uglify-js";
 import { basename } from "../utils/path";
-import { HandlebarsWax, InjectionData, SafeObject } from "../types";
+import { HandlebarsWax, InjectionData, SafeObject, WatcherChangeType } from "../types";
 import { configureHandlebars } from "./handlebars";
 import { Config } from "./config";
 import { logger } from "./logger";
@@ -98,8 +98,8 @@ export class Renderer {
         const js = await this.preCompile(templates);
 
         if (this.config.env === "development") {
-          return prettify.format(js, {
-            parser: "glimmer"
+          return prettier.format(js, {
+            parser: "babel"
           });
         } else {
           const ugly = uglify.minify(js);
@@ -122,19 +122,18 @@ export class Renderer {
   private async preCompile(templates: string[]): Promise<string> {
     try {
       return `(function() {
-            const template = Handlebars.template;
-            const templates = Handlebars.templates || {};
+            Handlebars.templates = {};
             ${await Promise.all(
               templates.map(async (templatePath) => {
                 const { name, template } = await this.loadTemplate(
                   templatePath
                 );
+
                 const code = this.hbs?.handlebars.precompile(template);
-                return `
-                        templates["${name}"] = template(${code});\r\n
-                    `;
+                
+                return `Handlebars.templates["${name}"] = Handlebars.template(${code});`;
               })
-            )}
+            ).then(rs => rs.join('\r\n'))}
           })();`;
     } catch (err) {
       return `console.error("${(err as Error).message}");`;
