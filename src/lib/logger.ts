@@ -1,5 +1,5 @@
 import createLogger, { Debugger } from "debug";
-import { writeFileSync } from "fs";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { resolvePath } from "../utils/path";
 
 export const log = createLogger("hotbars");
