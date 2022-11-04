@@ -15,7 +15,7 @@
     "url": "https://github.com/jairmilanes/hotbars"
   },
   "scripts": {
-    "copy": "copyfiles -u 1 --verbose ./src/client/**  ./dist",
+    "copy": "copyfiles -u 1 --verbose \"./src/client/**/*.*\"  dist",
     "build": "tsc",
     "watch": "node ./scripts/watch.js watch",
     "lint": "eslint src/ --fix",
