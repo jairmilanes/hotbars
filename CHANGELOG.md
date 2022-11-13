@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.5.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.6...hotbars-v1.5.0) (2022-11-13)
+
+
+### Features
+
+* added fake database generation with faker.js ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+* added full support for helpers on pre-compiled templates ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+* added support for client/server shared partials ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+* server wide updates and new features ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+
+
+### Bug Fixes
+
+* improved folder structure ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+* improved multipart configration to effect every route ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+* improved pre-compilation logic ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+* improved router reload on file changes ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+* page routes not supporting methods other than git ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+* renamed example to web for website use ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+* splitted pre-rendering logic from main renderer ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+* urlencoded parser warning on server start up ([d895458](https://github.com/jairmilanes/hotbars/commit/d89545838607575a521c53be47f5d6474c2a7ad6))
+
 ## [1.4.6](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.5...hotbars-v1.4.6) (2022-11-04)
 
 
