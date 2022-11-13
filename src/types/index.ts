@@ -1,8 +1,9 @@
-import { Application } from "express-ws";
-import { Config } from "../lib/config";
+import { Router } from "express-ws";
 import { Socket } from "node:net";
 import { HelperDeclareSpec, HelperDelegate } from "handlebars";
-import express, { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { ControllerAbstract } from "../abstract";
+import { Config } from "../lib/core";
 
 export type SafeAny =
   | string
@@ -11,6 +12,7 @@ export type SafeAny =
   | string[]
   | number[]
   | boolean[]
+  | RegExp
   | SafeObject
   | SafeArray
   | null
@@ -25,6 +27,92 @@ export type SafeArray = SafeObject[] | SafeAny[];
 export type AnymatchFn = (testString: string) => boolean;
 
 export type AnymatchPattern = string | RegExp | AnymatchFn;
+
+export interface PrivateOptions {
+  root: string;
+  watch: string[];
+  serverViews: string;
+  serverPartials: string;
+  serverScripts: string;
+  serverStyles: string;
+}
+
+export interface UploadField {
+  name: string;
+  maxCount?: number;
+}
+
+export interface OptionalFeature {
+  enabled: boolean;
+}
+
+export interface UploadsConfig extends OptionalFeature {
+  path: string;
+  limit: number;
+  maxFileSize: number;
+  types: string[] | UploadField[];
+}
+
+export interface CorsConfig extends OptionalFeature {
+  enabled: boolean;
+}
+
+export interface AutoRouteConfig {
+  methods: string | string[];
+  [view: string]: string | string[];
+}
+
+export type HTTPProtocol = "http" | "https";
+
+export type StylesType = "css" | "scss";
+
+export interface Options {
+  root: string;
+  logLevel: number;
+  encoding: BufferEncoding;
+  protocol: HTTPProtocol;
+  host: string;
+  browser: Browser;
+  port: number;
+  socketPort: number;
+  extname: string;
+  source: string;
+  configName: string;
+  bootstrapName: string;
+  routesConfigName: string;
+  jsonDb?: string;
+  dbSchema?: string;
+  data: string;
+  helpers: string;
+  layouts: string;
+  partials: string;
+  precompile: string;
+  shared: string;
+  views: string;
+  controllers: string;
+  styleMode: StylesType;
+  styles: string;
+  public: string;
+  partialsOptions: any;
+  ignore: string[];
+  ignorePattern?: RegExp;
+  uploads: UploadsConfig;
+  cors: CorsConfig;
+  env: string;
+  dev: boolean;
+  serverUrl: string;
+  autoroute: AutoRouteConfig;
+}
+
+export interface CliOptions {
+  env: string;
+  port: number;
+  socketPort: number;
+  configName: string;
+  logLevel: number;
+  logFilePath: string;
+  browser: Browser;
+}
 
 export interface TrackedSocket extends Socket {
   _id: string;
@@ -89,23 +177,34 @@ export enum Browser {
 }
 
 export type UserRoutesCallback = (
-  add: Application,
-  router: typeof express.Router,
-  config: Config
+  router: Router,
+  config: Readonly<Config>
 ) => void;
 
-export type UserBootstrapCallback = (config: Config) => SafeObject;
+export type UserBootstrapCallback = (
+  config: Readonly<Config>
+) => Promise<SafeObject>;
+
+export type ControllerFunction = (
+  req: Request,
+  res: Response
+) => Promise<SafeObject>;
+
+export type UserControllers = {
+  [path: string]: ControllerAbstract | ControllerFunction;
+};
 
 export enum WatcherChangeType {
   Routes = "routes",
+  Controller = "controller",
   Page = "page",
   Script = "script",
   Scss = "scss",
-  css = "css",
+  Css = "css",
   File = "file",
 }
 
-export enum WatcherEventType {
+export enum WatcherEvent {
   Change = "change",
   Add = "add",
   AddDir = "addDir",
@@ -114,10 +213,11 @@ export enum WatcherEventType {
   Ready = "ready",
   Error = "error",
   All = "all",
+  Broadcast = "broadcast",
 }
 
 export type WatcherEventCallback = (
-  event: WatcherEventType,
+  event: WatcherEvent,
   change: WatcherChange
 ) => void;
 
@@ -128,6 +228,7 @@ export type WatcherListeners = {
 export interface WatcherChange {
   type: WatcherChangeType;
   path: string;
+  structural: boolean;
 }
 
 export interface InjectionData {
@@ -168,31 +269,40 @@ export interface RouteKey {
 
 export type RequestMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
-export interface RouteLayer {
-  name: string;
-  keys?: RouteKey[];
-  route?: {
-    name?: string;
-    path: string;
-    stack?: RouteLayer[];
-    method: RequestMethod;
-    methods: {
-      [key: string]: boolean;
-    };
-  };
-  regexp: RegExp;
-  handle?: {
-    stack: RouteLayer[];
+export interface Route {
+  name?: string;
+  path: string;
+  stack?: RouteLayer[];
+  method: RequestMethod;
+  methods: {
+    [key: string]: boolean;
   };
 }
 
-export interface RouteMap {
+export interface RouteHandle {
+  stack: RouteLayer[];
+}
+
+export interface RouteLayer {
   name: string;
+  keys?: RouteKey[];
+  route?: Route;
+  regexp: RegExp;
+  handle?: RouteHandle;
+}
+
+export interface RouteMap {
+  index: number;
+  type: string;
   path: string;
   slug: string;
-  method: RequestMethod;
-  description: string;
+  source?: string;
+  prefix?: string;
+  method?: RequestMethod;
+  methods?: RequestMethod[];
+  description?: string;
   params?: RouteKey[];
+  routes?: RouteMap[];
 }
 
 export interface RouterMap {

@@ -1,0 +1,25 @@
+{{#if (eq "get" this)}}
+  <strong
+    class="bg-lime-100 text-lime-700 text-sm inline-block w-16 py-1 px-2 rounded"
+  >{{uppercase this}}</strong>
+{{/if}}
+{{#if (eq "post" this)}}
+  <strong
+    class="bg-teal-100 text-teal-700 text-sm inline-block w-16 py-1 px-2 rounded"
+  >{{uppercase this}}</strong>
+{{/if}}
+{{#if (eq "put" this)}}
+  <strong
+    class="bg-indigo-100 text-indigo-700 text-sm inline-block w-16 py-1 px-2 rounded"
+  >{{uppercase this}}</strong>
+{{/if}}
+{{#if (eq "patch" this)}}
+  <strong
+    class="bg-purple-100 text-purple-700 text-sm inline-block w-16 py-1 px-2 rounded"
+  >{{uppercase this}}</strong>
+{{/if}}
+{{#if (eq "delete" this)}}
+  <strong
+    class="bg-red-100 text-red-700 text-sm inline-block w-16 py-1 px-2 rounded"
+  >{{uppercase this}}</strong>
+{{/if}}

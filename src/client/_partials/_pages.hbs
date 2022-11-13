@@ -1,0 +1,22 @@
+{{#embed "_box" title="Pages" overflow="y-scroll"}}
+  {{#content "body"}}
+    <ul>
+      {{#filter routes "pages" property="source"}}
+        {{#each (get "routes" this)}}
+          <li
+            class="border-b border-slate-100 hover:bg-slate-100 dark:border-neutral-800 dark:hover:bg-neutral-800 py-1 px-2"
+          >
+            <a
+              href="{{this.path}}"
+              title="Click to visit"
+              target="_blank"
+              class="block hover:text-rose-600 py-1 px-2"
+            >
+              {{titleize this.slug}}
+            </a>
+          </li>
+        {{/each}}
+      {{/filter}}
+    </ul>
+  {{/content}}
+{{/embed}}

@@ -3,37 +3,37 @@
 
 import { Command, Option } from "commander";
 import { callbackify } from "util";
-import { App } from "../lib/app";
-import { parseConfig } from "../lib/config";
-import { logger, setLogLevel } from "../lib/logger";
+import { initLogger, logger } from "../lib/services";
+import { Config, cliDefaults } from "../lib/core";
 import { Browser } from "../types";
+import { App } from "../lib/app";
 
 const program = new Command();
 
 program
   .addOption(
     new Option("-e, --env <number>", "Environment name")
-      .env("PORT")
+      .env("NODE_ENV")
       .choices(["development", "production"])
-      .default("development")
+      .default(cliDefaults.env)
   )
   .addOption(
     new Option("-p, --port <number>", "HTTP Port you want to serve the file")
       .env("PORT")
-      .default(3000)
+      .default(cliDefaults.port)
       .argParser((value) => parseInt(value, 10))
   )
   .addOption(
     new Option("-sp, --socketPort <number>", "Socket port for hot reloading")
-      .env("PORT")
-      .default(5001)
+      .env("SOCKET_PORT")
+      .default(cliDefaults.socketPort)
       .argParser((value) => parseInt(value, 10))
   )
   .addOption(
     new Option(
       "-c, --configName <filePath>",
       'Config file name to load, defaults to hotbarsrc, and must be placed in the root of your project, it may also start with a dot ".hotbarsrc"" and or end with .js, .json or .cjs.'
-    ).default("hotbarsrc")
+    ).default(cliDefaults.configName)
   )
   .addOption(
     new Option(
@@ -41,31 +41,39 @@ program
       "Log level, must be a number between 1 and 4 (1: debug, 2: info, 3: warn, 4: error)"
     )
       .choices(["1", "2", "3", "4", "5"])
-      .default(1)
+      .default(cliDefaults.logLevel)
+      .argParser((value) => parseInt(value, 10))
+  )
+  .addOption(
+    new Option("-lf, --logFile <number>", "Path where to save log files.")
+      .default(cliDefaults.logFilePath)
       .argParser((value) => parseInt(value, 10))
   )
   .addOption(
     new Option("--browser", "Browser to open")
       .choices([Browser.Edge, Browser.Chrome, Browser.Firefox])
-      .default(Browser.Edge)
+      .default(cliDefaults.browser)
+  )
+  .addOption(
+    new Option(
+      "-D, --dev",
+      "Server dev flag, used for Hotbars development only"
+    ).hideHelp()
   )
   // .showSuggestionAfterError(false)
   .action(async (args) => {
-    setLogLevel(args.logLevel);
-
-    const config = parseConfig({
-      watch: args,
-      ...args,
-    });
-
-    logger.info(`Initializing server...`);
+    initLogger(args.logLevel, args.logFile);
 
     try {
-      const server = new App(config);
+      Config.create(args);
 
-      await server.start();
+      logger.warn(`Initializing ${Config.get("env")}...`);
 
-      const close = callbackify(server.close);
+      const hotBars = new App(args);
+
+      await hotBars.start();
+
+      const close = callbackify(hotBars.close);
 
       process.on("SIGTERM", () => {
         logger.debug("SIGTERM signal received.");

@@ -9,43 +9,38 @@
 
 ## [1.4.5](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.4...hotbars-v1.4.5) (2022-11-04)
 
-
 ### Bug Fixes
 
-* added verbose flag to copy files command ([49b01a2](https://github.com/jairmilanes/hotbars/commit/49b01a2f3eff31eb7f36436b91bc9ed275dee166))
+- added verbose flag to copy files command ([49b01a2](https://github.com/jairmilanes/hotbars/commit/49b01a2f3eff31eb7f36436b91bc9ed275dee166))
 
 ## [1.4.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.3...hotbars-v1.4.4) (2022-11-04)
 
-
 ### Bug Fixes
 
-* fixed copy command to copy whole ./client directory ([db4e3d3](https://github.com/jairmilanes/hotbars/commit/db4e3d3909fc916f6a1f59bbf33b4f51ade790bd))
+- fixed copy command to copy whole ./client directory ([db4e3d3](https://github.com/jairmilanes/hotbars/commit/db4e3d3909fc916f6a1f59bbf33b4f51ade790bd))
 
 ## [1.4.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.2...hotbars-v1.4.3) (2022-11-04)
 
-
 ### Bug Fixes
 
-* removed file logger temporarily for improvements ([63df840](https://github.com/jairmilanes/hotbars/commit/63df8407c728f6fb36da1fca38fe4df0502a4db0))
+- removed file logger temporarily for improvements ([63df840](https://github.com/jairmilanes/hotbars/commit/63df8407c728f6fb36da1fca38fe4df0502a4db0))
 
 ## [1.4.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.1...hotbars-v1.4.2) (2022-11-04)
 
-
 ### Bug Fixes
 
-* moved json-server from dev dependencies to dependencies ([cae81a8](https://github.com/jairmilanes/hotbars/commit/cae81a83bddb578b3fafcf7cc574d7c31b591a89))
+- moved json-server from dev dependencies to dependencies ([cae81a8](https://github.com/jairmilanes/hotbars/commit/cae81a83bddb578b3fafcf7cc574d7c31b591a89))
 
 ## [1.4.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.0...hotbars-v1.4.1) (2022-11-04)
 
-
 ### Bug Fixes
 
-* added url to the runtime handlebars compilation context ([aad915f](https://github.com/jairmilanes/hotbars/commit/aad915f0d8130617388076def48caff58162bdf2))
-* better sass compiler feedback in the console logs ([864f4c9](https://github.com/jairmilanes/hotbars/commit/864f4c915df3096ffddc4aae8d510bd7f88b5e72))
-* by passed scss updates in socket connector to only update once css has recompiled ([799e29e](https://github.com/jairmilanes/hotbars/commit/799e29e2d68a5044d9e1b39b168a55fc28ec0654))
-* extended router re-configuration when files are added or excluded from views ([c88b4dc](https://github.com/jairmilanes/hotbars/commit/c88b4dc9015ad342dad4024e2851b542bbfcd382))
-* fixed prettier parser for pre-compiled templates ([ca755b7](https://github.com/jairmilanes/hotbars/commit/ca755b76fe74f011e1cebc5ac020111fac9babc4))
-* improved watcher events handling ([864f4c9](https://github.com/jairmilanes/hotbars/commit/864f4c915df3096ffddc4aae8d510bd7f88b5e72))
+- added url to the runtime handlebars compilation context ([aad915f](https://github.com/jairmilanes/hotbars/commit/aad915f0d8130617388076def48caff58162bdf2))
+- better sass compiler feedback in the console logs ([864f4c9](https://github.com/jairmilanes/hotbars/commit/864f4c915df3096ffddc4aae8d510bd7f88b5e72))
+- by passed scss updates in socket connector to only update once css has recompiled ([799e29e](https://github.com/jairmilanes/hotbars/commit/799e29e2d68a5044d9e1b39b168a55fc28ec0654))
+- extended router re-configuration when files are added or excluded from views ([c88b4dc](https://github.com/jairmilanes/hotbars/commit/c88b4dc9015ad342dad4024e2851b542bbfcd382))
+- fixed prettier parser for pre-compiled templates ([ca755b7](https://github.com/jairmilanes/hotbars/commit/ca755b76fe74f011e1cebc5ac020111fac9babc4))
+- improved watcher events handling ([864f4c9](https://github.com/jairmilanes/hotbars/commit/864f4c915df3096ffddc4aae8d510bd7f88b5e72))
 
 ## [1.4.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.3.1...hotbars-v1.4.0) (2022-10-31)
 

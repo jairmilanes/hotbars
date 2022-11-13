@@ -1,0 +1,61 @@
+<button id="{{id}}" type="{{default type "button"}}" class="
+    text-sm font-medium
+
+    {{#if (eq theme "default")}}
+    bg-{{default color "blue"}}-700 hover:bg-{{default color "blue"}}-800
+    text-white
+
+    dark:bg-{{default color "blue"}}-600 dark:hover:bg-{{default color "blue"}}-700
+
+    focus:ring-{{default color "blue"}}-300
+    dark:focus:ring-{{default color "blue"}}-800
+
+    focus:ring-4 focus:outline-none
+    {{/if}}
+
+    {{#if (eq theme "outline")}}
+    text-{{default color "blue"}}-700 hover:text-{{default color "blue"}}-500
+
+    dark:text-{{default color "blue"}}-500
+
+    border border-{{default color "blue"}}-700 hover:border-{{default color "blue"}}-600
+    dark:border-{{default color "blue"}}-500
+
+    focus:ring-4 focus:outline-none focus:ring-{{default color "blue"}}-300
+    dark:focus:ring-{{default color "blue"}}-800
+    {{/if}}
+
+    {{#if (eq theme "dark")}}
+    bg-gray-800 hover:bg-gray-900
+    text-white
+
+    dark:bg-gray-800 dark:hover:bg-gray-700
+
+    dark:border-gray-700
+
+    focus:ring-4 focus:outline-none focus:ring-gray-300
+    dark:focus:ring-gray-700
+
+    focus:ring-4 focus:outline-none
+    {{/if}}
+
+    {{#if (eq theme "light")}}
+    bg-white hover:bg-gray-100
+    text-gray-900
+
+    dark:bg-gray-800 dark:hover:bg-gray-700
+    dark:text-white
+
+    border border-gray-300
+    dark:border-gray-600  dark:hover:border-gray-600
+
+    focus:ring-4 focus:outline-none focus:ring-gray-200
+    dark:focus:ring-gray-700
+    {{/if}}
+
+    {{#if (isTruthy rounded)}}
+      rounded-{{rounded}}
+    {{/if}}
+
+    px-5 py-2.5 {{class}}
+">{{label}}</button>

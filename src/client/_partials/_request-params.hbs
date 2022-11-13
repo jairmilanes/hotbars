@@ -1,0 +1,20 @@
+<!--
+{ name: 'resource', optional: false, offset: 1 },
+{ name: 'id', optional: false, offset: 16 },
+{ name: 'nested', optional: false, offset: 31 }
+-->
+{{#if (isTruthy params)}}
+  <div class="hbs-params hidden py-4">
+    {{#each (split path "/")}}
+      {{#startsWith ":" this}}
+        {{#filter ../params (replace this ":" "") property="name"}}
+          <span class="py-2"><span class="text-slate-600 font-bold">/</span><input name="{{name}}" size="20" type="text" placeholder=":{{name}}" class="py-0 pl-2 pr-0 border-0 w-fit" /></span>
+        {{/filter}}
+      {{else}}
+        {{#gt (length this) 0}}
+          <span class="py-2 text-slate-600 font-bold">/{{this}}</span>
+        {{/gt}}
+      {{/startsWith}}
+    {{/each}}
+  </div>
+{{/if}}

@@ -1,0 +1,204 @@
+{{#extend "_default"}}
+  {{#content "hero"}}
+    {{> "_heading" size="h2" text="Dashboard" }}
+  {{/content}}
+
+  {{#content "main"}}
+    <section class="container mx-auto grid grid-cols-2 gap-4">
+      {{> "_pages"}}
+      {{> "_watch-patterns"}}
+    </section>
+
+    <section class="container mx-auto grid grid-cols-1">
+      <div class="grid grid-cols-12 gap-0">
+        <div class="col-span-5 rounded-l-xl bg-white p-6 mb-6 flex flex-col">
+          {{> "_heading" size="h3" text="Endpoints" }}
+          {{> "_custom-routes"}}
+          <div class="my-1">&nbsp;</div>
+          {{> "_json-db"}}
+        </div>
+        <div class="col-span-7 flex flex-col rounded-r-xl bg-white mb-6 flex flex-col">
+          <div class="pt-6 px-6 rounded-tr-xl bg-slate-100">
+            <div class="flex py-2">
+              <div id="hbs-request-method-none"
+                   class="form-input rounded-l-full border-r-0 border-slate-100 mr-0 text-center font-bold text-slate-600 min-w-[80px]">
+                <span class="text-slate-300">*</span>
+              </div>
+              {{#each _hbs.methods}}
+                <div id="hbs-request-method-{{lowercase name}}"
+                     class="hbs-request-method hidden form-input rounded-l-full border-r-0 border-slate-100 mr-0 text-center font-bold min-w-[80px] {{color}} {{bg}}">
+                  {{name}}
+                </div>
+              {{/each}}
+              <div class="form-input border-slate-100 grow ml-0">
+                  <span id="hbs-request-resource">
+                      <span class="text-slate-300">{{_hbs.messages.noActiveResource}}</span>
+                  </span>
+              </div>
+              <button disabled class="rounded-r-full bg-rose-600 hover:bg-rose-500 text-white font-bold px-5">
+                Send
+              </button>
+            </div>
+            {{> "_tabs" _hbs.tabs}}
+          </div>
+          <div id="hbs-resource-tabs-content" class="border-l border-t grow flex flex-col">
+            <div id="hbs-request-body" class="hidden relative grow shrink-0">
+              <div id="ace-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 text-base"></div>
+              <div id="multipart-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 p-6">
+                <form id="hbs-multipart-entry-form">
+                  <div class="flex">
+                    {{> "_input" type="text" name="key" label="Key" class="grow mr-4"}}
+                    {{> "_input" type="text" name="value" label="Value" class="grow mr-4"}}
+                    {{> "_button" id="hbs-multipart-add" theme="default" color="rose" label="Add" rounded="lg"}}
+                  </div>
+                </form>
+              </div>
+              <div id="binary-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 p-6">
+                <form id="hbs-multipart-binary-form">
+                  {{> "_input" type="dropzone" name="key" label="Key"}}
+                </form>
+              </div>
+            </div>
+            <div id="hbs-request-headers" class="">
+              HEADERS
+            </div>
+            <div id="hbs-request-raw" class="hidden">
+              RAW
+            </div>
+            <div id="hbs-request-preview" class="hidden">
+              PREVIEW
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {{/content}}
+
+  {{#content "scripts"}}
+    <script>
+      const editor = ace.edit("ace-editor");
+      editor.setTheme("ace/theme/one_dark");
+
+      const editorSession = {
+        json: ace.createEditSession("// Enter your json payload", "ace/mode/json"),
+        plain: ace.createEditSession("// Enter your plain text payload", "ace/mode/text")
+      };
+
+      Object.keys(editorSession).forEach(mode => {
+        editorSession[mode].setTabSize(4);
+        editorSession[mode].setUseSoftTabs(true);
+        editorSession[mode].setUseWrapMode(true);
+      });
+
+      editor.setSession(editorSession.json);
+
+      $(function() {
+        const editors = {
+          json: $("#ace-editor"),
+          plain: $("#ace-editor"),
+          multipart: $("#multipart-editor"),
+          binary: $("#binary-editor")
+        };
+
+        /***************************************
+         * Resource Tab Controls
+         **************************************/
+        $("#hbs-resource-tabs a[data-tabs-toggle]").on("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const activeTabsClass = "bg-white font-bold border-l border-r border-t";
+          const tabsClass = "bg-slate-100";
+
+          const trigger = $(e.currentTarget);
+          const activeContent = $(`#${trigger.data("tabs-toggle")}`);
+
+          trigger
+            .parent()
+            .removeClass(tabsClass)
+            .addClass(activeTabsClass)
+            .siblings()
+            .removeClass(activeTabsClass)
+            .addClass(tabsClass);
+
+          activeContent
+            .removeClass("hidden")
+            .siblings()
+            .addClass("hidden");
+        });
+
+        $("[data-dropdown-trigger]").on("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const trigger = $(e.currentTarget);
+          const mode = trigger.data("dropdown-trigger");
+
+          editors[mode].removeClass("hidden");
+          editors[mode].siblings().addClass("hidden");
+
+          if (mode in editorSession) {
+            editor.setSession(editorSession[mode]);
+          }
+        });
+
+        $("#hbs-multipart-add").on("click", (e) => {
+          const { multipartEntry } = Handlebars.templates;
+          console.log(Handlebars);
+          /* console.log(multipartEntry({
+            key: "key",
+            value: "value"
+          })) */
+        });
+
+        /***************************************
+         * Resource Click event
+         **************************************/
+        $(".hbs-resource").on("click", (e) => {
+          const params = $(".hbs-params", $(e.delegateTarget)).eq(0);
+          const method = $(e.delegateTarget).data("method");
+
+          $("#hbs-request-method-none").remove();
+          $(".hbs-request-method").addClass("hidden");
+          $(`#hbs-request-method-${method}`).removeClass("hidden");
+
+          if (params.length) {
+            $("#hbs-request-resource").html(params.html());
+          } else {
+            $("#hbs-request-resource").html(`<span class="font-bold text-slate-600">${$(e.delegateTarget).data("path")}</bold>`);
+          }
+
+          const bodyTab = $("#hbs-resource-tabs li:first-child").first();
+
+          if (["get", "delete"].indexOf(method) < 0) {
+            bodyTab.removeClass("hidden");
+            $("a", bodyTab).first().trigger("click");
+
+            editor.session.setValue([
+              "// Enter your json payload"
+            ].join("\n"));
+          } else {
+            $("#hbs-resource-tabs li a:first-child").eq(1).trigger("click");
+            bodyTab.addClass("hidden");
+          }
+        });
+
+        /***************************************
+         * Autogrow resource text input
+         **************************************/
+        const paramsInput = $(".hbs-params").find("input[type=\"text\"]");
+        paramsInput.each((i, input) => {
+          // const val = $(input).val().size;
+          $(input).prop("size", 3);
+          $(input).on("keyup", () => {
+            const len = $(input).val().length;
+            if (len <= 3) {
+              $(input).prop("size", 3);
+            } else {
+              $(input).prop("size", len + .5);
+            }
+          });
+        });
+      });
+    </script>
+  {{/content}}
+{{/extend}}

@@ -1,0 +1,8 @@
+{
+  "extname": "hbs",
+  "source": "src",
+  "styles": "styles",
+  "styleMode": "scss",
+  "jsonDb": "db",
+  "upload": []
+}

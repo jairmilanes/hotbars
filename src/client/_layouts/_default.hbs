@@ -1,0 +1,42 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <title>Hotbars: User Api</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            textColor: "text-slate-600",
+            container: {
+              center: true,
+            },
+            colors: {
+              clifford: '#da373d',
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-slate-200 dark:bg-neutral-800 text-slate-800 dark:text-slate-100 flex flex-col overflow-hidden h-full">
+    {{> "_header"}}
+    {{#block "hero"}}{{/block}}
+
+    <main class="p-5 flex-auto overflow-y-scroll">
+      {{#block "main"}}{{/block}}
+    </main>
+
+    {{> "_scripts" }}
+
+    {{#block "footer"}}{{/block}}
+
+    {{#block "scripts"}}{{/block}}
+  </body>
+</html>

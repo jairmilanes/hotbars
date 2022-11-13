@@ -1,153 +1,77 @@
-import http from "http";
-import express, { Express } from "express";
-import expressWs from "express-ws";
 import open from "open";
-import { AddressInfo } from "net";
-import { promisify } from "util";
-import { Server } from "./server";
-import { Config } from "./config";
-import { logger } from "./logger";
-import { Watcher } from "./watcher";
+import { joinPath } from "./utils";
 import {
-  ServerError,
-  TrackedSocket,
+  Browser,
   WatcherChange,
   WatcherChangeType,
-  WatcherEventType,
+  WatcherEvent,
+  CliOptions,
 } from "../types";
-import { bootstrap } from "./bootstrap";
+import { logger, BootstrapData, compileSass } from "./services";
+import {
+  Server,
+  Config,
+  Controllers,
+  Renderer,
+  PreRenderer,
+  Watcher,
+  Router,
+} from "./core";
 
 export class App {
-  private readonly config: Config;
+  readonly watcher: Watcher;
 
-  express: Express;
+  readonly renderer: Renderer;
 
-  instance: expressWs.Instance;
+  readonly preRenderer: PreRenderer;
 
-  watcher: Watcher;
+  readonly router: Router;
 
-  server: Server;
-
-  app?: http.Server;
-
-  serveURL?: string;
-
-  connections = new Set<TrackedSocket>();
+  private initialized = false;
 
   closing = false;
 
-  constructor(config: Config) {
-    this.config = config;
-
-    this.express = express();
-
-    this.instance = expressWs(this.express, undefined, {
-      wsOptions: {
-        clientTracking: true,
-      },
-    });
-
-    this.watcher = new Watcher(this.config, this.instance);
-
-    this.server = new Server(this.config, this.instance);
+  constructor() {
+    this.watcher = new Watcher();
+    this.renderer = new Renderer();
+    this.preRenderer = new PreRenderer();
+    this.router = new Router(this.renderer, this.preRenderer);
   }
 
-  async start(): Promise<void> {
-    logger.debug(`Creating express websocket server...`);
+  async start(): Promise<this> {
+    logger.info(`Configuring server...`);
 
-    const bootstrapData = await bootstrap(this.config);
+    await BootstrapData.load();
+    await Controllers.load();
 
-    this.server.configure(this.instance, bootstrapData);
+    this.sass();
 
-    this.watcher.on(WatcherEventType.All, (eventType, change) => {
-      if (
-        change.type === WatcherChangeType.Routes ||
-        eventType !== WatcherEventType.Change
-      ) {
-        this.server.router.configure();
+    this.renderer.configure();
+    this.preRenderer.configure();
+
+    Server.create(this.renderer);
+
+    this.router.configure();
+
+    this.watcher.on(WatcherEvent.All, this.reConfigure.bind(this));
+
+    this.watcher.on(WatcherEvent.Broadcast, this.broadcast.bind(this));
+
+    this.watcher.watch(async () => {
+      if (!this.initialized) {
+        await Server.listen();
+
+        logger.info(`Hot reload server listening at ${Server.url}`);
+
+        await this.launch();
+        this.initialized = true;
       }
-
-      if (change.type === WatcherChangeType.File) {
-        this.server.renderer.configure(bootstrapData);
-      }
     });
 
-    this.listen();
-  }
-
-  private listen(port?: number): void {
-    this.serveURL =
-      this.config.protocol +
-      "://" +
-      this.config.host +
-      ":" +
-      (port || this.config.port);
-
-    this.app = this.instance.app.listen(
-      port || this.config.port,
-      this.config.host,
-      () => {
-        logger.info(`🔥 Hot reload server listening at ${this.serveURL}`);
-
-        this.watcher.watch(() => {
-          this.launch();
-        });
-      }
-    );
-
-    this.app?.on("connection", this.trackConnections.bind(this));
-    this.app?.on("secureConnection", this.trackConnections.bind(this));
-    this.app?.on("request", this.trackIdleState.bind(this));
-    this.app?.on("error", this.error.bind(this));
-  }
-
-  private trackIdleState(
-    req: http.IncomingMessage,
-    res: http.OutgoingMessage
-  ): void {
-    const socket = req.socket as TrackedSocket;
-    socket._idle = false;
-
-    res.on("finish", () => {
-      socket._idle = false;
-      this.destroySocket(socket);
-    });
-  }
-
-  private trackConnections(socket: TrackedSocket) {
-    socket._idle = true;
-    this.connections.add(socket);
-
-    this.app?.once("close", () => {
-      this.connections.delete(socket);
-    });
-  }
-
-  private async launch(): Promise<void> {
-    if (this.serveURL) {
-      logger.info(`Launching ${this.config.browser}...`);
-      await open(this.serveURL, { app: { name: this.config.browser } });
-    }
-  }
-
-  private async error(error: ServerError): Promise<void> {
-    if (error.code === "EADDRINUSE") {
-      logger.warn("%s is already in use.", this.serveURL);
-      logger.warn("Trying a random free port...");
-
-      setTimeout(() => {
-        this.app = this.instance.app.listen(0, this.config.host, async () => {
-          this.listen((this.app?.address() as AddressInfo).port);
-        });
-      }, 500);
-    } else {
-      logger.error("Server error", error);
-      await this.close();
-    }
+    return this;
   }
 
   async close(force?: boolean): Promise<number> {
-    console.info("CLOSING");
     this.closing = true;
     logger.info(force ? "Forcefully shutting down..." : "Shutting down...");
 
@@ -155,18 +79,7 @@ export class App {
     logger.debug("-- Watcher down");
 
     try {
-      const ws = this.instance.getWss();
-      const closeWs = promisify(ws.close.bind(ws));
-      const closeHttp = promisify((this.app?.close as any).bind(this.app));
-
-      await closeHttp();
-      logger.debug("-- Server closed...");
-
-      await closeWs();
-      logger.debug("-- Websocket's closed...");
-
-      this.clearConnections(force);
-
+      await Server.get().close(force);
       this.closing = false;
       process.exit(0);
     } catch (error) {
@@ -179,22 +92,64 @@ export class App {
     }
   }
 
-  private clearConnections(force?: boolean): void {
-    if (this.connections.size > 0) {
-      logger.debug(`-- Closing ${this.connections.size} connections...`);
+  private async reConfigure(eventType: WatcherEvent, change: WatcherChange) {
+    if (change.type === WatcherChangeType.Scss) {
+      this.sass();
+    }
 
-      for (const socket of this.connections) {
-        this.destroySocket(socket, force);
-      }
+    if (change.type === WatcherChangeType.Routes) {
+      this.router.user(true);
+    }
 
-      logger.debug(`-- Connections down...`);
+    if (change.structural && change.type === WatcherChangeType.Page) {
+      this.router.pages(true);
+    }
+
+    if (change.type === WatcherChangeType.Controller) {
+      await Controllers.load();
+    }
+
+    if (change.type === WatcherChangeType.File) {
+      this.renderer.configure();
     }
   }
 
-  private destroySocket(socket: TrackedSocket, force?: boolean): void {
-    if (force || (socket._idle && this.closing)) {
-      socket.destroy();
-      this.connections.delete(socket);
+  private broadcast(type: WatcherEvent, change: WatcherChange) {
+    const { clients } = Server.ws;
+
+    logger.debug(`-- Broadcasting to ${clients.size} clients...`);
+
+    clients.forEach((ws) => {
+      if (ws) {
+        ws.send(JSON.stringify({ type, file: change.path }), (error) => {
+          if (error) {
+            logger.error("Websocket error:", error);
+          }
+        });
+      }
+    });
+
+    logger.debug("All WS clients have been updated.");
+  }
+
+  private async launch(): Promise<void> {
+    if (Server.url) {
+      const targetBrowser = Config.value<Browser>("browser");
+
+      logger.info(`Launching application with: ${targetBrowser}...`);
+
+      await open(Server.url, { app: { name: targetBrowser } });
+    }
+  }
+
+  private sass() {
+    if (Config.get("styleMode") === "scss") {
+      compileSass(
+        Config.relPath("styles"),
+        joinPath(Config.relPath("public"), Config.value<string>("styles")),
+        Config.value<string>("root"),
+        Config.get("env")
+      );
     }
   }
 }

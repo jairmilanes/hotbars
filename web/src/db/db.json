@@ -1,0 +1,230 @@
+{
+  "areas": [
+    {
+      "id": "b192092a-d8e8-4738-86ce-8304b15c9555",
+      "type": "full-stack",
+      "title": "Full Stack",
+      "description": "Eum rem quas ipsam perferendis vitae quibusdam. Exercitationem quos optio consequuntur culpa ab expedita id eius. Voluptas modi aliquam magnam reiciendis aperiam quae voluptate dignissimos ducimus."
+    },
+    {
+      "id": "0ef7469d-ea28-47bc-85ee-9b86202c8172",
+      "type": "backend",
+      "title": "Backend",
+      "description": "Unde fugiat atque aut non. Adipisci nisi laudantium ab tenetur temporibus. In incidunt repellendus quisquam adipisci a. Illum minima nam totam sunt. Unde tempora adipisci maxime consequatur."
+    },
+    {
+      "id": "4fee2740-cfea-48b8-9fe6-d5c2b902c81e",
+      "type": "frontend",
+      "title": "Frontend",
+      "description": "Vitae odio at odio ullam quas sequi voluptatibus. Ipsum eveniet sed. Accusantium ea earum illo unde rem aliquam natus nostrum totam."
+    }
+  ],
+  "posts": [
+    {
+      "complete": "false",
+      "title": "Corporis occaecati corporis illum possimus hic.",
+      "post": "borracha.md"
+    },
+    {
+      "complete": "false",
+      "title": "Minima culpa numquam amet.",
+      "post": "jazz.md"
+    },
+    {
+      "complete": "false",
+      "title": "Quam ratione unde beatae maiores.",
+      "post": "electric_buckinghamshire.md"
+    },
+    {
+      "complete": "false",
+      "title": "Quisquam debitis quia ullam molestias aperiam est harum exercitationem.",
+      "post": "intangible_advanced.md"
+    },
+    {
+      "complete": "false",
+      "title": "Quasi cum nam reprehenderit quaerat quidem accusamus necessitatibus quae maiores.",
+      "post": "metal_southeast_feminino.md"
+    }
+  ],
+  "tech": [
+    {
+      "id": "f55b3a47-c826-4a19-ab3a-6d54a8abc24a",
+      "title": "React Js",
+      "slug": "React-Js",
+      "description": "Ab recusandae aliquam ratione maiores neque vero. Veniam architecto provident officia iusto omnis. Fugit doloremque aliquam aut repudiandae. Placeat enim dolor. Tempora cum ad et.",
+      "areaId": "4fee2740-cfea-48b8-9fe6-d5c2b902c81e",
+      "topics": [
+        "6ba1ed2e-2a49-4ec2-bae3-d1a48ef18bc5",
+        "387c2038-bf7c-4bf6-8db6-feaab61cc2cc",
+        "1f96ba72-6983-41f4-8e75-b8617068c609"
+      ]
+    },
+    {
+      "id": "7db9073a-208b-457a-a624-bb647a05ee5e",
+      "title": "React Js",
+      "slug": "React-Js",
+      "description": "Ut commodi quis natus iure odit doloremque animi magnam. Porro voluptatibus est culpa beatae porro culpa ut aliquam. Optio repellat alias repellendus. Repudiandae velit est quaerat. Amet consequuntur laboriosam assumenda perspiciatis incidunt necessitatibus.",
+      "areaId": "4fee2740-cfea-48b8-9fe6-d5c2b902c81e",
+      "topics": [
+        "8581d85d-3c0c-4161-8d8f-b9a83a821635",
+        "8ffa2a51-137e-41ac-a986-bf1ab69e9d2a",
+        "c1968e7a-07d8-4977-bce4-1efbdfaa852d",
+        "22656267-abab-49fe-adef-aee27d3037af"
+      ]
+    },
+    {
+      "id": "bebd6a84-4e0b-4049-add2-53748cd8d7b2",
+      "title": "React Js",
+      "slug": "React-Js",
+      "description": "Minus doloremque quam. Iste voluptates iusto commodi neque. Consectetur quia consequatur eaque minus magnam expedita numquam aperiam voluptatem. Quibusdam veniam cum vel rerum. Perferendis sit alias eum dolor. Nostrum nesciunt quibusdam assumenda quidem pariatur error.",
+      "areaId": "4fee2740-cfea-48b8-9fe6-d5c2b902c81e",
+      "topics": [
+        "e8be60ca-e0e9-423d-a0be-d3566c877899",
+        "c1968e7a-07d8-4977-bce4-1efbdfaa852d",
+        "1f96ba72-6983-41f4-8e75-b8617068c609"
+      ]
+    }
+  ],
+  "topics": [
+    {
+      "id": "d89f592e-860e-440d-903d-a4baf7ca6db1",
+      "title": "Quo dolores perferendis voluptatibus qui maiores.",
+      "slug": "Quo-dolores-perferendis-voluptatibus-qui-maiores.",
+      "description": "Expedita molestiae earum quaerat nam. Temporibus eligendi magnam nostrum. Explicabo quis odit quas quia quidem optio. Soluta porro minus. Excepturi quo delectus eligendi quasi. Velit soluta officiis eveniet fugit quod provident accusantium."
+    },
+    {
+      "id": "387c2038-bf7c-4bf6-8db6-feaab61cc2cc",
+      "title": "Atque nostrum a optio rem.",
+      "slug": "Atque-nostrum-a-optio-rem.",
+      "description": "Quia numquam nulla atque nesciunt sequi sequi corporis fugiat atque. Incidunt itaque provident illo vel. Ipsam eos recusandae. Nesciunt error beatae soluta. Magni aut animi."
+    },
+    {
+      "id": "a5a508ca-6222-4d22-87ea-8c4c8200e5c6",
+      "title": "Omnis adipisci dolor dolorem cupiditate iste.",
+      "slug": "Omnis-adipisci-dolor-dolorem-cupiditate-iste.",
+      "description": "Aliquid ullam error in eum nulla officia corrupti ab fugit. Delectus ducimus saepe in alias vitae. Earum distinctio provident excepturi debitis sint soluta."
+    },
+    {
+      "id": "1f96ba72-6983-41f4-8e75-b8617068c609",
+      "title": "Aut tempora est maxime aliquam libero quasi iusto.",
+      "slug": "Aut-tempora-est-maxime-aliquam-libero-quasi-iusto.",
+      "description": "Et eum necessitatibus cumque libero nemo sequi distinctio sunt. Quas nemo totam perspiciatis maxime. Accusantium neque et fugiat maxime saepe inventore. Culpa esse ipsa officiis nam delectus tenetur aspernatur. Earum harum dicta unde rerum."
+    },
+    {
+      "id": "e8be60ca-e0e9-423d-a0be-d3566c877899",
+      "title": "Doloremque praesentium enim minus.",
+      "slug": "Doloremque-praesentium-enim-minus.",
+      "description": "Ipsam consequuntur eum. Possimus maxime libero provident quos reprehenderit sed culpa ipsam. Accusantium similique suscipit fugit."
+    },
+    {
+      "id": "6ba1ed2e-2a49-4ec2-bae3-d1a48ef18bc5",
+      "title": "Deserunt ipsa tempora illum temporibus.",
+      "slug": "Deserunt-ipsa-tempora-illum-temporibus.",
+      "description": "Cupiditate esse sequi odio ipsam fugiat perspiciatis maxime eius vel. Aspernatur in magni illum officiis voluptatem voluptas temporibus occaecati ab. Facilis ex optio veritatis eos unde nobis. Beatae ipsa quos nulla fugiat inventore recusandae dolores nam quasi."
+    },
+    {
+      "id": "22656267-abab-49fe-adef-aee27d3037af",
+      "title": "Totam incidunt fugit eaque ab libero.",
+      "slug": "Totam-incidunt-fugit-eaque-ab-libero.",
+      "description": "Necessitatibus iure magnam error explicabo ipsam dolores quas reiciendis. Odit asperiores corrupti. Soluta animi dicta impedit laudantium eius nobis totam perferendis. Cupiditate tempore eos cupiditate mollitia aliquam ipsam quam."
+    },
+    {
+      "id": "ff09a032-5c0b-4135-80f7-6c707aeb8ae6",
+      "title": "Voluptatum eos eius dicta saepe quam magni fuga vel voluptatibus.",
+      "slug": "Voluptatum-eos-eius-dicta-saepe-quam-magni-fuga-vel-voluptatibus.",
+      "description": "Iste cum reiciendis. Natus consequuntur repudiandae libero ullam quia saepe. Voluptatum accusantium accusamus. Modi voluptatem quisquam fuga iure fugiat nihil. Consequatur architecto vel perspiciatis alias sapiente ab sit sapiente."
+    },
+    {
+      "id": "a8d7c675-eae0-4671-8f85-1a6d9ffce7ef",
+      "title": "Quas quisquam reprehenderit.",
+      "slug": "Quas-quisquam-reprehenderit.",
+      "description": "Labore mollitia ipsa rem rem praesentium. Omnis necessitatibus non neque dolore dolor nemo voluptatem. Doloribus saepe atque. Inventore asperiores atque accusantium minima culpa dolorem blanditiis facilis consectetur. Quidem quas fuga eaque reiciendis cum."
+    },
+    {
+      "id": "8ffa2a51-137e-41ac-a986-bf1ab69e9d2a",
+      "title": "Dolorum neque ut minus.",
+      "slug": "Dolorum-neque-ut-minus.",
+      "description": "Voluptatum debitis eligendi quasi atque. Deserunt modi laborum. Molestias ea magnam maxime consequatur. Sapiente veritatis molestiae ea ut incidunt consequuntur praesentium eum atque. Voluptates ratione odit eveniet commodi illo deleniti."
+    },
+    {
+      "id": "41e57cf7-5b13-4f9f-8558-02ec7dbbaeca",
+      "title": "Modi facere eum veniam deleniti sint culpa asperiores molestias.",
+      "slug": "Modi-facere-eum-veniam-deleniti-sint-culpa-asperiores-molestias.",
+      "description": "Velit nam harum exercitationem. Occaecati perferendis debitis. Ipsa sit nesciunt molestiae ipsum perspiciatis nesciunt enim. Ratione repellendus officiis cumque sed atque dolorum fugiat. Cupiditate voluptas nesciunt quaerat eveniet modi."
+    },
+    {
+      "id": "8581d85d-3c0c-4161-8d8f-b9a83a821635",
+      "title": "Nesciunt aperiam beatae sed totam autem quae ducimus ut ullam.",
+      "slug": "Nesciunt-aperiam-beatae-sed-totam-autem-quae-ducimus-ut-ullam.",
+      "description": "Tempore ducimus veritatis cum ab deleniti. Perspiciatis voluptate laudantium nihil. Hic maiores aut quaerat quaerat voluptate aperiam distinctio sit. Labore earum dolorem officia commodi officiis dolore culpa ea. Voluptatem unde possimus velit ut repellendus. At nihil soluta molestiae nesciunt ea et."
+    },
+    {
+      "id": "c1968e7a-07d8-4977-bce4-1efbdfaa852d",
+      "title": "Tempore sint impedit architecto minus.",
+      "slug": "Tempore-sint-impedit-architecto-minus.",
+      "description": "Minus ex labore ipsam. Distinctio magni error fugiat nostrum quibusdam. Necessitatibus autem excepturi molestiae."
+    },
+    {
+      "id": "502b95f2-304a-4549-b487-1fe2ec7140a7",
+      "title": "Explicabo asperiores dolor beatae culpa nemo quidem expedita incidunt nostrum.",
+      "slug": "Explicabo-asperiores-dolor-beatae-culpa-nemo-quidem-expedita-incidunt-nostrum.",
+      "description": "Veritatis reiciendis quis deleniti adipisci quas repellat porro. Laborum beatae iusto architecto ducimus. Blanditiis eveniet recusandae dolorum ex deleniti. Nobis ipsam quae. Laborum dolorum eaque blanditiis. Vero est qui."
+    },
+    {
+      "id": "9c0993f8-fa00-4770-b458-a52d34b7fc6e",
+      "title": "Velit quia pariatur aliquam esse libero nobis expedita quibusdam distinctio.",
+      "slug": "Velit-quia-pariatur-aliquam-esse-libero-nobis-expedita-quibusdam-distinctio.",
+      "description": "Possimus reprehenderit cumque voluptatem reiciendis inventore doloremque. Accusantium impedit ad et. Maiores dolor ipsam sequi fugit tempora dolore."
+    }
+  ],
+  "user": [
+    {
+      "id": "755b03cc-ee8a-490f-b9c2-ae8ebd0bdd05",
+      "createdAt": "2022-02-12T00:29:09.635Z",
+      "gender": "Feminino",
+      "firstName": "Washington",
+      "lastName": "Silva",
+      "userName": "MariaAlice_Albuquerque",
+      "password": "29qTZbgE3Cgcy8q",
+      "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/190.jpg",
+      "jobTitle": "Nacional Soluções Supervisor",
+      "country": "Brasil",
+      "countryCode": "BR",
+      "state": "Rio de Janeiro",
+      "timeZone": "America/Sao_Paulo",
+      "website": "https://monstrous-pince-nez.name"
+    },
+    {
+      "id": "844318af-c5d5-4698-8383-ba0794712eec",
+      "createdAt": "2022-07-31T05:02:37.712Z",
+      "gender": "Masculino",
+      "firstName": "Hugo",
+      "lastName": "Moraes",
+      "userName": "Arthur.Reis",
+      "password": "UXjwrjXj7s2WcFc",
+      "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/503.jpg",
+      "jobTitle": "Direto Prestação de contas Supervisor",
+      "country": "Brasil",
+      "countryCode": "BR",
+      "state": "Pará",
+      "timeZone": "America/Sao_Paulo",
+      "website": "http://all-casket.net"
+    },
+    {
+      "id": "7787351d-b6b6-474a-a8ee-ae8eb4b2d3fb",
+      "createdAt": "2022-03-06T18:56:16.223Z",
+      "gender": "Feminino",
+      "firstName": "Lara",
+      "lastName": "Xavier",
+      "userName": "Célia_Moreira",
+      "password": "chIROTAEhyffsf6",
+      "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/440.jpg",
+      "jobTitle": "Corporativo Contas Coordenador",
+      "country": "Brasil",
+      "countryCode": "BR",
+      "state": "Acre",
+      "timeZone": "America/Sao_Paulo",
+      "website": "http://quintessential-window.net"
+    }
+  ]
+}
