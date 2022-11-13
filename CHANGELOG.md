@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.6](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.5...hotbars-v1.4.6) (2022-11-04)
+
+
+### Bug Fixes
+
+* attempting for copyFiles in github actions ([01246e9](https://github.com/jairmilanes/hotbars/commit/01246e9007b639821beaa1c343a2163401a25fd8))
+
 ## [1.4.5](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.4...hotbars-v1.4.5) (2022-11-04)
 
 ### Bug Fixes
