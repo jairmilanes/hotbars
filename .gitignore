@@ -141,7 +141,3 @@ dist
 # .pnp.*
 
 # End of https://www.toptal.com/developers/gitignore/api/yarn,node,visualstudiocode
-
-src/templates
-mock.json
-yarn.lock

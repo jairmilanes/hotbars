@@ -1,0 +1,20 @@
+{
+  "size": 3,
+  "name": "user",
+  "schema": {
+    "id": "datatype.uuid:helpers.unique",
+    "createdAt": "date.past",
+    "gender": "name.sex",
+    "firstName": "unique:name.firstName:prop.gender",
+    "lastName": "unique:name.lastName:prop.gender",
+    "userName": "helpers.fake:{{prop.firstName}}.{{prop.lastName}}",
+    "password": "internet.password",
+    "avatar": "unique:internet.avatar",
+    "jobTitle": "name.jobTitle",
+    "country": "use:Brasil",
+    "countryCode": "use:BR",
+    "state": "address.state",
+    "timeZone": "use:America/Sao_Paulo",
+    "website": "internet.url"
+  }
+}

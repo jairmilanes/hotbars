@@ -1,0 +1,19 @@
+{
+  "size": 3,
+  "name": "tech",
+  "schema": {
+    "id": "datatype.uuid",
+    "title": "unique:helpers.arrayElement:React Js,Angular,Responsive Web",
+    "slug": "helpers.slugify:prop.title",
+    "description": "lorem.paragraph",
+    "areaId": "relation:areas.type:tech.slug",
+    "topics": "join:topics.id-3,15"
+  },
+  "mapping": {
+    "areas": {
+      "react-js": "frontend",
+      "angular": "frontend",
+      "responsive-web": "frontend"
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "title": {
+    "pages": "Pages",
+    "watch": "Watching",
+    "endpoints": "Endpoints"
+  },
+  "methods": [
+    { "name": "GET", "color": "text-lime-700", "bg": "bg-lime-100" },
+    { "name": "POST", "color": "text-teal-700", "bg": "bg-teal-100" },
+    { "name": "PATCH", "color": "text-purple-700", "bg": "bg-purple-100" },
+    { "name": "PUT", "color": "text-indigo-700", "bg": "bg-indigo-100" },
+    { "name": "DELETE", "color": "text-red-700", "bg": "bg-red-100" }
+  ],
+  "tabs": {
+    "id": "resource",
+    "targets": [
+      {
+        "id": "request-body",
+        "hidden": true,
+        "active": false,
+        "text": "Body",
+        "options": [
+          {
+            "label": "Json",
+            "value": "json"
+          },
+          {
+            "label": "Plain",
+            "value": "plain"
+          },
+          {
+            "label": "Multipart",
+            "value": "multipart"
+          },
+          {
+            "label": "Binary",
+            "value": "binary"
+          }
+        ]
+      },
+      {
+        "spacer": true
+      },
+      {
+        "id": "request-response",
+        "hidden": false,
+        "active": true,
+        "text": "Response"
+      },
+      {
+        "id": "request-preview",
+        "hidden": false,
+        "active": false,
+        "text": "Preview"
+      },
+      {
+        "id": "request-headers",
+        "hidden": false,
+        "active": false,
+        "text": "Headers"
+      }
+    ]
+  },
+  "messages": {
+    "noActiveResource": "Click on a resourse to view results"
+  }
+}

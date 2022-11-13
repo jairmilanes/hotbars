@@ -5,10 +5,14 @@
 
 <div align="center">
 
+<!-- x-release-please-start-version -->
+
 [![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
-[![Version](https://img.shields.io/badge/NPM-1.2.0-red?style=for-the-badge)](https://www.npmjs.com/package/@jmilanes/hotbars)
+[![Version](https://img.shields.io/badge/NPM-1.4.6-red?style=for-the-badge)](https://www.npmjs.com/package/@jmilanes/hotbars)
 ![Documentation](https://img.shields.io/badge/Documentation-Yes-green?style=for-the-badge)
 ![Maintained](https://img.shields.io/badge/Maintained-Yes-brightgreen?style=for-the-badge)
+
+<!-- x-release-please-end -->
 
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
@@ -61,31 +65,64 @@ creating!
 
 ## Project structure
 
-Below is an example of the suggested project structure:
+Below is an example of the suggested project structure, which can be configured through the `.hotbarsrc.json` file:
 
 ```shell
 ...
 ├── src
-  # Your static data files
+  # Publicly accessable files, Sass files
+  └── public
+      # Css files, when using Sass, this is where
+      # the compiled css is exported to.
+      └── styles
+          └── styles.css
+      # Images used int he client side
+      └── images
+          └── some-image.jpg
+          └── some-other-image.png
+      # Scripts used in the client side
+      └── scripts
+          └── some-script.js
+  # Your static data files, passed as context to templates
   └── data
       └── settings.json
       └── metadata.json
+  # Custom handlebars helpers
+  └── data
+      └── myHelper.js
+      └── myOtherHelper.js
+  # Optional controllers, called on every request to a view
+  # must follow the same folder structure as the views.
+  └── controllers
+      └── portfolio
+          └── projects.js
+          └── project.js
+      └── about.js
+      └── contact.js
+      └── index.js
   # Layouts which are extended to build pages
   └── layouts
       └── default.hbs
-  # Small re-usable ui components
+  # Parts of your application, which can be re-used in
+  # multiple views, not available in the client side.
   └── partials
       └── header.hbs
       ├── footer.hbs
       └── hero.hbs
-  # Templates that will be pre-compiled by Handlebars and sent to
-  # the client side.
+  # Templates that will be pre-compiled and sent to
+  # the client side, not available on server side.
   └── precompiled
       └── template-one.hbs
       ├── template-two.hbs
       └── template-three.hbs
+  # Templates that are available on server side as well as pre-compiled
+  # and sent to the client side.
+  └── shared
+      └── template-one.hbs
+      ├── template-two.hbs
+      └── template-three.hbs
   # Your pages, the structure you create here will become your
-  # routes automatically.
+  # routes automagically.
   └── views
       └── portfolio
           └── projects.hbs
@@ -93,12 +130,55 @@ Below is an example of the suggested project structure:
       └── about.hbs
       └── contact.hbs
       └── index.hbs
-  └── layouts
-  └── routes.hotbars.js
-
+  # Bootstrapping file, here you may initialize any data that
+  # only needs to run when the server starts, use this to
+  # pre-load data, configure third-party modules and so on.
+  └── hotbars.bootstrap.js
+  # Custom routes file, must return a function that recieves
+  # a router and full configuration object which you can use
+  # to create custom route endpoints, usefull for custom
+  # logic or data processing that is not directly related to
+  # any page.
+  └── hotbars.routes.js
+# Hotbars configuration file where you can customize many
+# functionalities and folder structure.
+├── .hotbarsrc.json
+├── package.json
 ```
 
-## Routing
+## Bootstrapping
+
+If there is any logic or configuration that must happen when the server starts, you can use a `hotbars.bootstrap.js` file to do so, this file must be created within your source directory, and it must return a single function that will receive the Hotbars configuration object as it's only argument.
+
+Any data returned from this bootstrap function is frozen, and will be passed as a context to every page request.
+
+```js
+// Import third party modules
+const { createClient } = require("@supabase/supabase-js");
+
+module.exports = async function (config) {
+  // Some custom logic here
+  config.set(
+    "supabase",
+    createClient("https://xyzcompany.supabase.co", "public-anon-key")
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // User will be accessable from config within controllers and custom routes.
+  config.set("user", user);
+
+  // Data will be available in every page rendering context.
+  return {
+    authenticated: true,
+    user: user,
+  };
+};
+```
+
+## Pages & Routing
 
 Every view file in the views directory are automatically configured as a page route, additionally they can also be dynamic. To use dynamic paths just name your view folder or file the name of your expected parameter name surrounded by brackets like so:
 
@@ -110,6 +190,7 @@ Every view file in the views directory are automatically configured as a page ro
       └── portfolio
           └── projects.hbs
           └── [projectName].hbs
+
       └── user
           └── [id]
               └── profile.hbs
@@ -121,30 +202,71 @@ The structure above will create the following routes without any extra configura
 ```shell
 GET /portfolio/projects
 GET /portfolio/:projectName
-GET /user/:id:profile
+GET /user/:id/profile
 ```
 
-### Custom routes
+## Controllers
 
-You can also create custom routes and handle however you need using the routes configuration file, which by default it's named `routes.hotbars.js` and it should be placed inside you source directory which defaults to `./src`.
-The routes file must export a function, which receives the Express app and router:
+For every view (page) you create under `/views` you can optionally associate a controller to it, all you have to do is create a `.js` file under `/controllers` following the same folder structure and file name as the view.
+
+Controllers must return a Promise, and are called when a page is requested, before rendering the page, which allows you to perform any logic related to that page, returning data that will subsequentely be passed as a context to the view template, or even rendering or returning anything other than the requested page html.
+
+This is very usefull for form submittions and dynamic data loading from third-party services and or databases, and it's completly optional.
+
+Below is an example of a controller, the callback receives 3 parameters:
+
+- **config**: The Hotbars configuration object
+- **request**: The Express server Request instance
+- **response**: The Express server Response instance
+
+```js
+// Import third party modules
+const supabase = require("@supabase/supabase-js");
+
+module.exports = async function (config, req, res) {
+  // Accessing request data
+  console.log(req.body);
+  console.log(req.params);
+  console.log(req.query);
+
+  // Some custom logic
+  const { data, error } = await supabase
+    .from("countries")
+    .select()
+    .eq("name", req.query.country);
+
+  // Return data which can be used in yout page template.
+  if (error) {
+    return {
+      error: error.message,
+    };
+  }
+
+  return data;
+};
+```
+
+### Custom Routes
+
+You can create custom routes and handle however logic you need using the routes configuration file, which by default it's named `hotbars.routes.js` and it should be placed inside you source directory which defaults to `./src`.
+
+The routes file must export a function, which receives the Express router and the Hotbars config instance:
 
 ```js
 // src/routes.hotbars.js
-module.exports = (app, createRouter) => {
-  app.get("/custom-route", (res, req, next) => {
+module.exports = (router, config) => {
+  router.use((req, res, next) => {
+    // some glogal logic to this router here
+    next();
+  });
+
+  router.get("/custom-route", (res, req, next) => {
     res.render("viewName");
   });
 
-  app.post("/custom-route", (res, req, next) => {
+  router.post("/custom-route", (res, req, next) => {
     res.render("viewName");
   });
-
-  app.use((res, req, next) => {
-    res.render("viewName");
-  });
-
-  const router = createRouter();
 
   router
     .route("/special-route")
@@ -154,30 +276,12 @@ module.exports = (app, createRouter) => {
     .delete((res, req, next) => {
       res.json({ message: "record deleted" });
     });
-
-  app.use(router);
-
-  const otherRouter = createRouter();
-
-  otherRouter.get("/other-1", (res, req, next) => {
-    res.render("viewName");
-  });
-
-  otherRouter.delete("/other-1", (res, req, next) => {
-    res.status(204).send();
-  });
-
-  app.use("/my", router);
 };
 ```
 
-This file must be provided as CommonJS, if by any means you wish to use other format like Typescript or ES6 you must first compile it to CommonJS using your tool of preference (Tsc, Webpack, Parcel, Babel and so on).
-
-This file will is also added to the watcher paths, so if you make any changes to it, the whole route configuration will be reloaded, and you will be able to use your routes without the need to re-start the server.
-
 ## Partials
 
-Partials are available within your other `.hbs` files like other partials, layouts and views and also through a special endpoint `/partial/:partialId`, which you can use to request partials from the client side, the endpoint uses a `POST` method, so you can pass data securely to it, the data you pass will be injected into your template's context, allowing to use dynamic data and it will return the fully rendered partial in html format.
+Partials are available within your other `.hbs` files like other partials, layouts and views and also through a special endpoint `/partial/:partialId`, which you can use to request compiled partials from the client side, the endpoint uses a `POST` method, so you can pass data that will be injected into your template's context, allowing to use dynamic data and it will return the fully rendered partial in html format.
 
 ```html
 <script>
@@ -187,15 +291,17 @@ Partials are available within your other `.hbs` files like other partials, layou
       "Content-Type": "text/html",
     },
     body: JSON.stringify(data),
-  }).then((data) => {
-    document.getElementById("#container").innerHTML = data;
-  });
+  })
+    .then((response) => response.text())
+    .then((html) => {
+      document.getElementById("#container").innerHTML = html;
+    });
 </script>
 ```
 
 ## Pre-Compiled Templates
 
-There is one more useful concept, which is pre-compiled templates, any hHandlebars files you have in the precompiled directory, will get pre-compiled by Handlebars and sent to the client side, and they will all be available to use by accessing the client side Handlebars runtime instance:
+Handlebars files you have in the `/precompile` directory, will get pre-compiled by Handlebars and sent to the client side, and they will all be available to use by accessing the client side Handlebars runtime instance:
 
 ```html
 <script>
@@ -207,13 +313,15 @@ There is one more useful concept, which is pre-compiled templates, any hHandleba
 </script>
 ```
 
+By default only the templates whithin the `/precompile` folder are sent to the client side, which means none of your other partials are available to these templates and if you try to use a partial within them, you will end up with an error, to make a selection of your partials available to pre-compiled templates, use the `/shared` folder, any partil in the shared folder will be available on both server and client side, we suggest to place your larger more complex partials in `/partials` and smaller UI components in `/shared` for a flexible and lightweight result.
+
 ## Forms and Uploads
 
-Hotbars is able to handle `multipart/form-data` out of the box with automatic file upload processing and storage, to process form with file upload use the available `/_form/*` endpoint, the wildcard should be replaced with a path like `/_form/profile` or `/_form/product` which are routes that you must create in your routes configuration file to handle logic other than the file upload.
+Hotbars is able to handle `multipart/form-data` out of the box with automatic file upload processing and storage, to process forms with file upload use `POST`, `PUT`, or `PATCH` type of requests, any endpoint is handled as long as one of these methods is used.
 
-Behind the curtains, any route that begins with `_/form/` uses [Multer](https://www.npmjs.com/package/multer) middleware to handle file uploads and allow for your custom route to do the rest.
+Behind the curtains, Hotbars uses [Multer](https://www.npmjs.com/package/multer) middleware to handle file uploads and allow for your custom route to do the rest.
 
-File uploads must be enabled in the configuration file for uploads to work like below:
+File uploads must be enabled and upload field names must be configured in your `.hotbars.json` file, only files for field names configured will be processed:
 
 ```json5
 {
@@ -224,29 +332,15 @@ File uploads must be enabled in the configuration file for uploads to work like 
       "limit": 10,
       "maxFileSize": 1048576,
       "types": [
-        "avatar", // This will allow up to 10 files to be uploaded
-        { name: "document", maxCount:  1 } // File is limited toa  single file
+        "avatar", // This will allow up to 10 avatars to be uploaded at once
+        { name: "resume", maxCount:  1 } // File is limited to a single file per request
       ]
     },
     ...
 }
 ```
 
-Configure your custom route to handle extra logic for the form:
-
-```js
-app.post("/_form/my-custom-route", (req, res) => {
-  const { name, age, address } = req.body;
-  const avatar = req.files["avatar"];
-  const resume = req.files["resume"][0];
-
-  // Process your form here
-
-  res.status(200).send();
-});
-```
-
-Next create your form, pay attention to the `enctype` and the file fields naming, which must match one of the types configured above:
+Bellow is a form example, pay attention to the `enctype` and the file fields naming, which must match one of the types configured above:
 
 ```html
 <form
@@ -265,7 +359,19 @@ Next create your form, pay attention to the `enctype` and the file fields naming
 </form>
 ```
 
-Once submitted, both group of files will be processed first and saved to the configure uploads path, and passed to your custom route to handle the rest of the fields.
+You may use a custom route or a controller to handle the rest of the multipart form logic, at this point files have already been saved and are available within the `request.files` object:
+
+```js
+router.post("/my-custom-route", (req, res) => {
+  const { name, age, address } = req.body;
+  const avatar = req.files["avatar"];
+  const resume = req.files["document"][0];
+
+  // Process your form here
+
+  res.status(200).send();
+});
+```
 
 ## Data sanitization & validation
 
@@ -275,7 +381,7 @@ When processing forms it is important to sanitize and validate users input data,
 const { body, validationResult } = require("express-validator");
 
 app.post(
-  "/_form/my-custom-route",
+  "/my-custom-route",
   body("name").isLength({ min: 3, max: 50 }).trim().escape(),
   body("age").isInt({ gt: 18 }),
   body("password").isStrongPassword({
@@ -308,6 +414,48 @@ app.post(
 );
 ```
 
+## Json Server
+
+Hotbars integrates the well known [Json Server](https://github.com/typicode/json-server) library, and makes it available through a special endpoint `/_api`, it must be enabled in your `.hotbarsrc.json` file by passing the folder name where you will keep your json database files:
+
+```json5
+...
+  "jsonServer": "db"
+...
+```
+
+This will tell Hotbars, to pass the json files in this folder to Json Server, which you can later interact with through the `/_api` endpoint:
+
+```json5
+// ./src/db/users.json
+{
+  "users": [
+    {
+      "name": "John",
+      "city": "Chicago"
+    },
+    {
+      "name": "Kevin",
+      "city": "Boston"
+    },
+    ...
+  ]
+}
+```
+
+Now query your data like so:
+
+```js
+fetch("/_api/users?name=John")
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+    // { "name": "John", "city": "Chicago" }
+  });
+```
+
+There is mutch more that Json Server can do, for more info on how Json Server works, vist their Github page and make sure to leave a star, because it is awesome! [Json Server](https://github.com/typicode/json-server).
+
 ## Configuration
 
 There is many options to customize the behavior of the server, for that create a configuration file in the root
@@ -322,6 +470,10 @@ of your project
   // Configure the debug level for the server
   // 1: debug, 2: info, 3: warn, 4: error
   logLevel: 1,
+
+  // Path to save log data, not all logs endup here
+  // I plan on making this more configured soon.
+  logFilePath: "./logs/log.txt",
 
   // File encoding when reading template files and when saving uploaded files
   encoding: "utf-8",
@@ -363,6 +515,11 @@ of your project
   // └ /project/root/`<configName>.cjs`,
   configName: "hotbarsrc",
 
+  // The bootstrap file, it will be searched within the source directory in the following order:
+  // └ `.<configName>.js`,
+  // └ `.<configName>.cjs`,
+  bootstrapName: "hotbars.bootstrap",
+
   // The routes configuration file, it will be searched within the source directory in the following order:
   // └ `.<configName>.js`,
   // └ `.<configName>.cjs`,
@@ -375,19 +532,40 @@ of your project
   helpers: "helpers/**/*.{js,cjs}",
 
   // Handlebars layouts directory
-  layouts: "layouts/**/*.<extname>",
+  layouts: "layouts",
 
   // Handlebars partials directory
-  partials: "partials/**/*.<extname>",
+  partials: "partials",
 
   // Pre-compilation templates
-  precompile: "precompile/**/*.<extname>",
+  precompile: "precompile",
+
+  // Server and client side shared partials
+  shared: "shared",
 
   // Handlebars views directory
   views: "views",
 
+  // Page controllers
+  controllers: "controllers",
+
+  // Customize which methods are available
+  // to your page routes, by default only
+  // GET is created, but creating a new entry
+  // with your view name allows you to dictate
+  // which other methods should be created for
+  // each page, you may also set to "*" to allow
+  // all methods for a page.
+  autoroute: {
+    methods: ["get"],
+    login: ["get", "post"],
+  },
+
   // Styles mode
   // options: css, scss
+  // Sass will send compiled css files to the configured public folder
+  // in a folder with the same name as the configured styles folder below
+  // eg: /src/public/styles by default.
   styleMode: "css",
 
   // The styles directory relative to the source directory
@@ -420,23 +598,31 @@ of your project
 }
 ```
 
+# Hotbars Dashboard
+
+Still under heavy development, but the goel is to make this a toolkit to manage and develop your websites and applications with Hotbars, I will soon post more details on how to access it and what it will be able to do, make sure to hit the notifications and leave a star if you want to be notified about the next updates.
+
 # Roadmap
 
 Some of the features I'm working to implement and improve:
 
 - Testing - Increase test coverage
-- User Management - Integrate various authentication methods
+- Hotbars Dashboard - A control panel for your Hotbars apps and websites
+- User Management - Integrate various authentication methods within the Dashboard
+- Fake data generation for Json Server
 - Schema Validation - Integrated form schema validation
 - Integrations - Seamless integrations with:
   - [Supabase](https://supabase.com/)
+  - [Supabase](https://supabase.com/)
+  - [Deta](https://deta.sh/)
   - [Netlify](https://www.netlify.com/)
   - [Heroku](https://www.heroku.com/)
 - Suggestions? Please post an issue and label it `enhancement` for feature requests!
 
 ## Show your support
 
-Give a ⭐ if you think this project is promising!
+Give a ⭐ if you think this project is promising or even just to show your support for my work, I'll really appretiate it!
 
 ## 📝 License
 
-This project is [MIT](https://github.com/tolgaerdonmez/handlebars-hot-reload/blob/main/LICENSE) licensed.
+This project is [MIT](https://github.com/jairmilanes/hotbars/blob/main/LICENSE) licensed.
