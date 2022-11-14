@@ -4,5 +4,6 @@
   "styles": "styles",
   "styleMode": "scss",
   "jsonDb": "db",
+  "auth": "auth",
   "upload": []
 }

@@ -7,7 +7,7 @@
     "gender": "name.sex",
     "firstName": "unique:name.firstName:prop.gender",
     "lastName": "unique:name.lastName:prop.gender",
-    "userName": "helpers.fake:{{prop.firstName}}.{{prop.lastName}}",
+    "userName": "lodash.concat:prop.firstName,_,prop.lastName",
     "password": "internet.password",
     "avatar": "unique:internet.avatar",
     "jobTitle": "name.jobTitle",

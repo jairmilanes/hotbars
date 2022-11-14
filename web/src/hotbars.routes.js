@@ -1,5 +1,8 @@
-const userRoutes = (router, config) => {
+const userRoutes = (router, config, db) => {
   router.get("/user-route", (req, res) => {
+
+    console.log(db.get('user').find(e => e.username = "MariaAlice_Albuquerque").value())
+
     res.json({
       message: "User route message",
     });

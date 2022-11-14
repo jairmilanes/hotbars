@@ -1,5 +1,13 @@
 {{#extend "default"}}
   {{#content "main" mode="append"}}
     <h1>Index page</h1>
+
+    <form action="/login" method="post">
+      <h3>Login</h3>
+      <input type="hidden" name="provider" value="json-db">
+      <input name="username" type="text" />
+      <input name="password" type="password" />
+      <button type="submit">Sign-In</button>
+    </form>
   {{/content}}
 {{/extend}}
