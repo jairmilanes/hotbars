@@ -2,12 +2,8 @@
   {{#content "main" mode="append"}}
     <h1>Index page</h1>
 
-    <form action="/login" method="post">
-      <h3>Login</h3>
-      <input type="hidden" name="provider" value="json-db">
-      <input name="username" type="text" />
-      <input name="password" type="password" />
-      <button type="submit">Sign-In</button>
-    </form>
+    <a href="/sign-in" class="mb-4">Sign In</a>
+
+    <a href="/sign-out">Sign Out</a>
   {{/content}}
 {{/extend}}

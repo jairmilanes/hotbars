@@ -1,10 +1,12 @@
 import { existsSync } from "fs";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { RequestHandler } from "express-serve-static-core";
 import expressWs from "express-ws";
+import session from "express-session";
 import cors from "cors";
 import jsonRouter from "json-server";
 import apicache from "apicache";
+import passport from "passport";
 import {
   RequestError,
   RouteMap,
@@ -23,6 +25,8 @@ import {
 } from "../utils";
 import { Multipart, logger } from "../services";
 import { Config, Server, Controllers, Renderer, PreRenderer } from ".";
+import { AuthManager } from "../auth";
+import { DataManager } from "../data";
 
 export class Router {
   private readonly renderer: Renderer;
@@ -40,7 +44,7 @@ export class Router {
     this.preRenderer = preRenderer;
   }
 
-  configure(): void {
+  async configure(): Promise<void> {
     logger.info(`Configuring routes...`);
 
     if (Config.value<CorsConfig>("cors").enabled) {
@@ -58,8 +62,10 @@ export class Router {
 
     this.logger();
     this.static();
+    this.session();
     this.form();
-    this.api();
+    this.authenticate();
+    await this.api();
     this.partial();
     this.preCompiler();
     this.socket();
@@ -97,6 +103,75 @@ export class Router {
       );
       next();
     });
+  }
+
+  private session() {
+    const sessionConfig = {
+      secret: "keyboard cat",
+      saveUninitialized: false,
+      cookie: {
+        secure: false,
+        maxAge: 60000,
+      },
+    };
+
+    if (Config.get("env") === "production") {
+      Server.app.set("trust proxy", 1); // trust first proxy
+      sessionConfig.saveUninitialized = true;
+      sessionConfig.cookie.secure = true; // serve secure cookies
+    }
+
+    Server.app.use(session(sessionConfig));
+  }
+
+  private authMiddleware(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): void {
+    const provider = req.params.provider;
+
+    if (AuthManager.has(provider)) {
+      const instance = AuthManager.get(provider);
+      const ist = passport.authenticate(instance.name, (error, user) =>
+        instance.handleResponse(res, error, user)
+      );
+
+      return ist(req, res, next);
+    }
+
+    next(
+      new Error(
+        `Provider ${provider} not found, please check your configuration and try again.`
+      )
+    );
+  }
+
+  private authenticate() {
+    if (!Config.enabled("auth")) {
+      return;
+    }
+
+    Server.app.get(`/sign-in`, (req, res) => {
+      res.render("sign-in");
+    });
+
+    Server.app.post(`/sign-out`, (req, res, next) => {
+      req.logout((err) => {
+        if (err) {
+          return next(err);
+        }
+        res.render("/");
+      });
+    });
+
+    const authMiddleware = this.authMiddleware.bind(this);
+
+    // Authentication endpoint
+    Server.app.post(`/auth/:provider`, authMiddleware);
+
+    // OAuth2 callback endpoint
+    Server.app.get(`/auth/:provider/callback`, authMiddleware);
   }
 
   private form(): void {
@@ -186,7 +261,7 @@ export class Router {
         `-- Custom routes found at ${Config.relPath("routesConfigName")}..`
       );
 
-      userRoutesCallback(userRouter, Config.get());
+      userRoutesCallback(userRouter);
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -200,9 +275,10 @@ export class Router {
     }
   }
 
-  private api() {
+  private async api() {
     if (Config.value<string>("jsonDb")) {
-      const apiRouter = jsonRouter.router(mapDatabase(Config.get()));
+      const apiRouter = jsonRouter.router<any>(mapDatabase(Config.get()).db);
+      await DataManager.create("lowDb", apiRouter.db);
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore

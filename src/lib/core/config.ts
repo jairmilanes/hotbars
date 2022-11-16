@@ -1,3 +1,5 @@
+import get from "lodash/get";
+import set from "lodash/set";
 import {
   Browser,
   CliOptions,
@@ -63,6 +65,7 @@ export class Config implements Options, PrivateOptions, CliOptions {
   cors = {
     enabled: true,
   };
+  auth: undefined;
   env = "development";
   dev = false;
   serverUrl = "";
@@ -145,32 +148,40 @@ export class Config implements Options, PrivateOptions, CliOptions {
   }
 
   static get(): Readonly<Config>;
-  static get<T>(key?: keyof Config): T;
-  static get<T = Readonly<Config>>(key?: keyof Config): T | Readonly<Config> {
+  static get<T>(key?: string): T;
+  static get<T>(key?: string): T | Readonly<Config> {
     if (key) {
       return this.instance.get<T>(key);
     }
     return this.instance as Readonly<Config>;
   }
 
+  static set(key: string, value: any) {
+    this.instance.set(key, value);
+  }
+
   static value<T>(key: keyof Config): T {
     return this.instance.get<T>(key) as T;
   }
 
-  static fullPath(name: keyof Config, ext?: string): string {
+  static fullPath(name: string, ext?: string): string {
     return this.instance.fullPath(name, ext);
   }
 
-  static relPath(name: keyof Config, ext?: string): string {
+  static relPath(name: string, ext?: string): string {
     return this.instance.relPath(name, ext);
   }
 
-  static relGlobPath(name: keyof Config, ext?: string): string {
+  static relGlobPath(name: string, ext?: string): string {
     return this.instance.relGlobPath(name, ext);
   }
 
-  static fullGlobPath(name: keyof Config, ext?: string): string {
+  static fullGlobPath(name: string, ext?: string): string {
     return this.instance.fullGlobPath(name, ext);
+  }
+
+  static globPath(base: string, ext?: string): string {
+    return this.instance.globPath(base, ext);
   }
 
   static enabled(name: string): boolean {
@@ -179,37 +190,37 @@ export class Config implements Options, PrivateOptions, CliOptions {
   }
 
   set(key: string, value: SafeAny): void {
-    this.customProps[key] = value;
+    set(this.customProps, key, value);
   }
 
-  get<T = SafeAny>(key: keyof this): T {
+  get<T = SafeAny>(key: string): T {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return (this[key] as T) || (this.customProps[key] as T);
+    return (get(this, key) as T) || (get(this.customProps, key) as T);
   }
 
-  fullPath(name: keyof this, ext?: string): string {
+  fullPath(name: string, ext?: string): string {
     if (ext && ext.indexOf("/") < 0 && !ext.startsWith(".")) ext = `.${ext}`;
     return resolvePath(
       this.root,
       this.source,
-      (this[name] as string).concat(ext || "")
+      this.get<string>(name).concat(ext || "")
     );
   }
 
-  relPath(name: keyof this, ext?: string): string {
+  relPath(name: string, ext?: string): string {
     if (ext && ext.indexOf("/") < 0 && !ext.startsWith(".")) ext = `.${ext}`;
-    return joinPath(this.source, (this[name] as string).concat(ext || ""));
+    return joinPath(this.source, this.get<string>(name).concat(ext || ""));
   }
 
-  relGlobPath(name: keyof Config, ext?: string) {
+  relGlobPath(name: string, ext?: string) {
     return this.globPath(this.relPath(name), ext);
   }
 
-  fullGlobPath(name: keyof Config, ext?: string): string {
+  fullGlobPath(name: string, ext?: string): string {
     const base = !name.startsWith("server")
       ? this.fullPath(name)
-      : (this[name] as string);
+      : this.get<string>(name);
     return this.globPath(base, ext);
   }
 
@@ -218,7 +229,7 @@ export class Config implements Options, PrivateOptions, CliOptions {
     return "enabled" in option && option.enabled;
   }
 
-  private globPath(base: string, ext?: string): string {
+  globPath(base: string, ext?: string): string {
     const pattern = "/**/*.%s";
     const target = base.split("/").pop();
 
@@ -227,6 +238,7 @@ export class Config implements Options, PrivateOptions, CliOptions {
         return `${base}${pattern.replace("%s", "{json,js,cjs}")}`;
       case "helpers":
       case "controllers":
+      case "auth":
         return `${base}${pattern.replace("%s", "{js,cjs}")}`;
       case "styles":
         return `${base}${pattern.replace("%s", "{css,scss}")}`;

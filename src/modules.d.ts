@@ -1,6 +1,7 @@
 declare module "handlebars-wax";
 declare module "handlebars-layouts";
 declare module "day-log-savings";
+declare module "lodash-id";
 
 /*
 interface "@handlebars/parser" {

@@ -1,11 +1,10 @@
-const userRoutes = (router, config, db) => {
+const { DataManager } = require("@jmilanes/hotbars");
+
+const userRoutes = (router) => {
+  const db = DataManager.get("lowDb");
+
   router.get("/user-route", (req, res) => {
-
-    console.log(db.get('user').find(e => e.username = "MariaAlice_Albuquerque").value())
-
-    res.json({
-      message: "User route message",
-    });
+    res.json(db.from("user").eq("userName", "Melissa_Souza").single());
   });
 
   router.get("/user-test", (req, res) => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import glob from "glob";
 import { logger } from "../../lib/services";
