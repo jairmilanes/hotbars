@@ -147,6 +147,13 @@ export class Router {
     );
   }
 
+  private secureRoute(req: Request, res: Response, next: NextFunction) {
+    if (!req.isAuthenticated()) {
+      return res.redirect(`/sign-in`);
+    }
+    next();
+  }
+
   private authenticate() {
     if (!Config.enabled("auth")) {
       return;
@@ -198,6 +205,14 @@ export class Router {
       Config.get("securePath"),
       (route, view) => {
         const viewRouteConfig = config[view] || config.methods;
+        const middlewares: any[] = [route]
+
+        // Add authentication check middleware if route is secure
+        if (view.indexOf(`/${Config.get("auth.securePath")}`) > -1) {
+          middlewares.push(this.secureRoute.bind(this))
+        }
+
+        middlewares.push(this.handleViewRequest(view));
 
         if (Array.isArray(viewRouteConfig)) {
           viewRouteConfig
@@ -209,11 +224,11 @@ export class Router {
             )
             .forEach((method) => {
               // @ts-ignore
-              pagesRouter[method](route, this.handleViewRequest(view));
+              pagesRouter[method](...middlewares);
             });
         } else if (viewRouteConfig === "*") {
           // @ts-ignore
-          pagesRouter.all(route, this.handleViewRequest(view));
+          pagesRouter.all(...middlewares);
         }
       }
     );
@@ -277,8 +292,14 @@ export class Router {
   }
 
   private async api() {
-    if (Config.value<string>("jsonDb")) {
-      const apiRouter = jsonRouter.router<any>(mapDatabase(Config.get()).db);
+    const jsonDbPath = Config.value<string>("jsonDb");
+
+    if (jsonDbPath) {
+      const apiRouter = jsonRouter.router<any>(
+        jsonDbPath.endsWith('.json')
+        ? Config.relPath("jsonDb")
+        : mapDatabase(Config.get()).db
+      );
       await DataManager.create("lowDb", apiRouter.db);
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

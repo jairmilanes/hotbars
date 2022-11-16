@@ -1,5 +1,6 @@
 import get from "lodash/get";
 import set from "lodash/set";
+// import merge from "lodash/merge";
 import {
   Browser,
   CliOptions,
@@ -11,8 +12,8 @@ import {
   SafeObject,
   StylesType,
 } from "../../types";
-import { loadFile, joinPath, resolvePath } from "../utils";
 import { logger } from "../services";
+import { loadFile, joinPath, resolvePath } from "../utils";
 
 const moduleName = "hotbars";
 
@@ -65,7 +66,14 @@ export class Config implements Options, PrivateOptions, CliOptions {
   cors = {
     enabled: true,
   };
-  auth: undefined;
+  auth = {
+    enabled: false,
+    path: "auth",
+    securePath: "secure",
+    usersTable: "users",
+    usernameColumn: "username",
+    passwordColumn: "password",
+  };
   env = "development";
   dev = false;
   serverUrl = "";
@@ -76,7 +84,7 @@ export class Config implements Options, PrivateOptions, CliOptions {
     login: ["get", "post"],
   };
 
-  serverRoot = resolvePath(__dirname, "..", "..", "..");
+  // serverRoot = resolvePath(__dirname, "..", "..", "..");
   serverData = resolvePath(__dirname, "..", "..", "client/_data");
   serverPrecompile = resolvePath(__dirname, "..", "..", "client/_precompile");
   serverShared = resolvePath(__dirname, "..", "..", "client/_shared");
