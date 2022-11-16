@@ -195,6 +195,7 @@ export class Router {
     this.userPages = mapPages(
       Config.relPath("views"),
       Config.get("extname"),
+      Config.get("securePath"),
       (route, view) => {
         const viewRouteConfig = config[view] || config.methods;
 

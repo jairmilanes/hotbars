@@ -1,12 +1,12 @@
 import glob from "glob";
 import { logger } from "../services";
 import { SafeObject } from "../../types";
-import { Config } from "../core";
 
 const parsePath = (
   viewsPath: string,
   path: string,
-  extname: string
+  extname: string,
+  securePath: string,
 ): { route: string; view: string } => {
   const pathParts: string[] = path.replace(`${viewsPath}/`, "").split("/");
   const routeParts: string[] = [];
@@ -15,7 +15,7 @@ const parsePath = (
   pathParts.forEach((part) => {
     const name = part.replace(`.${extname}`, "");
 
-    if (part === "secure") {
+    if (part === securePath) {
       return viewParts.push(name)
     }
 
@@ -62,6 +62,7 @@ const resolvePaths = (viewsPath: string, extname: string): string[] => {
 export const mapPages = (
   viewsPath: string,
   extname: string,
+  securePath: string,
   callback: (route: string, view: string) => void
 ): SafeObject => {
   logger.debug("-- User views: ", `${viewsPath}/**/*.${extname}`);
@@ -72,8 +73,8 @@ export const mapPages = (
   logger.debug(`-- Found ${paths.length} views under "${viewsPath}".`);
 
   paths.forEach((entry, index) => {
-    const { route, view } = parsePath(viewsPath, entry, extname);
-    const isSecure = route.indexOf(`/${Config.get("auth.securePath")}`) > -1;
+    const { route, view } = parsePath(viewsPath, entry, extname, securePath);
+    const isSecure = route.indexOf(`/${securePath}`) > -1;
     pages[route] = view;
 
     callback(route, view);
