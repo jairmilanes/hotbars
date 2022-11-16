@@ -7,7 +7,7 @@
     "gender": "name.sex",
     "firstName": "unique:name.firstName:prop.gender",
     "lastName": "unique:name.lastName:prop.gender",
-    "userName": "lodash.join:prop.firstName,prop.lastName _",
+    "username": "lodash.join:prop.firstName,prop.lastName _",
     "password": "hash:internet.password",
     "avatar": "unique:internet.avatar",
     "jobTitle": "name.jobTitle",
