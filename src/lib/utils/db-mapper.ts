@@ -2,7 +2,7 @@ import { readFileSync } from "fs";
 import glob from "glob";
 import { Options, SafeArray, SafeObject } from "../../types";
 import { logger } from "../services";
-import { joinPath, pathSep } from "./path";
+import { joinPath, pathSep } from "./path-helpers";
 
 export const mapDatabase = (config: Options): any => {
   const { root, source, jsonDb, encoding } = config;

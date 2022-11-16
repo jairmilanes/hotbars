@@ -1,6 +1,7 @@
 import glob from "glob";
 import { logger } from "../services";
 import { SafeObject } from "../../types";
+import { Config } from "../core";
 
 const parsePath = (
   viewsPath: string,
@@ -13,6 +14,10 @@ const parsePath = (
 
   pathParts.forEach((part) => {
     const name = part.replace(`.${extname}`, "");
+
+    if (part === "secure") {
+      return viewParts.push(name)
+    }
 
     if (name.startsWith("[")) {
       // Path is a param, check for closing tag
@@ -68,11 +73,12 @@ export const mapPages = (
 
   paths.forEach((entry, index) => {
     const { route, view } = parsePath(viewsPath, entry, extname);
+    const isSecure = route.indexOf(`/${Config.get("auth.securePath")}`) > -1;
     pages[route] = view;
 
     callback(route, view);
 
-    logger.debug(`---- "${route}" -> "${view}.${extname}"`);
+    logger.debug(`---- ${isSecure ? "Secure:" : ""}${route} => ${view}.${extname}`);
 
     if (index === paths.length - 1) {
       if (!pages["/"]) {
