@@ -4,7 +4,7 @@ import { Options, SafeArray, SafeObject } from "../../types";
 import { logger } from "../services";
 import { joinPath, pathSep } from "./path";
 
-export const mapDatabase = (config: Options): SafeObject => {
+export const mapDatabase = (config: Options): any => {
   const { root, source, jsonDb, encoding } = config;
 
   if (!jsonDb) {

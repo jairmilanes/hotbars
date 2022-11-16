@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker/locale/pt_BR";
+import { hashSync } from "bcryptjs";
 import { SafeAny } from "../../types";
 import { RecordKey } from "@faker-js/faker/modules/helpers/unique";
 
@@ -29,6 +30,7 @@ export type SchemasMap = { [name: string]: SchemaConfig };
 export interface FakerConfig {
   method: string;
   unique?: typeof faker.helpers.unique;
+  hash?: typeof hashSync;
   args?: string;
 }
 

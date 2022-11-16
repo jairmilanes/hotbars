@@ -4,5 +4,12 @@
   "styles": "styles",
   "styleMode": "scss",
   "jsonDb": "db",
-  "upload": []
+  "auth": {
+    "enabled": true,
+    "path": "auth"
+  },
+  "upload": {
+    "enabled": true,
+    "types": []
+  }
 }

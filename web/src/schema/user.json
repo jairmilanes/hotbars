@@ -1,5 +1,5 @@
 {
-  "size": 3,
+  "size": 10,
   "name": "user",
   "schema": {
     "id": "datatype.uuid:helpers.unique",
@@ -7,12 +7,13 @@
     "gender": "name.sex",
     "firstName": "unique:name.firstName:prop.gender",
     "lastName": "unique:name.lastName:prop.gender",
-    "userName": "helpers.fake:{{prop.firstName}}.{{prop.lastName}}",
-    "password": "internet.password",
+    "userName": "lodash.join:prop.firstName,prop.lastName _",
+    "password": "hash:internet.password",
     "avatar": "unique:internet.avatar",
     "jobTitle": "name.jobTitle",
     "country": "use:Brasil",
     "countryCode": "use:BR",
+    "age": "datatype.number:min_18,max_50",
     "state": "address.state",
     "timeZone": "use:America/Sao_Paulo",
     "website": "internet.url"

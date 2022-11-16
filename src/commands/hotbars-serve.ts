@@ -64,12 +64,14 @@ program
   .action(async (args) => {
     initLogger(args.logLevel, args.logFile);
 
+    console.log("ENVIRONMENT", process.env.GITHUB_CLIENT_ID);
+
     try {
       Config.create(args);
 
       logger.warn(`Initializing ${Config.get("env")}...`);
 
-      const hotBars = new App(args);
+      const hotBars = new App();
 
       await hotBars.start();
 

@@ -1,11 +1,10 @@
 import open from "open";
-import { joinPath } from "./utils";
+import { joinPath, mapDatabase } from "./utils";
 import {
   Browser,
   WatcherChange,
   WatcherChangeType,
   WatcherEvent,
-  CliOptions,
 } from "../types";
 import { logger, BootstrapData, compileSass } from "./services";
 import {
@@ -17,6 +16,7 @@ import {
   Watcher,
   Router,
 } from "./core";
+import { AuthManager } from "./auth";
 
 export class App {
   readonly watcher: Watcher;
@@ -41,9 +41,6 @@ export class App {
   async start(): Promise<this> {
     logger.info(`Configuring server...`);
 
-    await BootstrapData.load();
-    await Controllers.load();
-
     this.sass();
 
     this.renderer.configure();
@@ -51,7 +48,11 @@ export class App {
 
     Server.create(this.renderer);
 
-    this.router.configure();
+    await BootstrapData.load();
+    await Controllers.load();
+    await AuthManager.load();
+
+    await this.router.configure();
 
     this.watcher.on(WatcherEvent.All, this.reConfigure.bind(this));
 

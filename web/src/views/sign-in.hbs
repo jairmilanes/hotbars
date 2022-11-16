@@ -1,0 +1,18 @@
+{{#extend "default"}}
+  {{#content "main" mode="append"}}
+
+    <div class="mb-5 block">
+      <form action="/auth/local" method="post">
+        <h3>Login Passowrd</h3>
+        <input name="username" type="text" />
+        <input name="password" type="password" />
+        <button type="submit">Sign-In</button>
+      </form>
+    </div>
+
+    <form action="/auth/github" method="post">
+      <h3>Login Github</h3>
+      <button type="submit">Sign-In with Github</button>
+    </form>
+  {{/content}}
+{{/extend}}
