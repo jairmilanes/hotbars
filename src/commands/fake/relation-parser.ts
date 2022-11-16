@@ -20,6 +20,8 @@ export class RelationParser {
     const { name: sourceName, schema } = this.schemaConfig;
     const props = Object.keys(schema);
 
+    logger.info(`Genereting ${sourceName} relations...`)
+
     props.forEach((prop) => {
       if (typeof schema[prop] !== "string") return;
 
@@ -27,17 +29,18 @@ export class RelationParser {
         const [targetConfig, sourceConfig] = schema[prop].split(":").slice(1);
 
         this.addTarget("target", targetConfig);
-        this.addTarget("source", sourceConfig);
 
         if (!sourceConfig) {
           logger.debug(
-            `------ ${sourceName} => ${this.targets.target?.table}.${this.targets.target?.prop}`
+            `------ ${prop} => random:${this.targets.target?.table}.${this.targets.target?.prop}`
           );
           return this.relateRandomly(prop);
         }
 
+        this.addTarget("source", sourceConfig);
+
         logger.debug(
-          `------ ${this.targets.source?.prop} => ${this.targets.target?.table}.${this.targets.target?.prop}`
+          `------ ${prop} => ${this.targets.source?.table}.${this.targets.source?.prop} === ${this.targets.target?.table}.${this.targets.target?.prop}`
         );
         this.relateByProp(prop);
       }
@@ -90,17 +93,20 @@ export class RelationParser {
     const { table: targetTable, prop: targetProp } = this.targets.target;
 
     this.data[sourceTable].forEach((entry: GeneratedEntry) => {
-      if (!this.schemaConfig.mapping) return;
       const normalizedValue = (entry[sourceProp] as string).toLowerCase();
+
+      let sourceValue = normalizedValue;
+
+      if (this.schemaConfig.mapping) {
+        sourceValue =
+          this.schemaConfig.mapping[targetTable][normalizedValue];
+      }
 
       logger.debug(`------ checking: ${normalizedValue}`);
 
-      const sourceValue =
-        this.schemaConfig.mapping[targetTable][normalizedValue];
-
       const target = this.data[targetTable].find(
         (tableEntry: GeneratedEntry) => {
-          return sourceValue === tableEntry[targetProp];
+          return sourceValue === (tableEntry[targetProp] as string).toLowerCase();
         }
       );
 

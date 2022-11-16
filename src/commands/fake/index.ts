@@ -8,6 +8,7 @@ import { generateRecords } from "./property-parser";
 import { SchemaConfig } from "./types";
 import { RelationParser } from "./relation-parser";
 import { JoinParser } from "./join-parser";
+import { afterAll } from "./post-generation";
 
 const loadSchema = (path: string): SchemaConfig | undefined => {
   const schemaConfig: SchemaConfig | undefined = loadFile(path);
@@ -43,7 +44,7 @@ export const generate = () => {
     if (schemaConfig) {
       schemas[schemaConfig.name] = schemaConfig;
       data[schemaConfig.name] = generateRecords(
-        schemaConfig.schema,
+        schemaConfig,
         schemaConfig.size
       );
     }
@@ -55,7 +56,10 @@ export const generate = () => {
 
     relationParser.generate();
     joinParser.generate();
+
+    data[schemaName] = afterAll(data[schemaName], schemas[schemaName]);
   });
+
 
   const dest = Config.fullPath("jsonDb");
 

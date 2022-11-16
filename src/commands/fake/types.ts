@@ -18,11 +18,18 @@ export interface RalationMapping {
   };
 }
 
+export interface PostGenAction {
+  type: string;
+  value: string | string[] | number | number[] | boolean | null;
+}
+
 export interface SchemaConfig {
   size: number;
   name: string;
   schema: { [prop: string]: string };
   mapping?: RalationMapping;
+  afterEach?: PostGenAction[];
+  afterAll?: PostGenAction[];
 }
 
 export type SchemasMap = { [name: string]: SchemaConfig };
