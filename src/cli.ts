@@ -3,6 +3,8 @@
 
 import { Command } from "commander";
 
+require("dot-env");
+
 const program = new Command();
 
 program

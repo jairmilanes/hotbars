@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from "express-ws";
 import { Socket } from "node:net";
 import { HelperDeclareSpec, HelperDelegate } from "handlebars";
@@ -57,6 +58,11 @@ export interface CorsConfig extends OptionalFeature {
   enabled: boolean;
 }
 
+export interface AuthConfig extends OptionalFeature {
+  enabled: boolean;
+  path: string;
+}
+
 export interface AutoRouteConfig {
   methods: string | string[];
   [view: string]: string | string[];
@@ -98,10 +104,12 @@ export interface Options {
   ignorePattern?: RegExp;
   uploads: UploadsConfig;
   cors: CorsConfig;
+  auth?: AuthConfig;
   env: string;
   dev: boolean;
   serverUrl: string;
   autoroute: AutoRouteConfig;
+  [key: string]: any;
 }
 
 export interface CliOptions {
@@ -176,10 +184,7 @@ export enum Browser {
   Edge = "msedge",
 }
 
-export type UserRoutesCallback = (
-  router: Router,
-  config: Readonly<Config>
-) => void;
+export type UserRoutesCallback = (router: Router) => void;
 
 export type UserBootstrapCallback = (
   config: Readonly<Config>
@@ -308,3 +313,24 @@ export interface RouteMap {
 export interface RouterMap {
   [name: string]: RouteMap[];
 }
+
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  password: string;
+  avatar: string;
+  timeZone: string;
+  [prop: string]: SafeAny;
+}
+
+export interface AuthenticateCallbackOptions {
+  message: string;
+}
+
+export type AuthenticateCallback = (
+  error?: Error,
+  user?: User | false,
+  options?: AuthenticateCallbackOptions
+) => void;

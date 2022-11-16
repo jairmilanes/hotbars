@@ -1,9 +1,9 @@
-import isNil from "lodash/isNil";
-import isNaN from "lodash/isNaN";
-import isString from "lodash/isString";
-import isEmpty from "lodash/isEmpty";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import * as _ from "lodash";
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { RecordKey } from "@faker-js/faker/modules/helpers/unique";
+import flow from "lodash/flow";
+import { hashSync } from "bcryptjs";
 import { logger } from "../../lib/services";
 import {
   CompareCallbacks,
@@ -13,8 +13,7 @@ import {
   Schema,
   UniqueCompareCallback,
 } from "./types";
-import { SafeAny } from "../../types";
-import flow from "lodash/flow";
+import { SafeAny, SafeObject } from "../../types";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const stringHelpers = require("handlebars-helpers/lib/string.js");
@@ -37,34 +36,70 @@ const arrayElementUniqueCompare = (maxTries: number): UniqueCompareCallback => {
   };
 };
 
-const coerceArgs = (args: any[]): any[] => {
-  if (!args.length) return [];
+const isArgMap = (args: string | string[]) => {
+  if (typeof args === "string") {
+    return args.match(/^.*_.*,.*$/g);
+  }
+  return args.join(",").match(/^.*_.*,.*$/g);
+};
 
+const coerce = (arg: string): any => {
+  const trimmed = arg.trim();
+
+  if (_.isNil(trimmed)) return;
+
+  if (_.isEmpty(trimmed)) return;
+
+  if (!isNaN(parseInt(trimmed, 10)) && _.isString(trimmed)) {
+    if (trimmed.indexOf(".") > -1 || trimmed.indexOf(",") > -1) {
+      return parseFloat(trimmed);
+    }
+
+    return parseInt(trimmed, 10);
+  }
+
+  if (trimmed === "true" || arg === "false") {
+    return trimmed === "true";
+  }
+
+  return trimmed;
+};
+
+const coerceArgsMap = (args: string[]): SafeObject => {
+  return args.reduce<SafeObject>((valid, arg: string) => {
+    const [key, value] = arg.split("_");
+    const coerced = coerce(value);
+
+    if (coerced) {
+      valid[key] = coerced;
+    }
+
+    return valid;
+  }, {});
+};
+
+const coerceArgsArray = (args: string[]): any[] => {
   return args.reduce((valid: any[], arg: string) => {
-    const trimmed = arg.trim();
-
-    if (isNil(trimmed)) return valid;
-
-    if (isEmpty(trimmed)) return valid;
-
-    if (!isNaN(parseInt(trimmed, 10)) && isString(trimmed)) {
-      if (trimmed.indexOf(".") > -1 || trimmed.indexOf(",") > -1) {
-        valid.push(parseFloat(trimmed));
-      } else {
-        valid.push(parseInt(trimmed, 10));
-      }
-
-      return valid;
-    }
-
-    if (trimmed === "true" || arg === "false") {
-      valid.push(trimmed === "true");
-      return valid;
-    }
-
-    valid.push(trimmed);
+    const coerced = coerce(arg);
+    if (coerced) valid.push(coerced);
     return valid;
   }, []);
+};
+
+const coerceArgs = <T = any[] | SafeObject | undefined>(
+  args: string | string[]
+): T => {
+  if (typeof args === "string") args = args.split(",");
+
+  args = args.filter((arg) => arg.trim().length > 0);
+
+  if (!args.length) return undefined as T;
+
+  if (isArgMap(args)) {
+    return coerceArgsMap(args) as T;
+  }
+
+  return coerceArgsArray(args) as T;
 };
 
 const parsePropConfig = (prop: string): FakerConfig => {
@@ -76,7 +111,15 @@ const parsePropConfig = (prop: string): FakerConfig => {
     parts.shift();
   }
 
-  return { method: parts[0], args: parts[1] || "" };
+  if (parts[0] === "hash") {
+    result.hash = hashSync;
+    parts.shift();
+  }
+
+  result.method = parts[0];
+  result.args = parts[1] || "";
+
+  return result;
 };
 
 const getMethod = (module: string, methodName: string) => {
@@ -138,6 +181,55 @@ const parseStringHelper = (params: FlowParams) => {
   return params;
 };
 
+const parseLodashHelpers = (params: FlowParams) => {
+  const { prop, obj, config } = params;
+
+  if (
+    obj[prop] === undefined &&
+    config.method.startsWith("lodash") &&
+    config.args
+  ) {
+    const helper = config.method.split(".")[1];
+    const args = config.args.split(" ");
+
+    const realArgs = args.reduce<SafeAny[]>((ags, arg) => {
+      if (arg.indexOf(",") > -1) {
+        const parts = arg.split(",");
+
+        const translated = parts.reduce<SafeAny[]>((pts, part) => {
+          if (part.startsWith("prop.")) {
+            const propName = part.split(".")[1];
+
+            if (obj[propName]) {
+              return [...pts, obj[propName]];
+            }
+          }
+
+          return pts;
+        }, []);
+
+        return [...ags, translated];
+      }
+
+      if (arg.startsWith("prop.")) {
+        const propName = arg.split(".")[1];
+
+        if (obj[propName]) {
+          return [...ags, obj[propName]];
+        }
+      }
+
+      return [...ags, arg];
+    }, []) as string[];
+
+    if (helper in _) {
+      obj[prop] = (_ as any)[helper](...realArgs);
+    }
+  }
+
+  return params;
+};
+
 const parseDependentHelper = (params: FlowParams) => {
   const { prop, obj, config } = params;
 
@@ -159,7 +251,7 @@ const parseElementArrayHelper = (params: FlowParams) => {
   const [module, helper] = config.method.split(".");
 
   if (obj[prop] === undefined && helper === "arrayElement") {
-    const args = coerceArgs(config.args?.split(",") || []);
+    const args = coerceArgs<any[]>(config.args?.split(",") || []);
 
     if (!compareCallbacks[prop]) {
       compareCallbacks[prop] = arrayElementUniqueCompare(args.length);
@@ -181,13 +273,29 @@ const parseHelper = (params: FlowParams) => {
   const { prop, obj, config } = params;
   if (obj[prop] === undefined) {
     const [module, helper] = config.method.split(".");
-    const args = coerceArgs(config.args?.split(",") || []);
-    const options = { compare: compareCallbacks[prop] };
+    const args = coerceArgs(config.args as string);
     const fn = getMethod(module, helper);
 
-    obj[prop] = config.unique
-      ? config.unique(fn, [args], options)
-      : fn(...args);
+    if (config.unique) {
+      const options = { compare: compareCallbacks[prop] };
+      if (Array.isArray(args)) {
+        obj[prop] = config.unique(fn, [...args], options);
+      } else {
+        obj[prop] = config.unique(fn, [args], options);
+      }
+    } else if (config.hash) {
+      console.log("FUUUCK", args);
+      const unhashedValue = fn(args);
+      obj[`${prop}Unhashed`] = unhashedValue;
+      obj[prop] = config.hash(unhashedValue, 10);
+    } else {
+      if (Array.isArray(args)) {
+        obj[prop] = fn(...args);
+      } else {
+        obj[prop] = fn(args);
+      }
+    }
+
     logger.debug(
       `-------- parsed:${module}.${helper}: ${prop} => ${obj[prop]}`
     );
@@ -218,6 +326,7 @@ const parseProperty = (
     parseUse,
     parseFakerHelper,
     parseStringHelper,
+    parseLodashHelpers,
     parseDependentHelper,
     parseElementArrayHelper,
     parseHelper,
