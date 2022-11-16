@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.5.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.5.0...hotbars-v1.5.1) (2022-11-16)
+
+
+### Bug Fixes
+
+* authentication methods and added bcryptjs for password hashing ([c3c0bdc](https://github.com/jairmilanes/hotbars/commit/c3c0bdc8650f3aa39681a3cbd4b92e5f4eff147b))
+* improved access to data from user files ([c3c0bdc](https://github.com/jairmilanes/hotbars/commit/c3c0bdc8650f3aa39681a3cbd4b92e5f4eff147b))
+* improved fake data generation logic ([c3c0bdc](https://github.com/jairmilanes/hotbars/commit/c3c0bdc8650f3aa39681a3cbd4b92e5f4eff147b))
+* improved registration of new authentication strategies from user files ([c3c0bdc](https://github.com/jairmilanes/hotbars/commit/c3c0bdc8650f3aa39681a3cbd4b92e5f4eff147b))
+* new authentication strategy logic ([a2314ec](https://github.com/jairmilanes/hotbars/commit/a2314ec0e34b8d2b9be65314618d783e7f17bc2d))
+
 ## [1.5.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.4.6...hotbars-v1.5.0) (2022-11-13)
 
 
