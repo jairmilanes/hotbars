@@ -44,6 +44,7 @@ export class Server {
   static create(renderer: Renderer): Server {
     logger.info(`Configuring .${Config.get("extname")} renderer...`);
     this.instance = new Server(renderer);
+    this.instance.serveURL = this.instance.resolveServerUrl();
     return this.instance;
   }
 

@@ -3,11 +3,12 @@ import { existsSync, mkdirSync, writeFileSync } from "fs";
 import glob from "glob";
 import { logger } from "../../lib/services";
 import { Config } from "../../lib/core";
-import { joinPath, loadFile } from "../../lib/utils";
+import { basename, dirname, joinPath, loadFile } from "../../lib/utils";
 import { generateRecords } from "./property-parser";
 import { SchemaConfig } from "./types";
 import { RelationParser } from "./relation-parser";
 import { JoinParser } from "./join-parser";
+import { afterAll } from "./post-generation";
 
 const loadSchema = (path: string): SchemaConfig | undefined => {
   const schemaConfig: SchemaConfig | undefined = loadFile(path);
@@ -43,7 +44,7 @@ export const generate = () => {
     if (schemaConfig) {
       schemas[schemaConfig.name] = schemaConfig;
       data[schemaConfig.name] = generateRecords(
-        schemaConfig.schema,
+        schemaConfig,
         schemaConfig.size
       );
     }
@@ -55,13 +56,16 @@ export const generate = () => {
 
     relationParser.generate();
     joinParser.generate();
+
+    data[schemaName] = afterAll(data[schemaName], schemas[schemaName]);
   });
 
-  const dest = Config.fullPath("jsonDb");
+  const jsonDb = basename(Config.get<string>("jsonDb"));
+  const dbDirectory = dirname(Config.fullPath("jsonDb"));
 
-  if (!existsSync(dest)) {
-    mkdirSync(dest);
+  if (!existsSync(dirname(dbDirectory))) {
+    mkdirSync(dirname(dbDirectory));
   }
 
-  writeFileSync(joinPath(dest, "db.json"), JSON.stringify(data, null, 4));
+  writeFileSync(joinPath(dbDirectory, jsonDb), JSON.stringify(data, null, 4));
 };

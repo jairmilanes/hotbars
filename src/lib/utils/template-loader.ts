@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises";
 import { logger } from "../services";
-import { basename } from "./path";
+import { basename } from "./path-helpers";
 
 const templateName = (templatePath: string, namespace?: string): string => {
   const ext = templatePath.split(".").pop();

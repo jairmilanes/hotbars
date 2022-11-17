@@ -59,8 +59,11 @@ export interface CorsConfig extends OptionalFeature {
 }
 
 export interface AuthConfig extends OptionalFeature {
-  enabled: boolean;
   path: string;
+  securePath: string;
+  usersTable: string;
+  usernameColumn: string;
+  passwordColumn: string;
 }
 
 export interface AutoRouteConfig {
@@ -322,7 +325,6 @@ export interface User {
   password: string;
   avatar: string;
   timeZone: string;
-  [prop: string]: SafeAny;
 }
 
 export interface AuthenticateCallbackOptions {

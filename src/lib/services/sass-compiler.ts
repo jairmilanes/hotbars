@@ -1,5 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { logger } from "./logger";
+import { Config } from "../core";
+import { resolvePath } from "../utils";
 
 export const compileSass = (
   sourcePath: string,
@@ -14,7 +16,12 @@ export const compileSass = (
 
   try {
     const result = spawnSync(
-      "sass",
+      `"${resolvePath(
+        Config.get("serverRoot"),
+        "node_modules",
+        ".bin",
+        "sass"
+      )}"`,
       [path, "--style", env !== "development" ? "compressed" : "expanded"],
       {
         cwd,

@@ -2,7 +2,7 @@ import { existsSync } from "fs";
 import express, { NextFunction, Request, Response } from "express";
 import { RequestHandler } from "express-serve-static-core";
 import expressWs from "express-ws";
-import session from "express-session";
+import session, { SessionOptions } from "express-session";
 import cors from "cors";
 import jsonRouter from "json-server";
 import apicache from "apicache";
@@ -63,8 +63,8 @@ export class Router {
     this.logger();
     this.static();
     this.session();
-    this.form();
     this.authenticate();
+    this.form();
     await this.api();
     this.partial();
     this.preCompiler();
@@ -106,18 +106,25 @@ export class Router {
   }
 
   private session() {
-    const sessionConfig = {
+    const sessionConfig: SessionOptions = {
       secret: "keyboard cat",
-      saveUninitialized: false,
+      saveUninitialized: true,
+      resave: true,
       cookie: {
         secure: false,
-        maxAge: 60000,
+        maxAge: 60 * 60 * 1000,
       },
     };
 
     if (Config.get("env") === "production") {
       Server.app.set("trust proxy", 1); // trust first proxy
+
       sessionConfig.saveUninitialized = true;
+
+      if (!sessionConfig.cookie) {
+        sessionConfig.cookie = {};
+      }
+
       sessionConfig.cookie.secure = true; // serve secure cookies
     }
 
@@ -133,11 +140,12 @@ export class Router {
 
     if (AuthManager.has(provider)) {
       const instance = AuthManager.get(provider);
-      const ist = passport.authenticate(instance.name, (error, user) =>
-        instance.handleResponse(res, error, user)
-      );
 
-      return ist(req, res, next);
+      return passport.authenticate(instance.name, instance.configure())(
+        req,
+        res,
+        next
+      );
     }
 
     next(
@@ -147,22 +155,36 @@ export class Router {
     );
   }
 
+  private secureRoute(req: Request, res: Response, next: NextFunction) {
+    if (!req.isAuthenticated()) {
+      return res.redirect(`/sign-in`);
+    }
+    next();
+  }
+
   private authenticate() {
     if (!Config.enabled("auth")) {
       return;
     }
 
+    Server.app.use(passport.initialize());
+    Server.app.use(passport.session());
+
     Server.app.get(`/sign-in`, (req, res) => {
-      res.render("sign-in");
+      if (req.isAuthenticated()) {
+        return res.redirect("/");
+      }
+      return res.render("sign-in");
     });
 
     Server.app.post(`/sign-out`, (req, res, next) => {
-      req.logout((err) => {
-        if (err) {
-          return next(err);
-        }
-        res.render("/");
-      });
+      if (req.isAuthenticated()) {
+        return req.logout((err) => {
+          if (err) return next(err);
+          res.redirect("/");
+        });
+      }
+      return res.redirect("/");
     });
 
     const authMiddleware = this.authMiddleware.bind(this);
@@ -195,8 +217,17 @@ export class Router {
     this.userPages = mapPages(
       Config.relPath("views"),
       Config.get("extname"),
+      Config.get("securePath"),
       (route, view) => {
         const viewRouteConfig = config[view] || config.methods;
+        const middlewares: any[] = [route];
+
+        // Add authentication check middleware if route is secure
+        if (view.indexOf(`/${Config.get("auth.securePath")}`) > -1) {
+          middlewares.push(this.secureRoute.bind(this));
+        }
+
+        middlewares.push(this.handleViewRequest(view));
 
         if (Array.isArray(viewRouteConfig)) {
           viewRouteConfig
@@ -208,11 +239,11 @@ export class Router {
             )
             .forEach((method) => {
               // @ts-ignore
-              pagesRouter[method](route, this.handleViewRequest(view));
+              pagesRouter[method](...middlewares);
             });
         } else if (viewRouteConfig === "*") {
           // @ts-ignore
-          pagesRouter.all(route, this.handleViewRequest(view));
+          pagesRouter.all(...middlewares);
         }
       }
     );
@@ -231,12 +262,19 @@ export class Router {
   private handleViewRequest(view: string): RequestHandler {
     return async (req: Request, res: Response) => {
       const result = await Controllers.call(view, req, res);
-
+      logger.info(
+        "Testing authentication",
+        req.isAuthenticated,
+        req.isAuthenticated && req.isAuthenticated(),
+        req.user
+      );
       res.status(200).render(view, {
         url: req.url,
         query: { ...req.query },
         params: { ...req.params },
         secure: req.secure,
+        authenticated: req.isAuthenticated && req.isAuthenticated(),
+        user: req.user,
         xhr: req.xhr,
         ...(isObject(result) ? result : {}),
       });
@@ -276,8 +314,20 @@ export class Router {
   }
 
   private async api() {
-    if (Config.value<string>("jsonDb")) {
-      const apiRouter = jsonRouter.router<any>(mapDatabase(Config.get()).db);
+    const jsonDbPath = Config.value<string>("jsonDb");
+
+    if (jsonDbPath) {
+      const apiRouter = jsonRouter.router<any>(
+        (() => {
+          if (jsonDbPath.endsWith(".json")) {
+            logger.info("Loading LowDb from", Config.relPath("jsonDb"));
+            return Config.relPath("jsonDb");
+          }
+          logger.info("Loading LowDb into memory");
+          return mapDatabase(Config.get()).db;
+        })()
+      );
+
       await DataManager.create("lowDb", apiRouter.db);
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -1,7 +1,10 @@
+import get from "lodash/get";
 import { compare } from "bcryptjs";
 import { Strategy as LocalStrategy } from "passport-local";
-import { StrategyAbstract } from "./strategy.abstract";
 import { AuthenticateCallback, User } from "../../../types";
+import { Config } from "../../core";
+import { StrategyAbstract } from "./strategy.abstract";
+import { logger } from "../../services";
 
 export abstract class LocalAuthStrateygyAbstract extends StrategyAbstract {
   constructor() {
@@ -10,6 +13,13 @@ export abstract class LocalAuthStrateygyAbstract extends StrategyAbstract {
 
   createStrategy() {
     return new LocalStrategy(this.authenticate.bind(this));
+  }
+
+  configure() {
+    return {
+      successRedirect: this.successRedirect,
+      failureRedirect: this.failureRedirect,
+    };
   }
 
   async authenticate(
@@ -26,9 +36,13 @@ export abstract class LocalAuthStrateygyAbstract extends StrategyAbstract {
     }
 
     try {
-      const valid = await compare(password, user.password);
+      const valid = await compare(
+        password,
+        get(user, Config.get<string>("auth.passwordColumn"))
+      );
 
       if (valid) {
+        logger.info("User authenticated successfully", user);
         return done(undefined, user);
       }
 

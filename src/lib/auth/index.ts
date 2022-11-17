@@ -3,6 +3,7 @@ import passport from "passport";
 import { StrategyAbstract } from "./strategies/strategy.abstract";
 import { Config } from "../core";
 import { logger } from "../services";
+import { DataManager } from "../data";
 
 export class AuthManager {
   private static strategies: { [name: string]: StrategyAbstract } = {};
@@ -28,9 +29,8 @@ export class AuthManager {
     for (let i = 0; i < (strategies || []).length; i++) {
       const module = await import(strategies[i]);
       const name = this.normalizePath(strategies[i]);
-      const fullName = `/${name}.${strategies[i].split(".").pop()}`;
 
-      logger.debug(`-- ${Config.relPath("auth.path", fullName)}`);
+      logger.debug(`-- found /${name}.${strategies[i].split(".").pop()}`);
 
       const authModule = new module.default() as StrategyAbstract;
 
@@ -39,28 +39,38 @@ export class AuthManager {
       passport.use(this.strategies[authModule.name].createStrategy());
     }
 
+    logger.debug("---- Setting up session serialization");
     this.serialize();
   }
 
   private static serialize() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     passport.serializeUser(function (user: any, cb) {
+      logger.debug("-- Auth:Serialize session user", user);
       process.nextTick(function () {
-        logger.debug("-- Auth:Serialize User", user);
         if (user.provider) {
           // const {} = user as Profile;
-          logger.warn("Must customize serializer for profile");
+          logger.debug("Saving session", user.id);
         }
 
-        return cb(null, { ...user });
+        return cb(null, user.id);
       });
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    passport.deserializeUser(function (user: any, cb) {
+    passport.deserializeUser(function (userId: any, cb) {
+      logger.debug("-- Auth:Deserialize session user", userId);
       process.nextTick(function () {
-        logger.debug("-- Auth:Deserialize User", user);
-        return cb(null, user);
+        const usersDb = DataManager.get().from(
+          Config.get<string>("auth.usersTable")
+        );
+        return usersDb
+          .get(userId)
+          .then((user) => {
+            logger.debug("---- User reloaded", user);
+            cb(null, user);
+          })
+          .catch(cb);
       });
     });
   }

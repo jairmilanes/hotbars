@@ -3,7 +3,7 @@
   "source": "src",
   "styles": "styles",
   "styleMode": "scss",
-  "jsonDb": "db",
+  "jsonDb": "db/db.json",
   "auth": {
     "enabled": true,
     "path": "auth"

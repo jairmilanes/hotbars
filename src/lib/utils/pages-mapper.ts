@@ -5,7 +5,8 @@ import { SafeObject } from "../../types";
 const parsePath = (
   viewsPath: string,
   path: string,
-  extname: string
+  extname: string,
+  securePath: string
 ): { route: string; view: string } => {
   const pathParts: string[] = path.replace(`${viewsPath}/`, "").split("/");
   const routeParts: string[] = [];
@@ -13,6 +14,10 @@ const parsePath = (
 
   pathParts.forEach((part) => {
     const name = part.replace(`.${extname}`, "");
+
+    if (part === securePath) {
+      return viewParts.push(name);
+    }
 
     if (name.startsWith("[")) {
       // Path is a param, check for closing tag
@@ -57,6 +62,7 @@ const resolvePaths = (viewsPath: string, extname: string): string[] => {
 export const mapPages = (
   viewsPath: string,
   extname: string,
+  securePath: string,
   callback: (route: string, view: string) => void
 ): SafeObject => {
   logger.debug("-- User views: ", `${viewsPath}/**/*.${extname}`);
@@ -67,12 +73,15 @@ export const mapPages = (
   logger.debug(`-- Found ${paths.length} views under "${viewsPath}".`);
 
   paths.forEach((entry, index) => {
-    const { route, view } = parsePath(viewsPath, entry, extname);
+    const { route, view } = parsePath(viewsPath, entry, extname, securePath);
+    const isSecure = route.indexOf(`/${securePath}`) > -1;
     pages[route] = view;
 
     callback(route, view);
 
-    logger.debug(`---- "${route}" -> "${view}.${extname}"`);
+    logger.debug(
+      `---- ${isSecure ? "Secure:" : ""}${route} => ${view}.${extname}`
+    );
 
     if (index === paths.length - 1) {
       if (!pages["/"]) {

@@ -11,9 +11,11 @@ import {
   FlowParams,
   GeneratedEntry,
   Schema,
+  SchemaConfig,
   UniqueCompareCallback,
 } from "./types";
 import { SafeAny, SafeObject } from "../../types";
+import { afterEach } from "./post-generation";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const stringHelpers = require("handlebars-helpers/lib/string.js");
@@ -284,7 +286,6 @@ const parseHelper = (params: FlowParams) => {
         obj[prop] = config.unique(fn, [args], options);
       }
     } else if (config.hash) {
-      console.log("FUUUCK", args);
       const unhashedValue = fn(args);
       obj[`${prop}Unhashed`] = unhashedValue;
       obj[prop] = config.hash(unhashedValue, 10);
@@ -334,9 +335,10 @@ const parseProperty = (
 };
 
 export const generateRecords = (
-  schema: Schema,
+  schemaConfig: SchemaConfig,
   size: number
 ): GeneratedEntry[] => {
+  const { schema } = schemaConfig;
   compareCallbacks = {};
   const props = Object.keys(schema);
 
@@ -351,7 +353,7 @@ export const generateRecords = (
 
     props.forEach((prop) => parseProperty(schema, entry, prop));
 
-    entries.push(entry);
+    entries.push(afterEach(entry, schemaConfig));
   }
 
   logger.info(`-- generated ${entries} ${schema.name} records.`);

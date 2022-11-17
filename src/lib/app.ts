@@ -122,11 +122,14 @@ export class App {
 
     clients.forEach((ws) => {
       if (ws) {
-        ws.send(JSON.stringify({ type, file: change.path }), (error) => {
-          if (error) {
-            logger.error("Websocket error:", error);
+        ws.send(
+          JSON.stringify({ type: change.type, file: change.path }),
+          (error) => {
+            if (error) {
+              logger.error("Websocket error:", error);
+            }
           }
-        });
+        );
       }
     });
 
