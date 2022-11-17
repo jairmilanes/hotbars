@@ -10,7 +10,10 @@
     "skipLibCheck": false,
     "forceConsistentCasingInFileNames": true,
     "types": ["node"],
-    "typeRoots": ["node_modules/@types", "src/typings"]
+    "typeRoots": [
+      "src/types",
+      "node_modules/@types"
+    ]
   },
   "files": ["src/cli.ts", "src/index.ts", "src/modules.d.ts"],
   "include": ["src/**/*"],
