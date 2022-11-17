@@ -1,6 +1,6 @@
 import get from "lodash/get";
 import set from "lodash/set";
-// import merge from "lodash/merge";
+import merge from "lodash/merge";
 import {
   Browser,
   CliOptions,
@@ -84,7 +84,7 @@ export class Config implements Options, PrivateOptions, CliOptions {
     login: ["get", "post"],
   };
 
-  // serverRoot = resolvePath(__dirname, "..", "..", "..");
+  serverRoot = resolvePath(__dirname, "..", "..", "..");
   serverData = resolvePath(__dirname, "..", "..", "client/_data");
   serverPrecompile = resolvePath(__dirname, "..", "..", "client/_precompile");
   serverShared = resolvePath(__dirname, "..", "..", "client/_shared");
@@ -194,7 +194,7 @@ export class Config implements Options, PrivateOptions, CliOptions {
 
   static enabled(name: string): boolean {
     const option = this.instance[name as keyof Config] as OptionalFeature;
-    return "enabled" in option && option.enabled;
+    return option.enabled;
   }
 
   set(key: string, value: SafeAny): void {
@@ -259,10 +259,6 @@ export class Config implements Options, PrivateOptions, CliOptions {
   }
 
   private merge(options: Partial<Options & PrivateOptions & CliOptions>): void {
-    Object.keys(options).forEach((key) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      this[key as keyof this] = options[key];
-    });
+    merge(this, options);
   }
 }

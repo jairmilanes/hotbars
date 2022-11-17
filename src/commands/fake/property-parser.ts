@@ -10,8 +10,9 @@ import {
   FakerConfig,
   FlowParams,
   GeneratedEntry,
-  Schema, SchemaConfig,
-  UniqueCompareCallback
+  Schema,
+  SchemaConfig,
+  UniqueCompareCallback,
 } from "./types";
 import { SafeAny, SafeObject } from "../../types";
 import { afterEach } from "./post-generation";
@@ -337,7 +338,7 @@ export const generateRecords = (
   schemaConfig: SchemaConfig,
   size: number
 ): GeneratedEntry[] => {
-  const { schema } = schemaConfig
+  const { schema } = schemaConfig;
   compareCallbacks = {};
   const props = Object.keys(schema);
 

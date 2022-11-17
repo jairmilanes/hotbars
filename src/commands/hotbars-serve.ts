@@ -64,8 +64,6 @@ program
   .action(async (args) => {
     initLogger(args.logLevel, args.logFile);
 
-    console.log("ENVIRONMENT", process.env.GITHUB_CLIENT_ID);
-
     try {
       Config.create(args);
 

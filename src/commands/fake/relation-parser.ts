@@ -20,7 +20,7 @@ export class RelationParser {
     const { name: sourceName, schema } = this.schemaConfig;
     const props = Object.keys(schema);
 
-    logger.info(`Genereting ${sourceName} relations...`)
+    logger.info(`Genereting ${sourceName} relations...`);
 
     props.forEach((prop) => {
       if (typeof schema[prop] !== "string") return;
@@ -98,15 +98,16 @@ export class RelationParser {
       let sourceValue = normalizedValue;
 
       if (this.schemaConfig.mapping) {
-        sourceValue =
-          this.schemaConfig.mapping[targetTable][normalizedValue];
+        sourceValue = this.schemaConfig.mapping[targetTable][normalizedValue];
       }
 
       logger.debug(`------ checking: ${normalizedValue}`);
 
       const target = this.data[targetTable].find(
         (tableEntry: GeneratedEntry) => {
-          return sourceValue === (tableEntry[targetProp] as string).toLowerCase();
+          return (
+            sourceValue === (tableEntry[targetProp] as string).toLowerCase()
+          );
         }
       );
 

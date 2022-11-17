@@ -1,8 +1,10 @@
 import { GeneratedEntry, PostGenAction, SchemaConfig } from "./types";
 import { omit } from "lodash";
 
-
-export const afterEach = (record: GeneratedEntry, schemaConfig: SchemaConfig) => {
+export const afterEach = (
+  record: GeneratedEntry,
+  schemaConfig: SchemaConfig
+) => {
   const { afterEach } = schemaConfig;
 
   if (afterEach) {
@@ -10,13 +12,16 @@ export const afterEach = (record: GeneratedEntry, schemaConfig: SchemaConfig) =>
       if (action.type === "removeProps") {
         record = omit(record, action.value as string[]);
       }
-    })
+    });
   }
 
   return record;
-}
+};
 
-export const afterAll = (records: GeneratedEntry[], schemaConfig: SchemaConfig) => {
+export const afterAll = (
+  records: GeneratedEntry[],
+  schemaConfig: SchemaConfig
+) => {
   const { afterAll } = schemaConfig;
 
   return records.map((record, i) => {
@@ -25,9 +30,9 @@ export const afterAll = (records: GeneratedEntry[], schemaConfig: SchemaConfig) 
         if (action.type === "removeProps") {
           record = omit(record, action.value as string[]);
         }
-      })
+      });
     }
 
     return record;
   });
-}
+};

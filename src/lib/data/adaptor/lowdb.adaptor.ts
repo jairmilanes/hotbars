@@ -1,6 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { LowdbSync } from "lowdb";
-import { eq, gt, gte, lt, lte, pick, isNumber, get, isNil } from "lodash";
+import {
+  eq,
+  gt,
+  gte,
+  lt,
+  lte,
+  pick,
+  isNumber,
+  get,
+  isNil,
+  CollectionChain,
+} from "lodash";
 import { SafeObject } from "../../../types";
 import { QueryBuilder } from "./query-builder";
 
@@ -28,13 +39,9 @@ export default class LowdbAdaptor extends QueryBuilder {
     return new LowdbAdaptor(this._api, collection);
   }
 
-  exec() {
-    if (!this.collection) {
-      throw new Error("Query executed without a collection.");
-    }
-
-    let collection = this._api.get(this.collection);
-
+  protected query(
+    collection: CollectionChain<object>
+  ): CollectionChain<object> {
     this.queue.forEach((op) => {
       if (op.type === "eq" && op.args.length === 2) {
         collection = collection.filter(
@@ -126,6 +133,22 @@ export default class LowdbAdaptor extends QueryBuilder {
       collection = collection.orderBy(...this._order);
     }
 
+    return collection;
+  }
+
+  protected async exec() {
+    if (!this.collection) {
+      throw new Error("Query executed without a collection.");
+    }
+
+    let collection = this._api.get(this.collection);
+
+    if (this.id) {
+      return collection.getById(this.id as string).value();
+    }
+
+    collection = this.query(collection);
+
     if (this._limit === 1) {
       if (this.fields.length) {
         return collection.first().pick(this.fields).value();
@@ -153,5 +176,38 @@ export default class LowdbAdaptor extends QueryBuilder {
     }
 
     return collection.value();
+  }
+
+  async insert(record: Record<string, any>): Promise<Record<string, any>> {
+    return this._api.get(this.collection).insert(record);
+  }
+
+  async upsert(record: Record<string, any>): Promise<Record<string, any>> {
+    return this._api.get(this.collection).upsert(record);
+  }
+
+  async updateById(
+    id: string,
+    record: Record<string, any>
+  ): Promise<Record<string, any>> {
+    this._api.get(this.collection).updateById(id, record);
+    return record;
+  }
+
+  async updateWhere(
+    predicate: Record<string, any>,
+    attr: Record<string, any>
+  ): Promise<Record<string, any>[]> {
+    return this._api.get(this.collection).updateWhere(predicate, attr);
+  }
+
+  async delete(id: string): Promise<Record<string, any>> {
+    return this._api.get(this.collection).removeById(id);
+  }
+
+  async deleteWhere(
+    predicate: Record<string, any>
+  ): Promise<Record<string, any>[]> {
+    return this._api.get(this.collection).removeWhere(predicate);
   }
 }

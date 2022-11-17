@@ -1,3 +1,5 @@
+import { CollectionChain } from "lodash";
+
 export type FilterCallback = (value: Record<string, any>) => boolean;
 
 export type MixedValue =
@@ -39,7 +41,7 @@ export abstract class QueryBuilder {
     return this;
   }
 
-  get(id: string) {
+  async get(id: string) {
     this.id = id;
     return this.exec();
   }
@@ -110,19 +112,43 @@ export abstract class QueryBuilder {
     return this;
   }
 
-  limit(limit: number) {
+  async limit(limit: number) {
     this._limit = limit;
     return this.exec();
   }
 
-  single() {
+  async single() {
     this._limit = 1;
     return this.exec();
   }
 
-  all() {
+  async all() {
     return this.exec();
   }
 
-  abstract exec(): any;
+  protected abstract query(
+    collection: CollectionChain<object>
+  ): CollectionChain<any>;
+
+  protected abstract exec(): Promise<any>;
+
+  abstract insert(record: Record<string, any>): Promise<Record<string, any>>;
+
+  abstract updateById(
+    id: string,
+    record: Record<string, any>
+  ): Promise<Record<string, any>>;
+
+  abstract updateWhere(
+    predicate: Record<string, any>,
+    attrs: Record<string, any>
+  ): Promise<Record<string, any>[]>;
+
+  abstract upsert(record: Record<string, any>): Promise<Record<string, any>>;
+
+  abstract delete(id: string): Promise<Record<string, any>>;
+
+  abstract deleteWhere(
+    predicate: Record<string, any>
+  ): Promise<Record<string, any>>;
 }

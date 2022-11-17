@@ -6,7 +6,7 @@ const parsePath = (
   viewsPath: string,
   path: string,
   extname: string,
-  securePath: string,
+  securePath: string
 ): { route: string; view: string } => {
   const pathParts: string[] = path.replace(`${viewsPath}/`, "").split("/");
   const routeParts: string[] = [];
@@ -16,7 +16,7 @@ const parsePath = (
     const name = part.replace(`.${extname}`, "");
 
     if (part === securePath) {
-      return viewParts.push(name)
+      return viewParts.push(name);
     }
 
     if (name.startsWith("[")) {
@@ -79,7 +79,9 @@ export const mapPages = (
 
     callback(route, view);
 
-    logger.debug(`---- ${isSecure ? "Secure:" : ""}${route} => ${view}.${extname}`);
+    logger.debug(
+      `---- ${isSecure ? "Secure:" : ""}${route} => ${view}.${extname}`
+    );
 
     if (index === paths.length - 1) {
       if (!pages["/"]) {

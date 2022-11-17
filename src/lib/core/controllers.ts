@@ -56,14 +56,11 @@ export class Controllers {
     if (!key) return;
     const config = Config.get();
 
-    logger.debug(`-- Initializing: ${key} - ${name}`);
-    logger.debug(module);
-
     if (this.isClass(module[key])) {
-      logger.debug(`-- Class mode`);
+      logger.debug(`-- Initializing controller class: ${key} - ${name}`);
       this.controllers[name] = new module[key](config);
     } else {
-      logger.debug(`-- Function mode`);
+      logger.debug(`-- Initializing controller function: ${key} - ${name}`);
       this.controllers[name] = (
         (config: Readonly<Config>) => (req: Request, res: Response) =>
           module[key](config, req, res)
