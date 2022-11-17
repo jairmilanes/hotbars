@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.6.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.5.1...hotbars-v1.6.0) (2022-11-17)
+
+
+### Features
+
+* **fake:** added support for post generation actions afterEach and afterAll ([c489412](https://github.com/jairmilanes/hotbars/commit/c4894124f5bcd7f9de58ef5dcdb6ad5ab8909814))
+
+
+### Bug Fixes
+
+* **auth:** added configuration for greater auth logic customization ([cb4c0f0](https://github.com/jairmilanes/hotbars/commit/cb4c0f0231bb3e4557eec8e0921280dd15d4d195))
+* **auth:** fixed bugs on local authentication strategy ([67af68c](https://github.com/jairmilanes/hotbars/commit/67af68cbeb988f32c44a076cf07b86911a3f0a5f))
+* **auth:** fixed promise error when extending AbstractStrategy ([67af68c](https://github.com/jairmilanes/hotbars/commit/67af68cbeb988f32c44a076cf07b86911a3f0a5f))
+* **fake:** added afterAll post generation logic for fake data ([67af68c](https://github.com/jairmilanes/hotbars/commit/67af68cbeb988f32c44a076cf07b86911a3f0a5f))
+* **fake:** fixed relations not being properly mapped ([c489412](https://github.com/jairmilanes/hotbars/commit/c4894124f5bcd7f9de58ef5dcdb6ad5ab8909814))
+* **fake:** simplified configuration for rendom relations ([c489412](https://github.com/jairmilanes/hotbars/commit/c4894124f5bcd7f9de58ef5dcdb6ad5ab8909814))
+* **website:** general fixes to web configurations ([23026bc](https://github.com/jairmilanes/hotbars/commit/23026bc23387c390de89f8378179f1062cad7fe3))
+
 ## [1.5.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.5.0...hotbars-v1.5.1) (2022-11-16)
 
 ### Bug Fixes
