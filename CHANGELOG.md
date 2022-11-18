@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.2...hotbars-v1.6.3) (2022-11-18)
+
+
+### Bug Fixes
+
+* improved documentation under auth and data ([7176f11](https://github.com/jairmilanes/hotbars/commit/7176f11680de3de302502ead8f7ed1c1c4b8351b))
+* rework of the fake command undergoing ([7176f11](https://github.com/jairmilanes/hotbars/commit/7176f11680de3de302502ead8f7ed1c1c4b8351b))
+* typos under auth strategies ([7176f11](https://github.com/jairmilanes/hotbars/commit/7176f11680de3de302502ead8f7ed1c1c4b8351b))
+
 ## [1.6.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.1...hotbars-v1.6.2) (2022-11-18)
 
 
