@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.1...hotbars-v1.6.2) (2022-11-18)
+
+
+### Bug Fixes
+
+* **data:** fixed QueryBuilder insert and update methods not saving data to local file ([6c09f0f](https://github.com/jairmilanes/hotbars/commit/6c09f0f064f6239fd8491047e105bf61d2b980c7))
+* lodash-id augmentation typings with proper return values ([6c09f0f](https://github.com/jairmilanes/hotbars/commit/6c09f0f064f6239fd8491047e105bf61d2b980c7))
+* **test:** configured jest and added first few tests ([6c09f0f](https://github.com/jairmilanes/hotbars/commit/6c09f0f064f6239fd8491047e105bf61d2b980c7))
+
 ## [1.6.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.0...hotbars-v1.6.1) (2022-11-17)
 
 
