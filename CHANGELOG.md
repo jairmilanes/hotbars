@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.3...hotbars-v1.6.4) (2022-11-18)
+
+
+### Bug Fixes
+
+* typo under index export for auth strategy ([77f5c2c](https://github.com/jairmilanes/hotbars/commit/77f5c2c908be8da30e1134ec1df78495afd4debb))
+
 ## [1.6.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.2...hotbars-v1.6.3) (2022-11-18)
 
 
