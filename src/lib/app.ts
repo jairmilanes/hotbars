@@ -1,12 +1,12 @@
 import open from "open";
 import { joinPath, mapDatabase } from "./utils";
 import {
-  Browser,
+  Browser, CliOptions,
   WatcherChange,
   WatcherChangeType,
-  WatcherEvent,
+  WatcherEvent
 } from "../types";
-import { logger, BootstrapData, compileSass } from "./services";
+import { logger, BootstrapData, compileSass, initLogger } from "./services";
 import {
   Server,
   Config,
@@ -31,7 +31,13 @@ export class App {
 
   closing = false;
 
-  constructor() {
+  constructor(argv: CliOptions) {
+    initLogger(argv.logLevel, argv.logFilePath);
+
+    Config.create(argv);
+
+    logger.warn(`Initializing ${Config.get("env")}...`);
+
     this.watcher = new Watcher();
     this.renderer = new Renderer();
     this.preRenderer = new PreRenderer();

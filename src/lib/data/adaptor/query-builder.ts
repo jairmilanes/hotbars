@@ -61,28 +61,33 @@ export abstract class QueryBuilder {
     return this;
   }
 
-  gt(field: string, value: string) {
+  gt(field: string, value: number) {
     this.queue.push({ type: "gt", args: [field, value] });
     return this;
   }
 
-  lt(field: string, value: string) {
+  lt(field: string, value: number) {
     this.queue.push({ type: "lt", args: [field, value] });
     return this;
   }
 
-  gte(field: string, value: string) {
+  gte(field: string, value: number) {
     this.queue.push({ type: "gte", args: [field, value] });
     return this;
   }
 
-  lte(field: string, value: string) {
+  lte(field: string, value: number) {
     this.queue.push({ type: "lte", args: [field, value] });
     return this;
   }
 
-  in(field: string, values: string[]) {
+  in(field: string, values: string[] | number[]) {
     this.queue.push({ type: "in", args: [field, values] });
+    return this;
+  }
+
+  nin(field: string, values: string[] | number[]) {
+    this.queue.push({ type: "nin", args: [field, values] });
     return this;
   }
 
@@ -112,17 +117,17 @@ export abstract class QueryBuilder {
     return this;
   }
 
-  async limit(limit: number) {
+  async limit(limit: number): Promise<Record<string, any>[]> {
     this._limit = limit;
     return this.exec();
   }
 
-  async single() {
+  async single(): Promise<Record<string, any>> {
     this._limit = 1;
     return this.exec();
   }
 
-  async all() {
+  async all(): Promise<Record<string, any>[]> {
     return this.exec();
   }
 
@@ -134,7 +139,7 @@ export abstract class QueryBuilder {
 
   abstract insert(record: Record<string, any>): Promise<Record<string, any>>;
 
-  abstract updateById(
+  abstract update(
     id: string,
     record: Record<string, any>
   ): Promise<Record<string, any>>;

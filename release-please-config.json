@@ -6,11 +6,11 @@
       "package-name": "hotbars",
       "release-type": "node",
       "target-branch": "master",
-      "bump-minor-pre-major": false,
-      "bump-patch-for-minor-pre-major": false,
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false,
-      "initial-version": "1.0.0",
+      "prerelease": true,
+      "initial-version": "2.0.0",
       "extra-files": ["src/cli.js", "README.md"]
     }
   },

@@ -1,0 +1,12 @@
+{
+  "size": 30,
+  "name": "posts",
+  "schema": {
+    "id": "datatype.uuid",
+    "createdAt": "date.past",
+    "userId": "relation:users.id",
+    "image": "image.cats",
+    "title": "lorem.sentence",
+    "content": "lorem.paragraphs:5"
+  }
+}

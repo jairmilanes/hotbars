@@ -3,8 +3,8 @@
 
 import { Command, Option } from "commander";
 import { callbackify } from "util";
-import { initLogger, logger } from "../lib/services";
-import { Config, cliDefaults } from "../lib/core";
+import { logger } from "../lib/services";
+import { cliDefaults, Config } from "../lib/core";
 import { Browser } from "../types";
 import { App } from "../lib/app";
 
@@ -31,7 +31,7 @@ program
   )
   .addOption(
     new Option(
-      "-c, --configName <filePath>",
+      "-c, --configName <fileName>",
       'Config file name to load, defaults to hotbarsrc, and must be placed in the root of your project, it may also start with a dot ".hotbarsrc"" and or end with .js, .json or .cjs.'
     ).default(cliDefaults.configName)
   )
@@ -61,15 +61,9 @@ program
     ).hideHelp()
   )
   // .showSuggestionAfterError(false)
-  .action(async (args) => {
-    initLogger(args.logLevel, args.logFile);
-
+  .action(async (argv) => {
     try {
-      Config.create(args);
-
-      logger.warn(`Initializing ${Config.get("env")}...`);
-
-      const hotBars = new App();
+      const hotBars = new App(argv);
 
       await hotBars.start();
 
@@ -94,7 +88,7 @@ program
         });
       });
     } catch (e) {
-      if (args.logLevel > 1) {
+      if (Config.get<number>("logLevel") > 1) {
         logger.error(
           "Failed to initialize server, use debug logging level to find out more."
         );

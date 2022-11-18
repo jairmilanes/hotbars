@@ -1,4 +1,5 @@
 export * from "./abstract";
+export * from "./lib/app";
 export * from "./lib/core/config";
 export * from "./lib/data/index";
 export * from "./lib/data/adaptor/query-builder";

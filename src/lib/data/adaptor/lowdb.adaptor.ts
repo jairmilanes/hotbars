@@ -106,6 +106,13 @@ export default class LowdbAdaptor extends QueryBuilder {
         });
       }
 
+      if (op.type === "nin" && op.args.length === 2) {
+        collection = collection.filter((e: SafeObject) => {
+          const value = get(e, String(op.args[0]));
+          return (op.args[1] as any[]).indexOf(value) === -1;
+        });
+      }
+
       if (op.type === "filter") {
         collection = collection.filter((e: object) => {
           const value = get(e, String(op.args[0]));
@@ -179,35 +186,45 @@ export default class LowdbAdaptor extends QueryBuilder {
   }
 
   async insert(record: Record<string, any>): Promise<Record<string, any>> {
-    return this._api.get(this.collection).insert(record);
+    const row = this._api.get(this.collection).insert(record).value();
+    return this.write<Record<string, any>>(row);
   }
 
   async upsert(record: Record<string, any>): Promise<Record<string, any>> {
-    return this._api.get(this.collection).upsert(record);
+    const row = this._api.get(this.collection).upsert(record).value();
+    return this.write<Record<string, any>>(row);
   }
 
-  async updateById(
+  async update(
     id: string,
     record: Record<string, any>
   ): Promise<Record<string, any>> {
-    this._api.get(this.collection).updateById(id, record);
-    return record;
+    const row = this._api.get(this.collection).updateById(id, record).value();
+    return this.write<Record<string, any>>(row);
   }
 
   async updateWhere(
     predicate: Record<string, any>,
     attr: Record<string, any>
   ): Promise<Record<string, any>[]> {
-    return this._api.get(this.collection).updateWhere(predicate, attr);
+    const rows = this._api.get(this.collection).updateWhere(predicate, attr).value();
+    return this.write<Record<string, any>[]>(rows)
   }
 
   async delete(id: string): Promise<Record<string, any>> {
-    return this._api.get(this.collection).removeById(id);
+    const row = this._api.get(this.collection).removeById(id).value();
+    return this.write<Record<string, any>>(row)
   }
 
   async deleteWhere(
     predicate: Record<string, any>
   ): Promise<Record<string, any>[]> {
-    return this._api.get(this.collection).removeWhere(predicate);
+    const rows = this._api.get(this.collection).removeWhere(predicate).value();
+    return this.write<Record<string, any>[]>(rows)
+  }
+
+  private write<T>(record: T): T {
+    this._api.write()
+    return record as T;
   }
 }
