@@ -4,7 +4,7 @@
   "schema": {
     "id": "datatype.uuid",
     "type": "unique:helpers.arrayElement:frontend,backend,full-stack",
-    "title": "string.titleize:prop.type",
+    "title": "lodash.startCase:prop.type",
     "description": "lorem.paragraph"
   }
 }

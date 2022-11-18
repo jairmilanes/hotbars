@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 "use strict";
 
+import * as dotenv from 'dotenv'
 import { Command } from "commander";
 
-require("dot-env");
+dotenv.config();
 
 const program = new Command();
 

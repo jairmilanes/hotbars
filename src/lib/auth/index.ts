@@ -1,5 +1,5 @@
 import glob from "glob";
-import passport, { Profile } from "passport";
+import passport from "passport";
 import { StrategyAbstract } from "./strategies/strategy.abstract";
 import { Config } from "../core";
 import { logger } from "../services";

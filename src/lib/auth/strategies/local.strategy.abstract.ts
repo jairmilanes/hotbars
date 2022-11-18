@@ -6,9 +6,9 @@ import { Config } from "../../core";
 import { StrategyAbstract } from "./strategy.abstract";
 import { logger } from "../../services";
 
-export abstract class LocalAuthStrateygyAbstract extends StrategyAbstract {
-  constructor() {
-    super("local");
+export abstract class LocalAuthStrategyAbstract extends StrategyAbstract {
+  protected constructor(name?: string) {
+    super(name || "local");
   }
 
   createStrategy() {

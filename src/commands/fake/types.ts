@@ -35,10 +35,11 @@ export interface SchemaConfig {
 export type SchemasMap = { [name: string]: SchemaConfig };
 
 export interface FakerConfig {
+  module?: string;
   method: string;
   unique?: typeof faker.helpers.unique;
   hash?: typeof hashSync;
-  args?: string;
+  args: any[];
 }
 
 export interface FlowParams {

@@ -13,12 +13,16 @@ export abstract class StrategyAbstract {
   protected INVALID_CREDENTIALS = "invalid_credentials";
   protected AUTH_ERROR = "auth_error";
 
-  protected constructor(name: string) {
+  protected constructor(name: string, successRedirect?: string, failureRedirect?: string) {
     if (!name) {
       throw new Error("Please set your auth strategy name identifier.");
     }
 
     this.name = name;
+
+    if (successRedirect) this.successRedirect = successRedirect;
+
+    if (failureRedirect) this.failureRedirect = failureRedirect;
   }
 
   abstract createStrategy(): Strategy;
