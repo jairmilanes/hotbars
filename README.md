@@ -8,7 +8,7 @@
 <!-- x-release-please-start-version -->
 
 [![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
-[![Version](https://img.shields.io/badge/NPM-1.6.3?style=for-the-badge)](https://www.npmjs.com/package/@jmilanes/hotbars)
+[![Version](https://img.shields.io/badge/NPM-1.6.4?style=for-the-badge)](https://www.npmjs.com/package/@jmilanes/hotbars)
 ![Documentation](https://img.shields.io/badge/Documentation-Yes-green?style=for-the-badge)
 ![Maintained](https://img.shields.io/badge/Maintained-Yes-brightgreen?style=for-the-badge)
 
