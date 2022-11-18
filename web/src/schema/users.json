@@ -1,0 +1,21 @@
+{
+  "size": 10,
+  "name": "users",
+  "schema": {
+    "id": "datatype.uuid:helpers.unique",
+    "createdAt": "date.past",
+    "gender": "name.sex",
+    "firstName": "unique:name.firstName:prop.gender",
+    "lastName": "unique:name.lastName:prop.gender",
+    "username": "lodash.join:prop.firstName,prop.lastName _",
+    "password": "hash:internet.password",
+    "avatar": "unique:internet.avatar",
+    "jobTitle": "name.jobTitle",
+    "country": "use:Brasil",
+    "countryCode": "use:BR",
+    "age": "datatype.number:min_18,max_50",
+    "state": "address.state",
+    "timeZone": "use:America/Sao_Paulo",
+    "website": "internet.url"
+  }
+}

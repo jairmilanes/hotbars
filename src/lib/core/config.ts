@@ -7,7 +7,6 @@ import {
   HTTPProtocol,
   OptionalFeature,
   Options,
-  PrivateOptions,
   SafeAny,
   SafeObject,
   StylesType,
@@ -20,27 +19,28 @@ const moduleName = "hotbars";
 export const cliDefaults: CliOptions = {
   env: "development",
   port: 3000,
-  browser: Browser.Edge,
-  logLevel: 1,
-  configName: `${moduleName}rc`,
   socketPort: 5001,
+  browser: null,
+  logLevel: 1,
   logFilePath: "./logs/log.txt",
+  configName: `${moduleName}rc`,
 };
 
-export class Config implements Options, PrivateOptions, CliOptions {
-  logLevel = 1;
-  logFilePath = "./logs/log.txt";
-  encoding = "utf-8" as BufferEncoding;
-  protocol = "http" as HTTPProtocol;
-  host = "127.0.0.1";
-  browser = Browser.Chrome;
+export class Config implements Options {
+  env = "development";
   port = 3000;
   socketPort = 5001;
-  extname = "hbs";
-  source = "src";
+  browser = Browser.Chrome;
+  logLevel = 1;
+  logFilePath = "./logs/log.txt";
   configName = `${moduleName}rc`;
   bootstrapName = `${moduleName}.bootstrap`;
   routesConfigName = `${moduleName}.routes`;
+  encoding = "utf-8" as BufferEncoding;
+  protocol = "http" as HTTPProtocol;
+  host = "127.0.0.1";
+  extname = "hbs";
+  source = "src";
   jsonDb = undefined;
   dbSchema = "schema";
   data = "data";
@@ -74,7 +74,6 @@ export class Config implements Options, PrivateOptions, CliOptions {
     usernameColumn: "username",
     passwordColumn: "password",
   };
-  env = "development";
   dev = false;
   serverUrl = "";
   ignorePattern?: RegExp;
@@ -103,7 +102,7 @@ export class Config implements Options, PrivateOptions, CliOptions {
   );
 
   private constructor(argv: CliOptions) {
-    const userConfig = loadFile<Partial<Options>>(this.configName, true);
+    const userConfig = loadFile<Partial<Options>>(argv.configName || this.configName, true);
 
     if (!userConfig) {
       logger.warn("User routes configuration not found, skipping.");
@@ -258,7 +257,7 @@ export class Config implements Options, PrivateOptions, CliOptions {
     }
   }
 
-  private merge(options: Partial<Options & PrivateOptions & CliOptions>): void {
+  private merge(options: Partial<Options>): void {
     merge(this, options);
   }
 }

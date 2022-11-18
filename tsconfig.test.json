@@ -1,0 +1,27 @@
+{
+  // This is an alias to @tsconfig/node16: https://github.com/tsconfig/bases
+
+  // Most ts-node options can be specified here using their programmatic names.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "baseUrl": ".",
+    "strict": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "skipLibCheck": false,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node", "jest", "lodash"],
+    "typeRoots": [
+      "src/types",
+      "node_modules/@types"
+    ],
+    "paths": {
+      "hotbars": ["src"],
+      "hotbars/*": ["src/*"]
+    }
+  },
+  "include": ["tests/**/*.test.ts"],
+  "exclude": ["node_modules", "dist"]
+}

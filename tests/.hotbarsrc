@@ -1,0 +1,5 @@
+{
+  "styleMode": "scss",
+  "jsonDb": "tests/__data__/db/db.json",
+  "dbSchema": "tests/__data__/schema"
+}

@@ -8,8 +8,11 @@ export abstract class JsonDbAuthStrateygy extends LocalAuthStrateygyAbstract {
     const usersDb = DataManager.get().from(
       Config.get<string>("auth.usersTable")
     );
-    return usersDb
+
+    const record = await usersDb
       .eq(Config.get<string>("auth.usernameColumn"), username)
-      .single();
+      .single()
+
+    return record as User;
   }
 }

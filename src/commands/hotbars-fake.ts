@@ -8,10 +8,10 @@ import { generate } from "./fake";
 
 const program = new Command();
 
-program.action((args) => {
+program
+  .action((args) => {
   initLogger(cliDefaults.logLevel, cliDefaults.logFilePath);
   Config.create(args || {});
-
   generate();
 });
 

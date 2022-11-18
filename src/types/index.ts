@@ -29,15 +29,6 @@ export type AnymatchFn = (testString: string) => boolean;
 
 export type AnymatchPattern = string | RegExp | AnymatchFn;
 
-export interface PrivateOptions {
-  root: string;
-  watch: string[];
-  serverViews: string;
-  serverPartials: string;
-  serverScripts: string;
-  serverStyles: string;
-}
-
 export interface UploadField {
   name: string;
   maxCount?: number;
@@ -75,18 +66,31 @@ export type HTTPProtocol = "http" | "https";
 
 export type StylesType = "css" | "scss";
 
-export interface Options {
+export interface PrivateOptions {
   root: string;
+  watch: string[];
+  serverViews: string;
+  serverPartials: string;
+  serverScripts: string;
+  serverStyles: string;
+}
+
+export interface CliOptions {
+  env: string;
+  port: number;
+  socketPort: number;
+  configName: string;
   logLevel: number;
+  logFilePath: string;
+  browser: Browser | null;
+}
+
+export interface Options extends CliOptions, PrivateOptions {
   encoding: BufferEncoding;
   protocol: HTTPProtocol;
   host: string;
-  browser: Browser;
-  port: number;
-  socketPort: number;
   extname: string;
   source: string;
-  configName: string;
   bootstrapName: string;
   routesConfigName: string;
   jsonDb?: string;
@@ -108,21 +112,10 @@ export interface Options {
   uploads: UploadsConfig;
   cors: CorsConfig;
   auth?: AuthConfig;
-  env: string;
   dev: boolean;
   serverUrl: string;
   autoroute: AutoRouteConfig;
   [key: string]: any;
-}
-
-export interface CliOptions {
-  env: string;
-  port: number;
-  socketPort: number;
-  configName: string;
-  logLevel: number;
-  logFilePath: string;
-  browser: Browser;
 }
 
 export interface TrackedSocket extends Socket {
@@ -317,7 +310,7 @@ export interface RouterMap {
   [name: string]: RouteMap[];
 }
 
-export interface User {
+export interface User extends Record<string , any>{
   id: string;
   firstName: string;
   lastName: string;

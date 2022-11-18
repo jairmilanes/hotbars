@@ -1,0 +1,11 @@
+{
+  "size": 60,
+  "name": "comments",
+  "schema": {
+    "id": "datatype.uuid",
+    "createdAt": "date.past",
+    "userId": "relation:users.id",
+    "content": "lorem.paragraphs:1,3",
+    "postId": "relation:posts.id"
+  }
+}
