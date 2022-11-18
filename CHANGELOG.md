@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.0...hotbars-v1.6.1) (2022-11-17)
+
+
+### Bug Fixes
+
+* fixed missing types during github action build ([881b7da](https://github.com/jairmilanes/hotbars/commit/881b7da5ffd02bbba4a555a37fe3ac6ebec8c0a5))
+
 ## [1.6.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.5.1...hotbars-v1.6.0) (2022-11-17)
 
 
