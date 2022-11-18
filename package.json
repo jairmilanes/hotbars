@@ -26,6 +26,7 @@
     "test": "jest --silent=false"
   },
   "dependencies": {
+    "@faker-js/faker": "^7.6.0",
     "apicache": "^1.6.3",
     "app-root-path": "^3.1.0",
     "bcryptjs": "^2.4.3",
@@ -35,7 +36,8 @@
     "cosmiconfig": "^7.0.1",
     "day-log-savings": "^1.0.4",
     "debug": "^4.3.4",
-    "dot-env": "^0.0.1",
+    "deformat": "^1.2.0",
+    "dotenv": "^16.0.3",
     "express": "4.18.2",
     "express-rate-limit": "^6.6.0",
     "express-session": "^1.17.3",
@@ -65,7 +67,6 @@
     "yargs": "^17.6.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^7.6.0",
     "@handlebars/parser": "^2.1.0",
     "@types/apicache": "^1.6.1",
     "@types/app-root-path": "^1.2.4",

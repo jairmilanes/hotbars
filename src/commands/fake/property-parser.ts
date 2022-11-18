@@ -14,11 +14,11 @@ import {
   SchemaConfig,
   UniqueCompareCallback,
 } from "./types";
-import { SafeAny, SafeObject } from "../../types";
+import { SafeAny } from "../../types";
 import { afterEach } from "./post-generation";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const stringHelpers = require("handlebars-helpers/lib/string.js");
+// const stringHelpers = require("handlebars-helpers/lib/string.js");
 let compareCallbacks: CompareCallbacks = {};
 
 const arrayElementUniqueCompare = (maxTries: number): UniqueCompareCallback => {
@@ -36,13 +36,6 @@ const arrayElementUniqueCompare = (maxTries: number): UniqueCompareCallback => {
 
     return 0;
   };
-};
-
-const isArgMap = (args: string | string[]) => {
-  if (typeof args === "string") {
-    return args.match(/^.*_.*,.*$/g);
-  }
-  return args.join(",").match(/^.*_.*,.*$/g);
 };
 
 const coerce = (arg: string): any => {
@@ -67,46 +60,12 @@ const coerce = (arg: string): any => {
   return trimmed;
 };
 
-const coerceArgsMap = (args: string[]): SafeObject => {
-  return args.reduce<SafeObject>((valid, arg: string) => {
-    const [key, value] = arg.split("_");
-    const coerced = coerce(value);
-
-    if (coerced) {
-      valid[key] = coerced;
-    }
-
-    return valid;
-  }, {});
-};
-
-const coerceArgsArray = (args: string[]): any[] => {
-  return args.reduce((valid: any[], arg: string) => {
-    const coerced = coerce(arg);
-    if (coerced) valid.push(coerced);
-    return valid;
-  }, []);
-};
-
-const coerceArgs = <T = any[] | SafeObject | undefined>(
-  args: string | string[]
-): T => {
-  if (typeof args === "string") args = args.split(",");
-
-  args = args.filter((arg) => arg.trim().length > 0);
-
-  if (!args.length) return undefined as T;
-
-  if (isArgMap(args)) {
-    return coerceArgsMap(args) as T;
-  }
-
-  return coerceArgsArray(args) as T;
-};
-
-const parsePropConfig = (prop: string): FakerConfig => {
+const parsePropConfig = (prop: string, record: Record<string, SafeAny>): FakerConfig => {
   const parts = prop.split(":");
-  const result: FakerConfig = { method: "" };
+  const result: FakerConfig = {
+    method: "",
+    args: []
+  };
 
   if (parts[0] === "unique") {
     result.unique = faker.helpers.unique;
@@ -118,154 +77,103 @@ const parsePropConfig = (prop: string): FakerConfig => {
     parts.shift();
   }
 
-  result.method = parts[0];
-  result.args = parts[1] || "";
+  if (parts[0].indexOf('.') > -1) {
+    const [module, helper] = parts[0].split('.')
+    result.module = module;
+    result.method = helper;
+  } else {
+    result.method = parts[0];
+  }
+
+  if (result.method === "use") {
+    result.args = [coerce(parts[1])];
+    return result;
+  }
+
+  if (parts[1].indexOf(",") > -1) {
+    result.args = parts[1].split(',');
+  } else {
+    result.args = [parts[1]]
+  }
+
+  const parseProp = (value: string) => {
+    if (value.indexOf('prop.')) {
+      return record[value.split('.')[1]];
+    }
+    return coerce(value);
+  }
+
+  const parseObject = (arg: string) =>
+    arg.split('+')
+      .reduce<Record<string, string|number|boolean>>((props, arg) => {
+        const [name, value] = arg.split('_');
+
+        return {
+          ...props,
+          [name]: coerce(value)
+        }
+      }, {})
+
+  const parseArray = (arg: string) => arg.split('+').map(parseProp)
+
+  result.args = result.args.map((arg: string) => {
+    if (arg.indexOf('+') > -1) {
+      if (arg.indexOf('_') > -1) {
+        // Argument is an object
+        return parseObject(arg);
+      } else {
+        // Argument is an array
+        return parseArray(arg);
+      }
+    }
+
+    return parseProp(arg);
+  })
 
   return result;
 };
 
-const getMethod = (module: string, methodName: string) => {
-  return (faker as any)[module][methodName];
-};
-
-const call = (module: string, methodName: string, args: any[]) => {
-  const fn = getMethod(module, methodName);
-  if (fn) {
-    logger.debug(`-------- calling:${module}.${methodName}(${args.join(",")})`);
-    return fn(...args);
+const getMethod = (config: FakerConfig): ((...args: any[]) => any) | undefined => {
+  const {module, method} = config;
+  if (_.has(faker, [module as string, method])
+    && _.isFunction(_.has(faker, [module as string, method]))) {
+    return _.get(faker, [module as string, method]);
   }
-  logger.warn(`-------- not found:${module}.${methodName}`);
+
+  if (_.has(_, method) && _.isFunction(_.get(_, method))) {
+    return _.get(_, method);
+  }
 };
 
 const parseUse = (params: FlowParams) => {
   const { prop, obj, config } = params;
 
-  if (obj[prop] === undefined && config.method.startsWith("use")) {
-    obj[prop] = config.args;
+  if (obj[prop] === undefined && config.method === "use") {
+    obj[prop] = config.args[0];
     logger.debug(`-------- parsed:use: ${prop} => ${obj[prop]}`);
   }
 
   return params;
 };
 
-const parseFakerHelper = (params: FlowParams) => {
+const parseElementArray = (params: FlowParams) => {
   const { prop, obj, config } = params;
+  const { module, method, args } = config;
 
-  if (
-    obj[prop] === undefined &&
-    config.args?.startsWith("prop.") &&
-    config.method.startsWith("helpers.")
-  ) {
-    const helper = config.method.split(".")[1];
-    const propName = config.args.split(".")[1];
-
-    obj[prop] = call("helpers", helper, [obj[propName]]);
-    logger.debug(`-------- parsed:helpers.${helper}: ${prop} => ${obj[prop]}`);
-  }
-
-  return params;
-};
-
-const parseStringHelper = (params: FlowParams) => {
-  const { prop, obj, config } = params;
-  const helper = config.method.split(".")[1];
-
-  if (
-    obj[prop] === undefined &&
-    config.args?.startsWith("prop.") &&
-    helper in stringHelpers
-  ) {
-    const propName = config.args.split(".")[1];
-    obj[prop] = stringHelpers[helper](obj[propName]);
-    logger.debug(`-------- parsed:string.${helper}: ${prop} => ${obj[prop]}`);
-  }
-
-  return params;
-};
-
-const parseLodashHelpers = (params: FlowParams) => {
-  const { prop, obj, config } = params;
-
-  if (
-    obj[prop] === undefined &&
-    config.method.startsWith("lodash") &&
-    config.args
-  ) {
-    const helper = config.method.split(".")[1];
-    const args = config.args.split(" ");
-
-    const realArgs = args.reduce<SafeAny[]>((ags, arg) => {
-      if (arg.indexOf(",") > -1) {
-        const parts = arg.split(",");
-
-        const translated = parts.reduce<SafeAny[]>((pts, part) => {
-          if (part.startsWith("prop.")) {
-            const propName = part.split(".")[1];
-
-            if (obj[propName]) {
-              return [...pts, obj[propName]];
-            }
-          }
-
-          return pts;
-        }, []);
-
-        return [...ags, translated];
-      }
-
-      if (arg.startsWith("prop.")) {
-        const propName = arg.split(".")[1];
-
-        if (obj[propName]) {
-          return [...ags, obj[propName]];
-        }
-      }
-
-      return [...ags, arg];
-    }, []) as string[];
-
-    if (helper in _) {
-      obj[prop] = (_ as any)[helper](...realArgs);
-    }
-  }
-
-  return params;
-};
-
-const parseDependentHelper = (params: FlowParams) => {
-  const { prop, obj, config } = params;
-
-  if (obj[prop] === undefined && config.args?.startsWith("prop.")) {
-    const [module, helper] = config.method.split(".");
-    const args = config.args.split(".");
-    logger.debug("CODEPENDEND", config.method, module, helper);
-    obj[prop] = call(module, helper, [obj[args[1]]]);
-    logger.debug(
-      `-------- parsed:coDependent.${module}.${helper}: ${prop} => ${obj[prop]}`
-    );
-  }
-
-  return params;
-};
-
-const parseElementArrayHelper = (params: FlowParams) => {
-  const { prop, obj, config } = params;
-  const [module, helper] = config.method.split(".");
-
-  if (obj[prop] === undefined && helper === "arrayElement") {
-    const args = coerceArgs<any[]>(config.args?.split(",") || []);
-
+  if (obj[prop] === undefined && method === "arrayElement") {
     if (!compareCallbacks[prop]) {
       compareCallbacks[prop] = arrayElementUniqueCompare(args.length);
     }
 
     const options = { compare: compareCallbacks[prop] };
-    const fn = getMethod(module, helper);
+    const fn = getMethod(config);
 
-    obj[prop] = config.unique ? config.unique(fn, [args], options) : fn(args);
-    logger.debug(
-      `-------- parsed:${module}.${helper}: ${prop} => ${obj[prop]}`
-    );
+    if (fn) {
+      obj[prop] = config.unique ? config.unique(fn, [args], options) : fn(args);
+      logger.debug(
+        `-------- parsed:${module}.${method}: ${prop} => ${obj[prop]}`
+      );
+    }
   }
 
   return params;
@@ -273,46 +181,44 @@ const parseElementArrayHelper = (params: FlowParams) => {
 
 const parseHelper = (params: FlowParams) => {
   const { prop, obj, config } = params;
-  if (obj[prop] === undefined) {
-    const [module, helper] = config.method.split(".");
-    const args = coerceArgs(config.args as string);
-    const fn = getMethod(module, helper);
+  const { unique, hash, args} = config;
 
-    if (config.unique) {
+  const fn = getMethod(config);
+
+  if (obj[prop] === undefined && fn) {
+    if (unique) {
       const options = { compare: compareCallbacks[prop] };
-      if (Array.isArray(args)) {
-        obj[prop] = config.unique(fn, [...args], options);
+      if (args.length > 1) {
+        obj[prop] = unique(fn, [...args], options);
       } else {
-        obj[prop] = config.unique(fn, [args], options);
+        obj[prop] = unique(fn, [args[0]], options);
       }
-    } else if (config.hash) {
-      const unhashedValue = fn(args);
-      obj[`${prop}Unhashed`] = unhashedValue;
-      obj[prop] = config.hash(unhashedValue, 10);
-    } else {
-      if (Array.isArray(args)) {
-        obj[prop] = fn(...args);
-      } else {
-        obj[prop] = fn(args);
-      }
+      return;
     }
 
-    logger.debug(
-      `-------- parsed:${module}.${helper}: ${prop} => ${obj[prop]}`
-    );
+    if (hash) {
+      const unhashedValue = fn(args);
+      obj[`${prop}Unhashed`] = unhashedValue;
+      obj[prop] = hash(unhashedValue, 10);
+      return;
+    }
+
+    obj[prop] = fn(...args);
+
+    logger.debug(`-------- parsed:${config.module}.${config.method}: ${prop} => ${obj[prop]}`);
   }
 
   return params;
 };
 
-const parseProperty = (
+export const parseProperty = (
   schema: Schema,
   obj: Record<string, SafeAny>,
   prop: string
 ) => {
   if (typeof schema[prop] !== "string") return;
 
-  const config = parsePropConfig(schema[prop]);
+  const config = parsePropConfig(schema[prop], obj);
 
   if (
     config.method.startsWith("relation") ||
@@ -325,11 +231,7 @@ const parseProperty = (
 
   flow([
     parseUse,
-    parseFakerHelper,
-    parseStringHelper,
-    parseLodashHelpers,
-    parseDependentHelper,
-    parseElementArrayHelper,
+    parseElementArray,
     parseHelper,
   ])({ prop, obj, config });
 };

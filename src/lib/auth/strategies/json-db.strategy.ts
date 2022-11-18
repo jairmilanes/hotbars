@@ -1,9 +1,14 @@
 import { User } from "../../../types";
 import { DataManager } from "../../data";
 import { Config } from "../../core";
-import { LocalAuthStrateygyAbstract } from "./local.strateygy.abstract";
+import { LocalAuthStrategyAbstract } from "./local.strategy.abstract";
 
-export abstract class JsonDbAuthStrateygy extends LocalAuthStrateygyAbstract {
+export abstract class JsonDbAuthStrategy extends LocalAuthStrategyAbstract {
+
+  protected constructor() {
+    super("jsonDb");
+  }
+
   async getUser(username: string): Promise<User> {
     const usersDb = DataManager.get().from(
       Config.get<string>("auth.usersTable")

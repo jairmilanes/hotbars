@@ -45,7 +45,7 @@ program
       .argParser((value) => parseInt(value, 10))
   )
   .addOption(
-    new Option("-lf, --logFile <number>", "Path where to save log files.")
+    new Option("-lf, --logFilePath <number>", "Path where to save log files.")
       .default(cliDefaults.logFilePath)
       .argParser((value) => parseInt(value, 10))
   )
