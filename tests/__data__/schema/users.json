@@ -2,7 +2,7 @@
   "size": 10,
   "name": "users",
   "schema": {
-    "id": "datatype.uuid:helpers.unique",
+    "id": "datatype.uuid",
     "createdAt": "date.past",
     "gender": "name.sex",
     "firstName": "unique:name.firstName:prop.gender",

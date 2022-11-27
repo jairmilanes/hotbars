@@ -2,7 +2,6 @@
   "name": "cobra-handlebars-example",
   "version": "1.0.0",
   "description": "An example project running Cobra Handlebars Hot Server",
-  "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "hotbars serve -D",
@@ -14,9 +13,8 @@
     "eslint-config-prettier": "^8.5.0"
   },
   "dependencies": {
-    "@jmilanes/hotbars": "^1.4.6",
+    "@jmilanes/hotbars": "^1.6.4",
     "@supabase/supabase-js": "^2.1.0",
-    "passport-github2": "^0.1.12",
-    "save-dev": "^0.0.1-security"
+    "passport-github2": "^0.1.12"
   }
 }

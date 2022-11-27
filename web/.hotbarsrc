@@ -1,12 +1,15 @@
 {
+  "logLevel": 1,
   "extname": "hbs",
   "source": "src",
   "styles": "styles",
   "styleMode": "scss",
   "jsonDb": "db/db.json",
+  "jsonServer": {
+    "enabled": true
+  },
   "auth": {
-    "enabled": true,
-    "path": "auth"
+    "enabled": true
   },
   "upload": {
     "enabled": true,

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
-
-import * as dotenv from 'dotenv'
+// import "./paths";
+import * as dotenv from "dotenv";
 import { Command } from "commander";
 
 dotenv.config();

@@ -3,56 +3,39 @@
 
 import { Command, Option } from "commander";
 import { callbackify } from "util";
-import { logger } from "../lib/services";
-import { cliDefaults, Config } from "../lib/core";
-import { Browser } from "../types";
-import { App } from "../lib/app";
+import { logger } from "../services";
+import { Config } from "../server/core";
+import { App } from "../server/app";
 
 const program = new Command();
 
 program
   .addOption(
-    new Option("-e, --env <number>", "Environment name")
+    new Option("-e, --env <string>", "Environment name")
       .env("NODE_ENV")
       .choices(["development", "production"])
-      .default(cliDefaults.env)
   )
   .addOption(
     new Option("-p, --port <number>", "HTTP Port you want to serve the file")
       .env("PORT")
-      .default(cliDefaults.port)
       .argParser((value) => parseInt(value, 10))
   )
   .addOption(
     new Option("-sp, --socketPort <number>", "Socket port for hot reloading")
       .env("SOCKET_PORT")
-      .default(cliDefaults.socketPort)
       .argParser((value) => parseInt(value, 10))
   )
   .addOption(
     new Option(
       "-c, --configName <fileName>",
       'Config file name to load, defaults to hotbarsrc, and must be placed in the root of your project, it may also start with a dot ".hotbarsrc"" and or end with .js, .json or .cjs.'
-    ).default(cliDefaults.configName)
-  )
-  .addOption(
-    new Option(
-      "-l, --logLevel <number>",
-      "Log level, must be a number between 1 and 4 (1: debug, 2: info, 3: warn, 4: error)"
     )
-      .choices(["1", "2", "3", "4", "5"])
-      .default(cliDefaults.logLevel)
-      .argParser((value) => parseInt(value, 10))
   )
   .addOption(
-    new Option("-lf, --logFilePath <number>", "Path where to save log files.")
-      .default(cliDefaults.logFilePath)
+    new Option("--logLevel <number>", "The json db schema files directory")
+      .choices(["1", "2", "3", "4"])
       .argParser((value) => parseInt(value, 10))
-  )
-  .addOption(
-    new Option("--browser", "Browser to open")
-      .choices([Browser.Edge, Browser.Chrome, Browser.Firefox])
-      .default(cliDefaults.browser)
+      .default(1)
   )
   .addOption(
     new Option(
@@ -63,11 +46,13 @@ program
   // .showSuggestionAfterError(false)
   .action(async (argv) => {
     try {
-      const hotBars = new App(argv);
+      Config.create(argv);
+
+      const hotBars = new App();
 
       await hotBars.start();
 
-      const close = callbackify(hotBars.close);
+      const close = callbackify(hotBars.close.bind(hotBars));
 
       process.on("SIGTERM", () => {
         logger.debug("SIGTERM signal received.");

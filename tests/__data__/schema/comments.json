@@ -4,8 +4,8 @@
   "schema": {
     "id": "datatype.uuid",
     "createdAt": "date.past",
-    "userId": "relation:users.id",
-    "content": "lorem.paragraphs:1,3",
-    "postId": "relation:posts.id"
+    "userId": "one-to-one:users.id",
+    "content": "lorem.paragraphs:1..3",
+    "postId": "one-to-one:posts.id"
   }
 }

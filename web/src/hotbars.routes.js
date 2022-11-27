@@ -1,7 +1,7 @@
 const { DataManager } = require("@jmilanes/hotbars");
 
 const userRoutes = (router) => {
-  const db = DataManager.get("lowDb");
+  const db = DataManager.get("jsonDb");
 
   router.get("/user-route", (req, res) => {
     res.json(db.from("user").eq("userName", "Melissa_Souza").single());
