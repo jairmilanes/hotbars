@@ -39,7 +39,7 @@ program
         console.log("File watcher error:", err);
       });
 
-    const ts = spawn("tsc", ["--watch"], {
+    const ts = spawn("tsc", ["--watch", "-p", "./tsconfig.app.json"], {
       cwd: path.resolve(__dirname, ".."),
       shell: true,
     });

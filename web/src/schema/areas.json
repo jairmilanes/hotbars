@@ -3,8 +3,8 @@
   "name": "areas",
   "schema": {
     "id": "datatype.uuid",
-    "type": "unique:helpers.arrayElement:frontend,backend,full-stack",
-    "title": "lodash.startCase:prop.type",
+    "name": "unique:helpers.arrayElement:frontend,backend,full-stack",
+    "title": "lodash.startCase:prop.name",
     "description": "lorem.paragraph"
   }
 }

@@ -1,0 +1,9 @@
+{
+  "subject": "Confirm your email",
+  "beforeCallOut": [
+    "We are excited that you are interested in our platform.",
+    "Your registration is almost complete, we've sent you an email, please check your email and follow the instructions provided to complete your account set-up."
+  ],
+  "callOutText": "Confirm email",
+  "afterCallOut": ["Let us know if you have any questions.", "Cheers!"]
+}

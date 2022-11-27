@@ -4,7 +4,7 @@
   "schema": {
     "id": "datatype.uuid",
     "createdAt": "date.past",
-    "userId": "relation:users.id",
+    "userId": "one-to-one:users.id",
     "image": "image.cats",
     "title": "lorem.sentence",
     "content": "lorem.paragraphs:5"

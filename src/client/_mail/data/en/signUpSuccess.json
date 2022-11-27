@@ -1,0 +1,7 @@
+{
+  "sugject": "Welcome to our app!",
+  "title": "Hello {{user.username}}",
+  "beforeCallOut": ["Your account has been successfully activated"],
+  "callOutText": "Sign in",
+  "callOutUrl": "/sign-in"
+}

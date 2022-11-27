@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /*
  * For a detailed explanation regarding each configuration property and type check, visit:
  * https://jestjs.io/docs/configuration
  */
-import type { JestConfigWithTsJest } from 'ts-jest';
+import type { JestConfigWithTsJest } from "ts-jest";
+import { pathsToModuleNameMapper } from "ts-jest";
+import { compilerOptions } from "./tsconfig.json";
 
+// @ts-ignore
 const jestConfig: JestConfigWithTsJest = {
   preset: "ts-jest",
   // All imported modules in your tests should be mocked automatically
@@ -38,18 +42,16 @@ const jestConfig: JestConfigWithTsJest = {
   transform: {
     // '^.+\\.[tj]sx?$' to process js/ts with `ts-jest`
     // '^.+\\.m?[tj]sx?$' to process js/ts/mjs/mts with `ts-jest`
-    '^.+\\.tsx?$': [
-      'ts-jest',
+    "^.+\\.tsx?$": [
+      "ts-jest",
       {
-        tsconfig: '<rootDir>/tsconfig.test.json',
+        tsconfig: "<rootDir>/tsconfig.test.json",
       },
     ],
   },
 
   // A list of reporter names that Jest uses when writing coverage reports
-  coverageReporters: [
-    'clover', 'json', 'lcov', ['text', {skipFull: true}],
-  ],
+  coverageReporters: ["clover", "json", "lcov", ["text", { skipFull: true }]],
 
   // An object that configures minimum threshold enforcement for coverage results
   // coverageThreshold: undefined,
@@ -98,10 +100,9 @@ const jestConfig: JestConfigWithTsJest = {
   // ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  moduleNameMapper: {
-    '^hotbars$': '<rootDir>/src',
-    '^hotbars/(.*)$': '<rootDir>/src/$1',
-  },
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+    prefix: "<rootDir>/",
+  }),
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -207,4 +208,4 @@ const jestConfig: JestConfigWithTsJest = {
   // watchman: true,
 };
 
-export default jestConfig
+export default jestConfig;

@@ -1,5 +1,8 @@
 {
+  "env": "test",
   "styleMode": "scss",
-  "jsonDb": "tests/__data__/db/db.json",
-  "dbSchema": "tests/__data__/schema"
+  "logLevel": 0,
+  "source": "tests/__data__",
+  "jsonSchema": "schema",
+  "jsonDb": "db/db.json"
 }

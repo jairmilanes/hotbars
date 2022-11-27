@@ -2,53 +2,47 @@
 
 ## [1.6.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.3...hotbars-v1.6.4) (2022-11-18)
 
-
 ### Bug Fixes
 
-* typo under index export for auth strategy ([77f5c2c](https://github.com/jairmilanes/hotbars/commit/77f5c2c908be8da30e1134ec1df78495afd4debb))
+- typo under index export for auth strategy ([77f5c2c](https://github.com/jairmilanes/hotbars/commit/77f5c2c908be8da30e1134ec1df78495afd4debb))
 
 ## [1.6.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.2...hotbars-v1.6.3) (2022-11-18)
 
-
 ### Bug Fixes
 
-* improved documentation under auth and data ([7176f11](https://github.com/jairmilanes/hotbars/commit/7176f11680de3de302502ead8f7ed1c1c4b8351b))
-* rework of the fake command undergoing ([7176f11](https://github.com/jairmilanes/hotbars/commit/7176f11680de3de302502ead8f7ed1c1c4b8351b))
-* typos under auth strategies ([7176f11](https://github.com/jairmilanes/hotbars/commit/7176f11680de3de302502ead8f7ed1c1c4b8351b))
+- improved documentation under auth and data ([7176f11](https://github.com/jairmilanes/hotbars/commit/7176f11680de3de302502ead8f7ed1c1c4b8351b))
+- rework of the fake command undergoing ([7176f11](https://github.com/jairmilanes/hotbars/commit/7176f11680de3de302502ead8f7ed1c1c4b8351b))
+- typos under auth strategies ([7176f11](https://github.com/jairmilanes/hotbars/commit/7176f11680de3de302502ead8f7ed1c1c4b8351b))
 
 ## [1.6.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.1...hotbars-v1.6.2) (2022-11-18)
 
-
 ### Bug Fixes
 
-* **data:** fixed QueryBuilder insert and update methods not saving data to local file ([6c09f0f](https://github.com/jairmilanes/hotbars/commit/6c09f0f064f6239fd8491047e105bf61d2b980c7))
-* lodash-id augmentation typings with proper return values ([6c09f0f](https://github.com/jairmilanes/hotbars/commit/6c09f0f064f6239fd8491047e105bf61d2b980c7))
-* **test:** configured jest and added first few tests ([6c09f0f](https://github.com/jairmilanes/hotbars/commit/6c09f0f064f6239fd8491047e105bf61d2b980c7))
+- **data:** fixed QueryBuilder insert and update methods not saving data to local file ([6c09f0f](https://github.com/jairmilanes/hotbars/commit/6c09f0f064f6239fd8491047e105bf61d2b980c7))
+- lodash-id augmentation typings with proper return values ([6c09f0f](https://github.com/jairmilanes/hotbars/commit/6c09f0f064f6239fd8491047e105bf61d2b980c7))
+- **test:** configured jest and added first few tests ([6c09f0f](https://github.com/jairmilanes/hotbars/commit/6c09f0f064f6239fd8491047e105bf61d2b980c7))
 
 ## [1.6.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.0...hotbars-v1.6.1) (2022-11-17)
 
-
 ### Bug Fixes
 
-* fixed missing types during github action build ([881b7da](https://github.com/jairmilanes/hotbars/commit/881b7da5ffd02bbba4a555a37fe3ac6ebec8c0a5))
+- fixed missing types during github action build ([881b7da](https://github.com/jairmilanes/hotbars/commit/881b7da5ffd02bbba4a555a37fe3ac6ebec8c0a5))
 
 ## [1.6.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.5.1...hotbars-v1.6.0) (2022-11-17)
 
-
 ### Features
 
-* **fake:** added support for post generation actions afterEach and afterAll ([c489412](https://github.com/jairmilanes/hotbars/commit/c4894124f5bcd7f9de58ef5dcdb6ad5ab8909814))
-
+- **fake:** added support for post generation actions afterEach and afterAll ([c489412](https://github.com/jairmilanes/hotbars/commit/c4894124f5bcd7f9de58ef5dcdb6ad5ab8909814))
 
 ### Bug Fixes
 
-* **auth:** added configuration for greater auth logic customization ([cb4c0f0](https://github.com/jairmilanes/hotbars/commit/cb4c0f0231bb3e4557eec8e0921280dd15d4d195))
-* **auth:** fixed bugs on local authentication strategy ([67af68c](https://github.com/jairmilanes/hotbars/commit/67af68cbeb988f32c44a076cf07b86911a3f0a5f))
-* **auth:** fixed promise error when extending AbstractStrategy ([67af68c](https://github.com/jairmilanes/hotbars/commit/67af68cbeb988f32c44a076cf07b86911a3f0a5f))
-* **fake:** added afterAll post generation logic for fake data ([67af68c](https://github.com/jairmilanes/hotbars/commit/67af68cbeb988f32c44a076cf07b86911a3f0a5f))
-* **fake:** fixed relations not being properly mapped ([c489412](https://github.com/jairmilanes/hotbars/commit/c4894124f5bcd7f9de58ef5dcdb6ad5ab8909814))
-* **fake:** simplified configuration for rendom relations ([c489412](https://github.com/jairmilanes/hotbars/commit/c4894124f5bcd7f9de58ef5dcdb6ad5ab8909814))
-* **website:** general fixes to web configurations ([23026bc](https://github.com/jairmilanes/hotbars/commit/23026bc23387c390de89f8378179f1062cad7fe3))
+- **auth:** added configuration for greater auth logic customization ([cb4c0f0](https://github.com/jairmilanes/hotbars/commit/cb4c0f0231bb3e4557eec8e0921280dd15d4d195))
+- **auth:** fixed bugs on local authentication strategy ([67af68c](https://github.com/jairmilanes/hotbars/commit/67af68cbeb988f32c44a076cf07b86911a3f0a5f))
+- **auth:** fixed promise error when extending AbstractStrategy ([67af68c](https://github.com/jairmilanes/hotbars/commit/67af68cbeb988f32c44a076cf07b86911a3f0a5f))
+- **fake:** added afterAll post generation logic for fake data ([67af68c](https://github.com/jairmilanes/hotbars/commit/67af68cbeb988f32c44a076cf07b86911a3f0a5f))
+- **fake:** fixed relations not being properly mapped ([c489412](https://github.com/jairmilanes/hotbars/commit/c4894124f5bcd7f9de58ef5dcdb6ad5ab8909814))
+- **fake:** simplified configuration for rendom relations ([c489412](https://github.com/jairmilanes/hotbars/commit/c4894124f5bcd7f9de58ef5dcdb6ad5ab8909814))
+- **website:** general fixes to web configurations ([23026bc](https://github.com/jairmilanes/hotbars/commit/23026bc23387c390de89f8378179f1062cad7fe3))
 
 ## [1.5.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.5.0...hotbars-v1.5.1) (2022-11-16)
 
