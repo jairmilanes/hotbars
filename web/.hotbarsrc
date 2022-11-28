@@ -4,6 +4,12 @@
   "source": "src",
   "styles": "styles",
   "styleMode": "scss",
+  "mailer": {
+    "enabled": true
+  },
+  "smtpServer": {
+    "enabled": true
+  },
   "jsonDb": "db/db.json",
   "jsonServer": {
     "enabled": true

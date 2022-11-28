@@ -1,6 +1,6 @@
 import { logger } from "../../../services";
-import { Server, EventManager, ServerEvent } from "../../core";
-import { WatcherChange, WatcherEvent } from "../../types";
+import { Server, EventManager, ServerEvent, Config } from "../../core";
+import { Env, WatcherChange, WatcherEvent } from "../../types";
 
 const reloadAllClients = (type: WatcherEvent, change: WatcherChange) => {
   const { clients } = Server.ws;
@@ -24,6 +24,11 @@ const reloadAllClients = (type: WatcherEvent, change: WatcherChange) => {
 };
 
 export const hotReloadHandler = () => {
+  if (!Config.is("env", Env.Dev)) {
+    // no hot reloading needed in other environments
+    return;
+  }
+
   Server.app.ws("/ws/_connect", (ws) => {
     Server.ws.clients.add(ws);
 

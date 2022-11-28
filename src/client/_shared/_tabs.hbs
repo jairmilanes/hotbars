@@ -1,23 +1,30 @@
-<ul id="hbs-{{id}}-tabs" class="flex pt-2">
+<ul id="hbs-{{id}}-tabs" data-tabs-toggle="#hbs-{{id}}-content" role="tablist" class="flex flex-wrap -mb-px text-sm font-medium text-center">
   {{#each targets}}
     {{#if spacer}}
       <li class="grow"></li>
     {{else}}
-      <li class="mr-1 inline-flex items-center {{#if hidden}}hidden {{/if}}{{#if active}}rounded-t bg-white font-bold border-l border-r border-t{{else}}bg-slate-100{{/if}}">
-        <a href="/#" class="inline-block py-2 px-5" data-tabs-toggle="hbs-{{id}}">
+      <li class="mr-1 {{#if hidden}}hidden{{/if}}" role="presentation">
+        <button
+          id="hbs-{{id}}-content-tab"
+          data-tabs-target="#hbs-{{id}}-content"
+          class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+          type="button"
+          role="tab"
+          aria-controls="hbs-{{id}}-content"
+          aria-selected="false">
           {{text}}
-        </a>
+        </button >
         {{#if (isTruthy options)}}
           <button
             type="button"
-             data-dropdown-toggle="dropdown-{{id}}"
+             data-dropdown-toggle="hbs-dropdown-{{id}}"
              class="px-2 py-2 inline-flex items-center">
             <svg class="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </button>
           <!-- Dropdown menu -->
-          <div id="dropdown-{{id}}" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
+          <div id="hbs-dropdown-{{id}}" class="hidden text-left z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
             <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefault">
               {{#each options}}
                 <li>

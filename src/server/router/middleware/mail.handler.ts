@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Server } from "../../core";
+import { Config, Server } from "../../core";
 import { logger } from "../../../services";
 import { Mailer } from "../../services";
 
@@ -67,6 +67,10 @@ const sendEmailHandler = async (req: Request, res: Response) => {
 };
 
 export const configureMailTransport = () => {
+  if (!Config.enabled("mailer")) {
+    return;
+  }
+
   logger.debug("%p%P Mailer handler", 3, 0);
 
   Server.app.get("/_mail/verify", verifySettingsHandler);

@@ -53,7 +53,7 @@ const levelNames: { [level: number]: string } = {
   10: "method:delete:197",
   11: "method:options:75",
   12: "method:head:75",
-  13: ":params:111",
+  13: "method:params:111",
 };
 
 // @ts-ignore

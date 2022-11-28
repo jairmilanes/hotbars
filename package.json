@@ -20,8 +20,8 @@
     "watch": "node ./scripts/watch.js watch",
     "lint": "eslint src/ --fix",
     "format": "prettier . --write",
-    "bundle": "browserify ./src/client/_scripts/runtime.js -o ./src/client/_scripts/runtime.bundle.js --external=Handlebars --ignore=handlebars",
-    "uglify": "uglifyjs --compress --mangle --source-map --output ./src/client/_scripts/runtime.bundle.min.js ./src/client/_scripts/runtime.bundle.js",
+    "bundle": "browserify ./dist/client/_public/runtime.js -o ./dist/client/_public/runtime.bundle.js --external=Handlebars --ignore=Handlebars",
+    "uglify": "uglifyjs --compress --mangle --source-map --output ./dist/client/_public/runtime.bundle.min.js ./dist/client/_public/runtime.bundle.js",
     "build:runtime": "npm run bundle && npm run uglify",
     "postbuild": "npm run copy",
     "test": "jest --watch --runInBand --detectOpenHandles"

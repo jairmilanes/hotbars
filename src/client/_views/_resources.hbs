@@ -1,0 +1,79 @@
+{{#extend "_default"}}
+  {{#content "hero"}}
+    <section class="container mx-auto grid grid-cols-1">
+      {{> "_heading" size="h2" text="Resources" margin="0" }}
+    </section>
+  {{/content}}
+
+  {{#content "main"}}
+    <section class="container mx-auto grid grid-cols-1">
+      <div class="grid grid-cols-12 gap-0">
+        <div class="col-span-5 rounded-l-xl bg-white p-6 mb-6 flex flex-col">
+          {{> "_heading" size="h3" text="Endpoints" }}
+          {{> "_custom-routes"}}
+          <div class="my-1">&nbsp;</div>
+          {{> "_json-db"}}
+        </div>
+        <div class="col-span-7 flex flex-col rounded-r-xl bg-white mb-6 flex flex-col">
+          <div class="pt-6 px-6 rounded-tr-xl bg-slate-100">
+            <div class="flex py-2">
+              <div id="hbs-request-method-none"
+                   class="form-input rounded-l-full border-r-0 border-slate-100 mr-0 text-center font-bold text-slate-600 min-w-[80px]">
+                <span class="text-slate-300">*</span>
+              </div>
+              {{#each (i "_hbs.methods")}}
+                <div id="hbs-request-method-{{lowercase name}}"
+                     class="hbs-request-method hidden form-input rounded-l-full border-r-0 border-slate-100 mr-0 text-center font-bold min-w-[80px] {{color}} {{bg}}">
+                  {{name}}
+                </div>
+              {{/each}}
+              <div class="form-input border-slate-100 grow ml-0">
+                  <span id="hbs-request-resource">
+                      <span class="text-slate-300">{{_hbs.messages.noActiveResource}}</span>
+                  </span>
+              </div>
+              <button id="hbs-send-request" disabled class="rounded-r-full bg-rose-600 hover:bg-rose-500 text-white font-bold px-5">
+                Send
+              </button>
+            </div>
+            {{> "_tabs" (i "_hbs.tabs")}}
+          </div>
+          <div id="{{prefix "resource-content"}}" class="border-l border-t grow flex flex-col">
+            <div id="{{prefix "body-content"}}" class="hidden relative grow shrink-0" role="tabpanel">
+              <div id="ace-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 text-base"></div>
+              <div id="multipart-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 p-6">
+                <form id="hbs-multipart-form">
+                  <div id="hbs-multipart-form-data">
+                    {{#embed "_key-value-form-item"}}{{/embed}}
+                  </div>
+                  <div class="flex">
+                    <div class="grow"></div>
+                    {{#embed "_button" id="hbs-multipart-add" theme="default" color="rose" label="Add" rounded="lg"}}{{/embed}}
+                  </div>
+                </form>
+              </div>
+              <div id="binary-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 p-6">
+                <form id="hbs-multipart-binary-form">
+                  {{#embed "_input"  type="dropzone" name="key" label="Key"}}{{/embed}}
+                </form>
+              </div>
+            </div>
+            <div id="{{prefix "headers-content"}}" class="hidden" role="tabpanel">
+              HEADERS
+            </div>
+            <div id="{{prefix "response-content"}}" class="hidden" role="tabpanel">
+              RESPONSE
+            </div>
+            <div id="{{prefix "preview-content"}}" class="hidden" role="tabpanel">
+              PREVIEW
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {{/content}}
+
+  {{#content "scripts"}}
+      <script src="/public/resources.js"></script>
+  {{/content}}
+{{/extend}}

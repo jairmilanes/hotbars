@@ -1,16 +1,17 @@
 import express from "express";
-import expressWs, { Application } from "express-ws";
+import expressWs, { Application as WsApplication } from "express-ws";
 import * as ws from "ws";
 import http from "http";
 import { promisify } from "util";
 import { logger } from "../../services";
-import { ServerError, TrackedSocket } from "../types";
+import { RouteMap, ServerError, TrackedSocket } from "../types";
 import { Config, Renderer } from "../core";
+import { mapRoutes } from "../utils";
 
 export class Server {
   private static instance: Server;
 
-  private readonly _app: Application;
+  private readonly _app: WsApplication;
 
   private readonly _ws: ws.Server;
 
@@ -21,6 +22,8 @@ export class Server {
   serveURL?: string;
 
   closing = false;
+
+  routes: RouteMap[] = [];
 
   private constructor() {
     const ws = expressWs(express(), undefined, {
@@ -37,7 +40,10 @@ export class Server {
 
     this._app.set("view engine", `.${Config.get("extname")}`);
 
-    this._app.set("views", Config.relPath("views"));
+    this._app.set("views", [
+      Config.relPath("views"),
+      Config.get("serverDefaultViews"),
+    ]);
 
     this._ws = ws.getWss();
   }
@@ -53,8 +59,12 @@ export class Server {
     return this.instance;
   }
 
-  static get app(): Application {
+  static get app(): WsApplication {
     return this.instance._app;
+  }
+
+  static get routes(): RouteMap[] {
+    return this.instance.routes;
   }
 
   static get ws(): ws.Server {
@@ -67,6 +77,10 @@ export class Server {
 
   static listen(port?: number): Promise<void> {
     return this.instance.listen(port);
+  }
+
+  static mapRoutes() {
+    this.instance.routes = mapRoutes(Server.app._router.stack);
   }
 
   listen(port?: number): Promise<void> {

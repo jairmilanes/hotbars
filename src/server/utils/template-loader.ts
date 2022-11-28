@@ -1,6 +1,5 @@
 import { readFile } from "fs/promises";
 import { basename } from "./path-helpers";
-import { getServerViewPath } from "./server-view-path";
 
 const templateName = (templatePath: string, namespace?: string): string => {
   const ext = templatePath.split(".").pop();
@@ -15,25 +14,14 @@ const templateName = (templatePath: string, namespace?: string): string => {
 
 export const loadTemplate = async (
   path: string,
-  encoding: BufferEncoding = "utf-8",
-  fromServer?: boolean
+  encoding: BufferEncoding = "utf-8"
 ): Promise<{ name: string; template: string } | undefined> => {
-  try {
-    const realPath = !fromServer ? path : getServerViewPath(path);
+  const template = await readFile(path, {
+    encoding,
+  });
 
-    if (realPath) {
-      const template = await readFile(realPath, {
-        encoding,
-      });
-
-      return {
-        name: templateName(path),
-        template: template.toString(),
-      };
-    }
-  } catch (e) {
-    if (!fromServer) {
-      return loadTemplate(path, encoding, true);
-    }
-  }
+  return {
+    name: templateName(path),
+    template: template.toString(),
+  };
 };

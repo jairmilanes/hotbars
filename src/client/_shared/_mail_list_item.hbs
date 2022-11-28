@@ -1,0 +1,10 @@
+{{#block "_mail_list_item"}}
+  <div class="py-4 px-4 border-b border-gray-200">
+    <h4 class="text-slate-600 font-medium">{{default subject "No subject"}}</h4>
+    <div class="flex">
+      <small class="font-medium text-slate-600 grow">to:
+        {{get "to.value.0.address" this}}</small>
+      <small class="font-medium">{{date}}</small>
+    </div>
+  </div>
+{{/block}}

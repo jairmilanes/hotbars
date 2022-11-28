@@ -20,6 +20,7 @@ export const errorHandler = () => {
       }
 
       logger.error(`Server Error: ${req.statusCode} - "${req.url}"`);
+      logger.error(`%O`, err);
 
       res.status(500);
 

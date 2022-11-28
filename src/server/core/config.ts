@@ -142,6 +142,13 @@ export class Config implements Options {
   serverHelpers = resolvePath(__dirname, "..", "..", "client/_helpers");
   serverScripts = resolvePath(__dirname, "..", "..", "client/_scripts");
   serverStyles = resolvePath(__dirname, "..", "..", "client/_styles");
+  serverPublic = resolvePath(__dirname, "..", "..", "client/_public");
+  serverDefaultViews = resolvePath(
+    __dirname,
+    "..",
+    "..",
+    "client/_default_views"
+  );
 
   serverMailData = resolvePath(__dirname, "..", "..", "client/_mail/data");
   serverMailLayouts = resolvePath(
