@@ -1,7 +1,7 @@
 const array = require(`handlebars-helpers/lib/array`);
 const collection = require(`handlebars-helpers/lib/collection`);
 const comparison = require(`handlebars-helpers/lib/comparison`);
-const date = require(`handlebars-helpers/lib/date`);
+// const date = require(`handlebars-helpers/lib/date`);
 const html = require(`handlebars-helpers/lib/html`);
 const inflection = require(`handlebars-helpers/lib/inflection`);
 const math = require(`handlebars-helpers/lib/math`);
@@ -16,7 +16,7 @@ const helpers = [
   array,
   collection,
   comparison,
-  date,
+  // date,
   html,
   i18n,
   inflection,
@@ -36,4 +36,4 @@ helpers.forEach((helper) => {
   });
 });
 
-Handlebars.registerHelper(layouts);
+Handlebars.registerHelper(layouts(Handlebars));

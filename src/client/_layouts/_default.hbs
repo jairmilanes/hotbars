@@ -6,6 +6,7 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <title>Hotbars: User Api</title>
+    {{> hotbarsHead}}
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
     <script>
@@ -13,7 +14,7 @@
         darkMode: 'class',
         theme: {
           extend: {
-            textColor: "text-slate-600",
+            textColor: "text-slate-800",
             container: {
               center: true,
             },
@@ -27,9 +28,15 @@
   </head>
   <body class="bg-slate-200 dark:bg-neutral-800 text-slate-800 dark:text-slate-100 flex flex-col overflow-hidden h-full">
     {{> "_header"}}
-    {{#block "hero"}}{{/block}}
 
-    <main class="p-5 flex-auto overflow-y-scroll">
+    <main class="p-5 flex-auto flex flex-col overflow-y-scroll">
+      <section class="container mx-auto grid grid-cols-1 py-7">
+        {{#if title}}
+          {{> "_heading" size="h2" text=title margin="0" }}
+        {{/if}}
+        {{#block "hero"}}{{/block}}
+      </section>
+
       {{#block "main"}}{{/block}}
     </main>
 
@@ -37,6 +44,14 @@
 
     {{#block "footer"}}{{/block}}
 
-    {{#block "scripts"}}{{/block}}
+    {{> hotbarsFooter}}
+
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js"></script>
+
+    {{#block "scripts"}}
+
+    {{/block}}
+    <script src="/public/common.js"></script>
   </body>
 </html>

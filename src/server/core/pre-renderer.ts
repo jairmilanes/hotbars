@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import glob from "glob";
 import prettier from "prettier";
 import uglify from "uglify-js";
-import { HandlebarsWax } from "../types";
+import { Env, HandlebarsWax } from "../types";
 import { logger } from "../../services";
 import { configureHandlebars } from "../services";
 import { HandlebarsException } from "../exceptions";
@@ -32,7 +32,7 @@ export class PreRenderer {
 
   private _template = this.template;
 
-  private prod = Config.get("env") === "production";
+  private prod = Config.get("env") === Env.Prod;
 
   static create(): void {
     logger.debug(`%p%P Pre-renderer`, 1, 1);
@@ -125,6 +125,8 @@ export class PreRenderer {
       ? Config.fullGlobPath("serverPrecompile", "hbs")
       : Config.fullGlobPath("precompile");
 
+    console.log("resolveTemplates", isSystem, path);
+
     return this.resolve(path);
   }
 
@@ -133,6 +135,7 @@ export class PreRenderer {
       ? Config.fullGlobPath("serverShared", "hbs")
       : Config.fullGlobPath("shared");
 
+    console.log("resolvePartials", isSystem, path);
     return this.resolve(path);
   }
 

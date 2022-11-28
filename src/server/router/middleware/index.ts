@@ -23,6 +23,7 @@ export const mountRoutes = () => {
   requestLoggerHandler();
   authenticateHandler();
   multipartDataHandler();
+  dashboardHandler();
   jsonDbHandler();
   smtpMailHandlers();
   configureMailTransport();
@@ -31,7 +32,6 @@ export const mountRoutes = () => {
   errorPageHandler();
   generateViewHandlers();
   createUserRouter();
-  dashboardHandler();
   fallbackHandler();
   errorHandler();
 };

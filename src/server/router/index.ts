@@ -44,5 +44,7 @@ export class Router {
 
     logger.info(`%p%P Registering handlers...`, 1, 1);
     mountRoutes();
+
+    Server.mapRoutes();
   }
 }

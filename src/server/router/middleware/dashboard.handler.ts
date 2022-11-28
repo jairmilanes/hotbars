@@ -1,10 +1,12 @@
-import { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { Config, Server } from "../../core";
-import { getServerViewPath } from "../../utils/server-view-path";
 import { logger } from "../../../services";
+import { joinPath } from "../../utils";
 
 export const dashboardHandler = () => {
-  Server.app.param(
+  const dashboardRouter = express.Router();
+
+  dashboardRouter.param(
     "serverPage",
     (req: Request, res: Response, next: NextFunction) => {
       if (req.url.startsWith("/_hotbars") && !req.params.serverPage) {
@@ -14,23 +16,25 @@ export const dashboardHandler = () => {
     }
   );
 
-  Server.app.get(
-    "/_hotbars/:serverPage",
-    async (req: Request, res: Response, next: NextFunction) => {
-      const viewPath = getServerViewPath(req.params.serverPage);
+  dashboardRouter.get("/:serverPage", async (req: Request, res: Response) => {
+    const { serverPage } = req.params;
+    const prefixedName = serverPage.startsWith("_")
+      ? serverPage
+      : `_${serverPage}`;
+    // use absolute path for dashboard views
+    const absolute = joinPath(Config.get("serverViews"), prefixedName);
 
-      if (!viewPath) {
-        return next();
-      }
+    return res.render(absolute, {
+      lang: "en",
+      url: req.url,
+      ...req.query,
+      ...req.params,
+      routes: Server.routes,
+      config: Config.get(),
+    });
+  });
 
-      return res.render(viewPath, {
-        url: req.url,
-        ...req.query,
-        ...req.params,
-        config: Config.get(),
-      });
-    }
-  );
+  Server.app.use("/_hotbars", dashboardRouter);
 
   logger.debug("%p%P Hotbars dashboard", 3, 0);
   logger.debug("%p%P [GET]/_hotbars/:serverPage", 5, 0);

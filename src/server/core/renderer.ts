@@ -92,15 +92,20 @@ export class Renderer {
       ...(options || {}),
     };
 
-    const html = _.flow([
-      (html) => this.compile(html, context),
-      (html) => this.inject(html as string),
-      (html) => this.compile(html, context),
-    ])(body);
+    try {
+      const html = _.flow([
+        (html) => this.compile(html, context),
+        (html) => this.inject(html as string),
+        (html) => this.compile(html, context),
+      ])(body);
 
-    logger.debug(`%p%P Page compiled.`, 1, 1);
+      logger.debug(`%p%P Page compiled.`, 1, 1);
 
-    return html || "";
+      return html || "";
+    } catch (e) {
+      logger.error("Failed to compile %O", e);
+      return "";
+    }
   }
 
   private compile(content: string, context = {}) {

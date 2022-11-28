@@ -4,6 +4,24 @@
     "watch": "Watching",
     "endpoints": "Endpoints"
   },
+  "menu": [
+    {
+      "title": "Home",
+      "path": "/_hotbars/_index"
+    },
+    {
+      "title": "Resources",
+      "path": "/_hotbars/_resources"
+    },
+    {
+      "title": "Data",
+      "path": "/_hotbars/_data"
+    },
+    {
+      "title": "Emails",
+      "path": "/_hotbars/_emails"
+    }
+  ],
   "methods": [
     { "name": "GET", "color": "text-lime-700", "bg": "bg-lime-100" },
     { "name": "POST", "color": "text-teal-700", "bg": "bg-teal-100" },
@@ -15,7 +33,7 @@
     "id": "resource",
     "targets": [
       {
-        "id": "request-body",
+        "id": "body",
         "hidden": true,
         "active": false,
         "text": "Body",
@@ -42,19 +60,19 @@
         "spacer": true
       },
       {
-        "id": "request-response",
+        "id": "response",
         "hidden": false,
         "active": true,
         "text": "Response"
       },
       {
-        "id": "request-preview",
+        "id": "preview",
         "hidden": false,
         "active": false,
         "text": "Preview"
       },
       {
-        "id": "request-headers",
+        "id": "headers",
         "hidden": false,
         "active": false,
         "text": "Headers"
