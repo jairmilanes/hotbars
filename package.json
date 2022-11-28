@@ -1,7 +1,7 @@
 {
   "name": "@jmilanes/hotbars",
   "description": "A modern hot reloading server highly configurable using express and handlebars for simple and fast website and applications development.",
-  "version": "1.6.4",
+  "version": "1.7.0",
   "main": "dist/index.js",
   "bin": {
     "hotbars": "dist/cli.js"
