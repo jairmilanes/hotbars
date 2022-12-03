@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.1...hotbars-v1.7.2) (2022-12-03)
+
+
+### Bug Fixes
+
+* general improvements app wide ([aad0f2a](https://github.com/jairmilanes/hotbars/commit/aad0f2a071bff74af98767dffc342079060003ed))
+
 ## [1.7.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.0...hotbars-v1.7.1) (2022-11-28)
 
 
