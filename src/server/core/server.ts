@@ -5,7 +5,7 @@ import http from "http";
 import { promisify } from "util";
 import { logger } from "../../services";
 import { RouteMap, ServerError, TrackedSocket } from "../types";
-import { Config, Renderer } from "../core";
+import { Config, DashboardConfig, Renderer } from "../core";
 import { mapRoutes } from "../utils";
 
 export class Server {
@@ -19,7 +19,7 @@ export class Server {
 
   private connections = new Set<TrackedSocket>();
 
-  serveURL?: string;
+  serveURL: string;
 
   closing = false;
 
@@ -42,10 +42,12 @@ export class Server {
 
     this._app.set("views", [
       Config.relPath("views"),
-      Config.get("serverDefaultViews"),
+      DashboardConfig.fullPath("default_views"),
     ]);
 
     this._ws = ws.getWss();
+
+    this.serveURL = this.resolveServerUrl(Config.get("port"));
   }
 
   static create(): Server {
@@ -71,7 +73,7 @@ export class Server {
     return this.instance._ws;
   }
 
-  static get url(): string | undefined {
+  static get url(): string {
     return this.instance.serveURL;
   }
 

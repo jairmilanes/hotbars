@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { Config, Server } from "../../core";
 import { logger } from "../../../services";
+import { Config, Server } from "../../core";
 import { Mailer } from "../../services";
+import { FakeSMPTServer } from "../../smtp";
 
 const verifySettingsHandler = async (
   req: Request,

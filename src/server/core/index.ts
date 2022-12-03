@@ -1,4 +1,5 @@
 export * from "./config";
+export * from "./dashboard-config";
 export * from "./server";
 export * from "./renderer";
 export * from "./pre-renderer";

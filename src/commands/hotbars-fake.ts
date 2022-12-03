@@ -3,6 +3,7 @@
 
 // import "../paths";
 import { Command, Option, Argument } from "commander";
+import * as _ from "lodash";
 import { Config } from "../server/core";
 import { generateDb } from "../fake";
 
@@ -33,13 +34,18 @@ program
     new Option("--verbose", "Will log more data than usual.").default(false)
   )
   .action((dest, argv) => {
-    Config.create({
-      logLevel: argv.logLevel,
-      source: argv.sourceDir,
-      jsonSchema: argv.schemaDir,
-      jsonDb: dest,
-      verbose: argv.verbose,
-    });
+    Config.create(
+      _.omitBy(
+        {
+          logLevel: argv.logLevel,
+          source: argv.sourceDir,
+          jsonSchema: argv.schemaDir,
+          jsonDb: dest,
+          verbose: argv.verbose,
+        },
+        _.isNil
+      )
+    );
 
     generateDb();
   });

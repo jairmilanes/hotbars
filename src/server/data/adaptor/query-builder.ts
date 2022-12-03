@@ -34,7 +34,11 @@ export abstract class QueryBuilder {
     }
   }
 
+  abstract collections(): Promise<string[]>;
+
   abstract from(collection: string): QueryBuilder;
+
+  abstract size(): Promise<number>;
 
   select(...fdls: string[]) {
     this.fields = fdls;
@@ -136,8 +140,6 @@ export abstract class QueryBuilder {
   ): CollectionChain<any>;
 
   protected abstract exec(): Promise<any>;
-
-  abstract size(): number;
 
   abstract insert(record: Record<string, any>): Promise<Record<string, any>>;
 

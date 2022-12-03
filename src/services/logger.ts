@@ -64,7 +64,7 @@ export const logger: Logger = {
       level = _.get(createLogger, "_startLevel", 1);
     }
 
-    let enabledStr = "hotbars,hotbars:*";
+    let enabledStr = "hotbars";
 
     for (let i = 1; i <= 4; i++) {
       if (i >= level) {

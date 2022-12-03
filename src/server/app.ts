@@ -1,7 +1,12 @@
 import open from "open";
 import { logger } from "../services";
-import { Browser } from "./types";
-import { BootstrapData, Mailer, SassCompiler } from "./services";
+import { Browser, Env } from "./types";
+import {
+  BootstrapData,
+  Mailer,
+  SassCompiler,
+  BrowserifyCompiler,
+} from "./services";
 import {
   Server,
   Config,
@@ -10,6 +15,7 @@ import {
   EventManager,
   ServerEvent,
   PreRenderer,
+  DashboardConfig,
 } from "./core";
 import { Router } from "./router";
 import { AuthManager } from "./auth";
@@ -18,15 +24,21 @@ import { Controllers } from "./controllers";
 import { FakeSMPTServer } from "./smtp";
 
 export class App {
-  readonly watcher: Watcher;
+  readonly watcher?: Watcher;
+  readonly dashboardWatcher?: Watcher;
 
   readonly router: Router;
 
   closing = false;
 
   constructor() {
-    logger.log(`Configuring ${Config.get("env")} server:`);
-    logger.log(`%p%P Default language ${Config.get("currentLanguage")}`, 1, 1);
+    logger.log(`Initializing ${Config.get("env")} server:`);
+
+    if (Config.enabled("language")) {
+      logger.info("%p%P Languages enabled", 1, 1);
+      logger.info(`%p%P defaults to %s`, 3, 0, Config.get("currentLanguage"));
+    }
+
     EventManager.create();
     Controllers.create();
     Renderer.create();
@@ -34,10 +46,19 @@ export class App {
     Mailer.create();
     AuthManager.create();
     FakeSMPTServer.create();
+    BrowserifyCompiler.create();
     SassCompiler.create();
+
+    if (Config.is("env", Env.Dev)) {
+      this.watcher = new Watcher(Config.get());
+    }
+
+    if (DashboardConfig.get("dev")) {
+      this.dashboardWatcher = new Watcher(DashboardConfig.get());
+    }
+
     Server.create();
 
-    this.watcher = new Watcher();
     this.router = new Router();
   }
 
@@ -52,15 +73,22 @@ export class App {
       await DataManager.create("jsonDb");
     }
 
-    SassCompiler.compile();
+    if (Config.is("env", Env.Dev)) {
+      SassCompiler.compile();
+
+      await BrowserifyCompiler.compileUserRuntime();
+      await BrowserifyCompiler.compileDashboardRuntime();
+    }
 
     this.router.configure();
 
     EventManager.i.emit(ServerEvent.INIT);
 
-    await this.watcher.start();
+    await this.watcher?.start();
+    await this.dashboardWatcher?.start();
 
-    if (Config.enabled("smtpServer")) {
+    // SMTP Server only works in dev
+    if (Config.is("env", Env.Dev) && Config.enabled("smtpServer")) {
       FakeSMPTServer.listen();
     }
 
@@ -75,7 +103,7 @@ export class App {
     this.closing = true;
     logger.warn(force ? "Forcefully shutting down..." : "Shutting down...");
 
-    await this.watcher.close();
+    await this.watcher?.close();
     logger.debug("%p Watcher down", 2);
 
     try {

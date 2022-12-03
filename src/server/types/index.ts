@@ -6,6 +6,8 @@ import { NextFunction, Request, Response } from "express";
 import { ControllerAbstract } from "../controllers";
 import { CorsOptions } from "cors";
 import { SessionOptions } from "express-session";
+import { ParamsDictionary } from "express-serve-static-core";
+import { ParsedQs } from "qs";
 
 export enum Env {
   Prod = "production",
@@ -37,6 +39,24 @@ export type AnymatchFn = (testString: string) => boolean;
 export type AnymatchPattern = string | RegExp | AnymatchFn;
 
 export type JsonDb = Record<string, Record<string, any>[]>;
+
+export interface RequestEnhanced extends Request {
+  original: {
+    params: ParamsDictionary;
+    query: ParsedQs;
+  };
+}
+
+export interface EnhancedJsonDbPayload {
+  items: Record<string, any>[];
+  total: number;
+  pages: number;
+  page: number;
+  next: number | null;
+  prev: number | null;
+  from: number | null;
+  to: number | null;
+}
 
 export interface UploadField {
   name: string;
@@ -78,14 +98,17 @@ export interface LanguageConfig extends OptionalFeature {
   default: string;
 }
 
+export interface SMTPConfig {
+  port: number;
+  host: string;
+  from: string;
+  username: string;
+  password: string;
+}
+
 export interface MailerConfig extends OptionalFeature {
-  smtp: {
-    port: number;
-    host: string;
-    from: string;
-    username: string;
-    password: string;
-  };
+  smtp?: SMTPConfig;
+  source: string;
   data: string;
   partials: string;
   layouts: string;
@@ -117,46 +140,28 @@ export type HTTPProtocol = "http" | "https";
 export type StylesType = "css" | "scss";
 
 export interface PrivateOptions {
-  root: string;
   watch: string[];
-  serverViews: string;
-  serverPartials: string;
-  serverScripts: string;
-  serverStyles: string;
 }
 
 export interface CliOptions {
+  dev?: boolean;
   env?: string;
   port?: number;
+  source?: string;
+  jsonSchema?: string;
+  jsonDb?: string;
   socketPort?: number;
   configName?: string;
   logLevel?: number;
   verbose?: boolean;
-  source?: string;
-  jsonSchema?: string;
-  jsonDb?: string;
+  root?: string;
 }
 
-export interface Options extends PrivateOptions {
+export interface BaseOptions extends PrivateOptions {
   env: string;
-  port: number;
-  socketPort: number;
-  configName: string;
-  logLevel: number;
-  verbose: boolean;
-  encoding: BufferEncoding;
-  activeData: boolean;
-  protocol: HTTPProtocol;
-  host: string;
-  extname: string;
   language: LanguageConfig;
-  mailer: MailerConfig;
+  extname: string;
   source: string;
-  bootstrapName: string;
-  routesConfigName: string;
-  jsonServer?: JsonServerConfig;
-  jsonSchema: string;
-  jsonDb?: string;
   data: string;
   helpers: string;
   layouts: string;
@@ -167,19 +172,37 @@ export interface Options extends PrivateOptions {
   controllers: string;
   styleMode: StylesType;
   styles: string;
+  scripts: string;
   public: string;
-  partialsOptions: any;
+  mailer: MailerConfig;
   ignore: string[];
   ignorePattern?: RegExp;
+  dev: boolean;
+  serverUrl: string;
+}
+
+export interface Options extends BaseOptions {
+  configName: string;
+  socketPort: number;
+  logLevel: number;
+  logFilePath: string;
+  verbose: boolean;
+  browser?: Browser;
+  encoding: BufferEncoding;
+  activeData: boolean;
+  protocol: HTTPProtocol;
+  host: string;
+  bootstrapName: string;
+  routesConfigName: string;
+  jsonSchema: string;
+  jsonDb?: string;
+  partialsOptions: any;
+  jsonServer?: JsonServerConfig;
   smtpServer: SMTPServerConfig;
   uploads: UploadsConfig;
   cors: CorsConfig;
   auth?: AuthConfig;
-  dev: boolean;
-  serverUrl: string;
   autoroute: AutoRouteConfig;
-  logFilePath: string;
-  browser?: Browser;
   [key: string]: any;
 }
 
@@ -267,6 +290,8 @@ export enum WatcherChangeType {
   Routes = "routes",
   Controller = "controller",
   PreCompiled = "precompiled",
+  UserRuntime = "userRuntime",
+  DashboardRuntime = "dashboardRuntime",
   Email = "email",
   Page = "page",
   Script = "script",

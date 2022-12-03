@@ -8,6 +8,7 @@ import {
   SMTPServerDataStream,
   SMTPServerSession,
 } from "smtp-server";
+import { JsonServerRouter } from "json-server";
 import { simpleParser, Headers, ParsedMail, HeaderValue } from "mailparser";
 import { logger } from "../../services";
 import { SMTPServerException } from "../exceptions";
@@ -15,6 +16,8 @@ import { Config } from "../core";
 import { SMTPServerConfig } from "../types";
 import JsonDbAdaptor from "../data/adaptor/jsonDb.adaptor";
 import { createJsonRouter } from "../services";
+import { DataManager } from "../data";
+import { emails } from "./dummy-db";
 
 export class FakeSMPTServer {
   private static instance: FakeSMPTServer;
@@ -25,19 +28,26 @@ export class FakeSMPTServer {
 
   private readonly _db: JsonDbAdaptor;
 
-  private router: any;
+  private dbName = "smtpDb";
+
+  private router: JsonServerRouter<any>;
 
   private readonly config: SMTPServerConfig;
 
   constructor() {
     this.config = Config.get("smtpServer");
-    logger.debug(`%p%P Fake SMTP server %O`, 1, 1, this.config);
+    logger.info(`%p%P SMTP server`, 1, 1);
 
-    this.router = createJsonRouter({
-      mails: [],
-    });
+    this.router = createJsonRouter(
+      {
+        mails: emails,
+      },
+      this.dbName
+    );
 
     this._db = new JsonDbAdaptor(this.router.db, "mails");
+
+    DataManager.register(this.dbName, this._db);
 
     this.server = new SMTPServer({
       size: 1024,
@@ -71,7 +81,7 @@ export class FakeSMPTServer {
     );
   }
 
-  static get router() {
+  static get router(): JsonServerRouter<any> {
     return this.instance.router;
   }
 
@@ -168,8 +178,6 @@ export class FakeSMPTServer {
 
     await this._db.insert(mail);
 
-    this._db.size();
-
     await this.cleanUp();
 
     callback();
@@ -177,7 +185,7 @@ export class FakeSMPTServer {
 
   private async cleanUp() {
     // Clean up excess messages
-    const diff = this._db.size() - this.config.emailsLimit;
+    const diff = (await this._db.size()) - this.config.emailsLimit;
 
     if (diff > 0) {
       const all = await this._db.all();

@@ -41,7 +41,7 @@ export abstract class JsonDbAuthStrategy extends LocalAuthStrategyAbstract {
   }
 
   async confirmEmail(username: string): Promise<User> {
-    const usersDb = DataManager.get().from(
+    const usersDb = DataManager.get("jsonDb").from(
       Config.get<string>("auth.usersTable")
     );
 

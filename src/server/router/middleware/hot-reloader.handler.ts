@@ -2,7 +2,7 @@ import { logger } from "../../../services";
 import { Server, EventManager, ServerEvent, Config } from "../../core";
 import { Env, WatcherChange, WatcherEvent } from "../../types";
 
-const reloadAllClients = (type: WatcherEvent, change: WatcherChange) => {
+const reloadAllClients = (change: WatcherChange) => {
   const { clients } = Server.ws;
 
   logger.debug(`%p%P reloading ${clients.size} clients...`, 1, 0);

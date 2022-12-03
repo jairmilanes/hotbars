@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { logger } from "../../services";
-import { SafeObject, UserBootstrapCallback } from "../types";
+import { Options, SafeObject, UserBootstrapCallback } from "../types";
 import { joinPath } from "../utils";
 import { Config } from "../core";
 import { loadFile } from "./file-loader";
@@ -11,7 +11,7 @@ export class BootstrapData {
   static async load() {
     logger.info(`%p%P User data`, 1, 1);
 
-    const config = Config.get();
+    const config = Config.get<Options>();
     const extensions = [".js", ".cjs"];
     const bootstrapFile = joinPath(config.source, config.bootstrapName);
     const userBootstrapCallback = loadFile<UserBootstrapCallback>(

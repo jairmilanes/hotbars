@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import { Config, Server } from "../../core";
+import { Config, Server, DashboardConfig } from "../../core";
 import { logger } from "../../../services";
 import { joinPath } from "../../utils";
 
@@ -22,7 +22,7 @@ export const dashboardHandler = () => {
       ? serverPage
       : `_${serverPage}`;
     // use absolute path for dashboard views
-    const absolute = joinPath(Config.get("serverViews"), prefixedName);
+    const absolute = DashboardConfig.fullPath("views", prefixedName);
 
     return res.render(absolute, {
       lang: "en",
@@ -31,6 +31,7 @@ export const dashboardHandler = () => {
       ...req.params,
       routes: Server.routes,
       config: Config.get(),
+      dashboard: DashboardConfig.get(),
     });
   });
 

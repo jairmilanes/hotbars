@@ -97,10 +97,12 @@ export const generateData = (schemasList: SchemaConfig[]): GeneratedData => {
 };
 
 export const generateDb = (): void => {
-  const schemaDir = Config.relGlobPath("jsonSchema", "{js,json}");
+  const schemaDir = Config.relGlobPath("jsonSchema");
   const paths = glob.sync(schemaDir);
 
   logger.log("Begining schema mapping...");
+  logger.debug("%p%P Source path %s", 1, 1, schemaDir);
+  logger.debug("%p%P %O", 1, 1, paths);
 
   const data = generateData(
     _.map(
