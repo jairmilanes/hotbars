@@ -25,8 +25,8 @@ export const mountRoutes = () => {
   multipartDataHandler();
   dashboardHandler();
   jsonDbHandler();
-  smtpMailHandlers();
   configureMailTransport();
+  smtpMailHandlers();
   partialsHandler();
   notFoundPageHandler();
   errorPageHandler();

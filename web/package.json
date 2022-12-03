@@ -5,7 +5,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "hotbars serve -D",
-    "fake": "hotbars fake"
+    "fake": "hotbars fake",
+    "bundle": "browserify ../dist/client/_public/tailwind.js -o ../dist/client/_public/tailwind.bundle.js --external=Handlebars --ignore=Handlebars",
+    "uglify": "uglifyjs --compress --mangle --source-map --output ../dist/client/_public/tailwind.bundle.min.js ../dist/client/_public/tailwind.bundle.js",
+    "build:tailwind": "npm run bundle && npm run uglify"
   },
   "author": "Jair Milanes Junior",
   "license": "MIT",

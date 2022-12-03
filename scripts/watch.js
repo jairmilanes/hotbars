@@ -31,9 +31,13 @@ program
       .on("unlinkDir", copy)
       .on("ready", () => {
         console.log("File watcher ready...", "src/client", distPath);
-        copyFiles(["src/client/**/*", distPath], { up: 1 }, () => {
-          console.info(`First copy successful!`);
-        });
+        copyFiles(
+          ["src/client/**/*", distPath],
+          { up: 1, exclude: "src/client/_public/bundles/**/*" },
+          () => {
+            console.info(`First copy successful!`);
+          }
+        );
       })
       .on("error", function (err) {
         console.log("File watcher error:", err);

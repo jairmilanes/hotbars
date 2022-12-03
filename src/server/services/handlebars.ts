@@ -4,9 +4,10 @@ import handlebarsLayouts from "handlebars-layouts";
 import hbsHelpers from "handlebars-helpers";
 import * as customHelpers from "../helpers";
 import { HandlebarsConfigureResponse } from "../types";
-import { Config } from "../core";
-import { loadData } from "../utils";
+import { Config, DashboardConfig } from "../core";
+import { loadData, loadDashboardData } from "../utils";
 import { BootstrapData } from "./bootstrap";
+import { logger } from "../../services";
 
 export const configureHandlebars = (
   runtime?: typeof Handlebars
@@ -16,22 +17,25 @@ export const configureHandlebars = (
 
   hbsHelpers({ handlebars });
 
+  logger.info(`%p%P Renderer`, 1, 1);
+
   try {
     const instance = handlebarsWax(handlebars)
+      .data(loadData("data"))
+      .data(BootstrapData.get())
       .helpers(handlebarsLayouts)
       .helpers(customHelpers)
       .helpers(Config.fullGlobPath("helpers"))
-      .data(loadData("data", "json"))
-      .data(BootstrapData.get())
       .partials(Config.fullGlobPath("layouts"), partialsOptions)
       .partials(Config.fullGlobPath("partials"), partialsOptions)
+      .partials(Config.fullGlobPath("shared"), partialsOptions)
       // Server spacific files
-      .data(Config.fullGlobPath("serverData", "json"))
-      .helpers(Config.fullGlobPath("serverHelpers", "js"))
-      .partials(Config.fullGlobPath("serverLayouts", "hbs"))
-      .partials(Config.fullGlobPath("serverPartials", "hbs"))
-      .partials(Config.fullGlobPath("serverShared", "hbs"))
-      .partials(Config.fullGlobPath("serverViews", "hbs"));
+      .data(loadDashboardData("data"))
+      .helpers(DashboardConfig.fullGlobPath("helpers"))
+      .partials(DashboardConfig.fullGlobPath("layouts"))
+      .partials(DashboardConfig.fullGlobPath("partials"))
+      .partials(DashboardConfig.fullGlobPath("shared"))
+      .partials(DashboardConfig.fullGlobPath("views"));
 
     return { instance, handlebars };
   } catch (e) {

@@ -1,0 +1,5 @@
+{
+  "language": null,
+  "title": "Handlebars Hot Reloading Server",
+  "description": "Simple development server for Handlebars with hot reloading and css injection."
+}

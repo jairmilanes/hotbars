@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import express from "express";
 import { logger } from "../../../services";
 import { loadFile } from "../../services";
-import { Env, UserRoutesCallback } from "../../types";
+import { Env, UserRoutesCallback, WatcherChange } from "../../types";
 import { Config, EventManager, Server, ServerEvent } from "../../core";
 import { replaceRouter } from "../replace";
 import { mapRoutes } from "../../utils";
@@ -53,7 +53,11 @@ export const createUserRouter = () => {
   EventManager.i.on(ServerEvent.ROUTES_CHANGED, reCreateUserRoutes);
 };
 
-export const reCreateUserRoutes = () => {
+export const reCreateUserRoutes = (data?: WatcherChange) => {
   logger.log("%P Reloading user routes...", 4);
   replaceRouter(USER_ROUTE_NAME, createRouter());
+
+  if (data) {
+    EventManager.i.emit(ServerEvent.HOT_RELOAD, data);
+  }
 };

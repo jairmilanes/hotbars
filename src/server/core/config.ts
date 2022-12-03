@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as _ from "lodash";
-import get from "lodash/get";
-import set from "lodash/set";
 import { loadFile } from "../services";
 import { joinPath, resolvePath } from "../utils";
 import {
@@ -15,20 +13,19 @@ import {
   JsonServerConfig,
   LanguageConfig,
   MailerConfig,
-  OptionalFeature,
   Options,
-  SafeAny,
-  SafeObject,
   SMTPServerConfig,
-  SMTPServerCredentials,
   StylesType,
   UploadsConfig,
 } from "../types";
 import { initLogger } from "../../services";
+import { ConfigManager } from "../services/config-manager";
 
 const moduleName = "hotbars";
 
-export class Config implements Options {
+export class Config extends ConfigManager<Options> implements Options {
+  dev = false;
+  root = process.cwd();
   env = Env.Dev;
   port = 3000;
   socketPort = 5001;
@@ -58,12 +55,11 @@ export class Config implements Options {
   styleMode = "css" as StylesType;
   styles = "styles";
   public = "public";
+  scripts = "scripts";
   partialsOptions = {};
   ignore: string[] = [];
-  dev = false;
   serverUrl = "";
   ignorePattern?: RegExp;
-  root = process.cwd();
   language: LanguageConfig = {
     enabled: false,
     languages: ["en"],
@@ -78,10 +74,11 @@ export class Config implements Options {
       username: "",
       password: "",
     },
-    data: "email/data",
-    partials: "email/partials",
-    layouts: "email/layouts",
-    templates: "email/templates",
+    source: "email",
+    data: "data",
+    partials: "partials",
+    layouts: "layouts",
+    templates: "templates",
   };
   smtpServer: SMTPServerConfig = {
     enabled: false,
@@ -132,55 +129,21 @@ export class Config implements Options {
     methods: ["get"],
     login: ["get", "post"],
   };
-  serverRoot = resolvePath(__dirname, "..", "..", "..");
-  serverData = resolvePath(__dirname, "..", "..", "client/_data");
-  serverPrecompile = resolvePath(__dirname, "..", "..", "client/_precompile");
-  serverShared = resolvePath(__dirname, "..", "..", "client/_shared");
-  serverLayouts = resolvePath(__dirname, "..", "..", "client/_layouts");
-  serverPartials = resolvePath(__dirname, "..", "..", "client/_partials");
-  serverViews = resolvePath(__dirname, "..", "..", "client/_views");
-  serverHelpers = resolvePath(__dirname, "..", "..", "client/_helpers");
-  serverScripts = resolvePath(__dirname, "..", "..", "client/_scripts");
-  serverStyles = resolvePath(__dirname, "..", "..", "client/_styles");
-  serverPublic = resolvePath(__dirname, "..", "..", "client/_public");
-  serverDefaultViews = resolvePath(
-    __dirname,
-    "..",
-    "..",
-    "client/_default_views"
-  );
-
-  serverMailData = resolvePath(__dirname, "..", "..", "client/_mail/data");
-  serverMailLayouts = resolvePath(
-    __dirname,
-    "..",
-    "..",
-    "client/_mail/layouts"
-  );
-  serverMailPartials = resolvePath(
-    __dirname,
-    "..",
-    "..",
-    "client/_mail/partials"
-  );
-  serverMailTemplates = resolvePath(
-    __dirname,
-    "..",
-    "..",
-    "client/_mail/templates"
-  );
   watch: string[] = [];
 
-  private customProps: SafeObject = {};
-
-  private static instance: Readonly<Config>;
+  static instance: Readonly<Config>;
 
   private constructor(argv: CliOptions) {
+    super();
     const userConfig = loadFile<Partial<Options>>(
       argv.configName || this.configName,
-      true
+      true,
+      undefined,
+      argv.root
     );
-    const options = _.merge(userConfig, argv);
+
+    const options = _.assign({}, userConfig, argv);
+
     const production = options.env === Env.Prod;
 
     const cors: CorsConfig = {
@@ -189,7 +152,7 @@ export class Config implements Options {
       credentials: production,
     };
 
-    _.merge(this, { cors }, options);
+    _.merge(this, options, { cors });
 
     /* if (this.env === Env.Dev && !this.browser) {
       this.browser =
@@ -201,26 +164,31 @@ export class Config implements Options {
     }
 
     if (this.mailer.enabled) {
-      if (process.env.EMAIL_SMTP_HOST)
-        this.mailer.smtp.host = process.env.EMAIL_SMTP_HOST;
-      if (process.env.EMAIL_SMTP_PORT)
-        this.mailer.smtp.port = parseInt(process.env.EMAIL_SMTP_PORT, 10);
-      if (process.env.EMAIL_SMTP_USERNAME)
-        this.mailer.smtp.username = process.env.EMAIL_SMTP_USERNAME;
-      if (process.env.EMAIL_SMTP_PASSWORD)
-        this.mailer.smtp.password = process.env.EMAIL_SMTP_PASSWORD;
-      if (process.env.EMAIL_SMTP_FROM)
-        this.mailer.smtp.from = process.env.EMAIL_SMTP_FROM;
+      _.merge(this.mailer.smtp, {
+        host: process.env.EMAIL_SMTP_HOST as string,
+        port: process.env.EMAIL_SMTP_PORT
+          ? parseInt(process.env.EMAIL_SMTP_PORT, 10)
+          : undefined,
+        username: process.env.EMAIL_SMTP_USERNAME,
+        password: process.env.EMAIL_SMTP_PASSWORD,
+        from: process.env.EMAIL_SMTP_FROM,
+      });
     }
 
-    if (this.language.default) {
-      this.set("currentLanguage", this.language.default);
-    }
+    ["data", "partials", "layouts", "templates"].forEach((name) =>
+      _.set(
+        this.mailer,
+        name,
+        joinPath(this.mailer.source, _.get(this.mailer, name))
+      )
+    );
+
+    this.set("currentLanguage", this.language.default);
 
     if (!production) {
       this.watch = [
-        this.relPath("routesConfigName", "js"),
-        this.relPath("routesConfigName", "cjs"),
+        this.relPath("routesConfigName", ".js"),
+        this.relPath("routesConfigName", ".cjs"),
         this.relGlobPath("data"),
         this.relGlobPath("helpers"),
         this.relGlobPath("layouts"),
@@ -230,21 +198,13 @@ export class Config implements Options {
         this.relGlobPath("views"),
         this.relGlobPath("controllers"),
         this.relGlobPath("styles"),
-        this.relPath("public", `/${this.styles}/**/*.css`),
+        this.relGlobPath("public", this.scripts, ".js"),
+        this.relGlobPath("public", this.styles, ".css"),
       ];
 
       if (this.auth.enabled) {
         this.watch.push(this.relGlobPath("auth.path"));
       }
-    }
-
-    if (this.dev) {
-      this.watch.push(this.globPath(this.serverData, "json"));
-      this.watch.push(this.globPath(this.serverHelpers, "js"));
-      this.watch.push(this.globPath(this.serverLayouts, "hbs"));
-      this.watch.push(this.globPath(this.serverPartials, "hbs"));
-      this.watch.push(this.globPath(this.serverShared, "hbs"));
-      this.watch.push(this.globPath(this.serverViews, "hbs"));
     }
 
     if (this.ignorePattern) {
@@ -258,122 +218,11 @@ export class Config implements Options {
     }
   }
 
-  static create(argv: CliOptions): Readonly<Config> {
-    this.instance = new this(argv);
+  static create(argv?: CliOptions): Readonly<Config> {
+    this.instance = new this(argv || {});
 
-    initLogger(Config.get("logLevel"), Config.get("logFilePath"));
+    initLogger(this.instance.logLevel, this.instance.logFilePath);
 
     return Object.freeze(this.instance);
-  }
-
-  static get(): Readonly<Config>;
-  static get<T>(key?: string): T;
-  static get<T>(key?: string): T | Readonly<Config> {
-    if (key) {
-      return this.instance.get<T>(key);
-    }
-    return this.instance as Readonly<Config>;
-  }
-
-  static set(key: string, value: any) {
-    this.instance.set(key, value);
-  }
-
-  static value<T>(key: keyof Config): T {
-    return this.instance.get<T>(key) as T;
-  }
-
-  static is(key: string, value: any): boolean {
-    return this.instance.is(key, value);
-  }
-
-  static fullPath(name: string, ext?: string): string {
-    return this.instance.fullPath(name, ext);
-  }
-
-  static relPath(name: string, ext?: string): string {
-    return this.instance.relPath(name, ext);
-  }
-
-  static relGlobPath(name: string, ext?: string): string {
-    return this.instance.relGlobPath(name, ext);
-  }
-
-  static fullGlobPath(name: string, ext?: string): string {
-    return this.instance.fullGlobPath(name, ext);
-  }
-
-  static globPath(base: string, ext?: string): string {
-    return this.instance.globPath(base, ext);
-  }
-
-  static enabled(name: string): boolean {
-    const option = this.instance[name as keyof Config] as OptionalFeature;
-    return option.enabled;
-  }
-
-  set(key: string, value: SafeAny): void {
-    set(this.customProps, key, value);
-  }
-
-  get<T = SafeAny>(key: string): T {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return (get(this, key) as T) || (get(this.customProps, key) as T);
-  }
-
-  is(key: string, value: any): boolean {
-    return this.get(key) === value;
-  }
-
-  fullPath(name: string, ext?: string): string {
-    if (ext && ext.indexOf("/") < 0 && !ext.startsWith(".")) ext = `.${ext}`;
-    return resolvePath(
-      this.root,
-      this.source,
-      this.get<string>(name).concat(ext || "")
-    );
-  }
-
-  relPath(name: string, ext?: string): string {
-    if (ext && ext.indexOf("/") < 0 && !ext.startsWith(".")) ext = `.${ext}`;
-    return joinPath(this.source, this.get<string>(name).concat(ext || ""));
-  }
-
-  relGlobPath(name: string, ext?: string) {
-    return this.globPath(this.relPath(name), ext);
-  }
-
-  fullGlobPath(name: string, ext?: string): string {
-    const base = !name.startsWith("server")
-      ? this.fullPath(name)
-      : this.get<string>(name);
-    return this.globPath(base, ext);
-  }
-
-  enabled(name: string): boolean {
-    const option = this.get(name) as OptionalFeature;
-    return "enabled" in option && option.enabled;
-  }
-
-  globPath(base: string, ext?: string): string {
-    const pattern = "/**/*.%s";
-    const target = base.split("/").pop();
-
-    switch (target) {
-      case "data":
-        return `${base}${pattern.replace("%s", "{json,js,cjs}")}`;
-      case "helpers":
-      case "controllers":
-      case "auth":
-        return `${base}${pattern.replace("%s", "{js,cjs}")}`;
-      case "styles":
-        return `${base}${pattern.replace("%s", "{css,scss}")}`;
-      default:
-        if (ext) {
-          return `${base}${pattern.replace("%s", ext)}`;
-        }
-        return `${base}${pattern.replace("%s", this.extname)}`;
-    }
   }
 }

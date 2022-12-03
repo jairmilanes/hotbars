@@ -5,10 +5,11 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
-    <title>Hotbars: User Api</title>
+    <title>Hotbars: {{default title "User Api"}}</title>
     {{> hotbarsHead}}
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <script>
       tailwind.config = {
         darkMode: 'class',
@@ -29,18 +30,16 @@
   <body class="bg-slate-200 dark:bg-neutral-800 text-slate-800 dark:text-slate-100 flex flex-col overflow-hidden h-full">
     {{> "_header"}}
 
-    <main class="p-5 flex-auto flex flex-col overflow-y-scroll">
-      <section class="container mx-auto grid grid-cols-1 py-7">
+    <main class="px-5 pb-5 flex-auto flex flex-col {{#if scroll}}overflow-y-scroll{{else}}overflow-hidden{{/if}}">
+      <section class="container mx-auto grid grid-cols-1 py-5">
         {{#if title}}
-          {{> "_heading" size="h2" text=title margin="0" }}
+          {{> "_heading" size="h3" text=title margin="0" }}
         {{/if}}
         {{#block "hero"}}{{/block}}
       </section>
 
       {{#block "main"}}{{/block}}
     </main>
-
-    {{> "_scripts" }}
 
     {{#block "footer"}}{{/block}}
 
@@ -49,9 +48,9 @@
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js"></script>
 
-    {{#block "scripts"}}
+    {{> "_scripts" }}
 
-    {{/block}}
-    <script src="/public/common.js"></script>
+    <script src="/public/hotbars/common.js"></script>
+    {{#block "scripts"}}{{/block}}
   </body>
 </html>

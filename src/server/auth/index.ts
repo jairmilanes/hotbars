@@ -4,6 +4,7 @@ import { logger } from "../../services";
 import { Config, EventManager, ServerEvent } from "../core";
 import { DataManager } from "../data";
 import { StrategyAbstract } from "./strategies/strategy.abstract";
+import { WatcherChange } from "../types";
 
 export class AuthManager {
   private static strategies: { [name: string]: StrategyAbstract } = {};
@@ -22,9 +23,12 @@ export class AuthManager {
       return;
     }
 
-    logger.debug(`%p%P Auth Manager`, 1, 1);
+    logger.info(`%p%P Auth Manager`, 1, 1);
 
-    EventManager.i.on(ServerEvent.AUTH_HANDLERS_CHANGED, this.load.bind(this));
+    EventManager.i.on(
+      ServerEvent.AUTH_HANDLERS_CHANGED,
+      this.loadStrategies.bind(this)
+    );
   }
 
   static register(name: string, strategy: StrategyAbstract) {
@@ -33,19 +37,25 @@ export class AuthManager {
     }
   }
 
-  static async load() {
-    if (!Config.enabled("auth")) {
-      logger.warn("%p%P Auth disabled, skipping.", 1, 1);
+  static async load(data?: WatcherChange) {
+    if (!this.enabled()) {
       return;
     }
 
-    if (!Config.enabled("mailer")) {
+    await this.loadStrategies();
+
+    logger.debug("%p%P Setting up session serialization", 3, 0);
+    this.serialize();
+  }
+
+  private static async loadStrategies(data?: WatcherChange) {
+    if (!this.enabled()) {
       return;
     }
 
     logger.info("%p%P Auth strategies", 1, 1);
 
-    const strategies = glob.sync(Config.fullGlobPath("auth.path", "js"));
+    const strategies = glob.sync(Config.fullGlobPath("auth.path", ".js"));
 
     for (let i = 0; i < (strategies || []).length; i++) {
       const module = await import(strategies[i]);
@@ -68,8 +78,27 @@ export class AuthManager {
       passport.use(this.strategies[authModule.name].createStrategy());
     }
 
-    logger.debug("%p%P Setting up session serialization", 3, 0);
-    this.serialize();
+    if (data) {
+      EventManager.i.emit(ServerEvent.HOT_RELOAD, data);
+    }
+  }
+
+  private static enabled(): boolean {
+    if (!Config.enabled("auth")) {
+      logger.warn("%p%P Auth disabled, skipping.", 1, 1);
+      return false;
+    }
+
+    if (!Config.enabled("mailer")) {
+      logger.warn(
+        "%p%P Auth depends on Mailer, configure your email settings before enabling authentication, skipping.",
+        1,
+        1
+      );
+      return false;
+    }
+
+    return true;
   }
 
   private static serialize() {
@@ -90,7 +119,7 @@ export class AuthManager {
     passport.deserializeUser(function (userId: any, cb) {
       logger.debug("%P Auth:Deserialize session user %s", 2, userId);
       process.nextTick(function () {
-        const usersDb = DataManager.get().from(
+        const usersDb = DataManager.get("jsonDb").from(
           Config.get<string>("auth.usersTable")
         );
         return usersDb

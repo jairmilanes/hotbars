@@ -1,0 +1,36 @@
+{{#block "_mail_item_header"}}
+  <div>
+    <div class="flex mb-2 pt-5 px-4">
+      <h2 class="grow font-medium text-2xl">{{default subject "(no subject)"}}</h2>
+      <div class="text-3xl text-red-500">
+        <button id="hbs-remove-email" class="remove {{button "iconOutline"}}" type="button">
+          <span class="material-icons">delete_forever</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex mb-4 px-4">
+      <div class="grow flex flex-col">
+        <small><span class="font-medium">from:</span><[from here]></small>
+        <small><span class="font-medium">to:</span>< {{get "to.text" this}} ></small>
+      </div>
+      <div>
+        <span class="font-medium">{{date}}</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col pb-5">
+      <a href="/#"
+         title="View headers"
+         class="block px-4 text-blue-600"
+         data-toggle="#hbs-email-headers"
+         data-toggle-text-on="Hide headers"
+         data-toggle-text-off="Hide headers">
+        View headers
+      </a>
+      <div id="hbs-email-headers" class="hidden pt-3">
+        {{#embed "_table" headers=headerHeaders rows=headerLines}}{{/embed}}
+      </div>
+    </div>
+  </div>
+{{/block}}

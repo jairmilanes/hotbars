@@ -1,26 +1,33 @@
 import glob from "glob";
 import { Request, Response } from "express";
+import importFresh from "import-fresh";
 import { logger } from "../../services";
 import { Config, EventManager, ServerEvent } from "../core";
-import { ControllerFunction, UserControllers, SafeObject } from "../types";
+import {
+  ControllerFunction,
+  UserControllers,
+  SafeObject,
+  WatcherChange,
+} from "../types";
 import { ControllerAbstract } from "./abstract";
 
 export class Controllers {
   private static controllers: UserControllers = {};
 
   static create() {
-    logger.debug(`%p%P Controllers`, 1, 1);
+    logger.info(`%p%P Controllers`, 1, 1);
+    logger.info(`%p%P from %s`, 3, 0, Config.relGlobPath("controllers"));
     EventManager.i.on(ServerEvent.CONTROLLERS_CHANGED, this.load.bind(this));
   }
 
-  static async load(): Promise<void> {
+  static async load(data?: WatcherChange): Promise<void> {
     logger.info(`%p%P Controllers`, 1, 1);
     const controllers = glob.sync(Config.fullGlobPath("controllers"));
 
     for (let i = 0; i < (controllers || []).length; i++) {
-      const module = await import(controllers[i]);
+      const module = importFresh(controllers[i]);
       const name = this.normalizePath(controllers[i]);
-      const fullName = `/${name}.${controllers[i].split(".").pop()}`;
+      const fullName = `${name}.${controllers[i].split(".").pop()}`;
 
       logger.debug(`%p%P %s`, 3, 1, Config.relPath("controllers", fullName));
 
@@ -36,6 +43,10 @@ export class Controllers {
         );
       }
     }
+
+    if (data) {
+      EventManager.i.emit(ServerEvent.HOT_RELOAD, data);
+    }
   }
 
   static async call(
@@ -47,7 +58,7 @@ export class Controllers {
       logger.debug(`%P Invoking controller at ${path}`, 2);
 
       if (this.controllers[path] instanceof ControllerAbstract) {
-        return (<ControllerAbstract>this.controllers[path]).handle(req, res);
+        return (<ControllerAbstract>this.controllers[path]).handle(req);
       }
       return (<ControllerFunction>this.controllers[path])(req, res);
     }
@@ -65,7 +76,7 @@ export class Controllers {
 
   private static instantiate(module: any, name: string, key?: string): void {
     if (!key) return;
-    const config = Config.get();
+    const config = Config.get<Config>();
 
     if (this.isClass(module[key])) {
       logger.debug(`%P Initializing controller class: %s - %s`, 2, key, name);

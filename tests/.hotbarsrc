@@ -4,5 +4,9 @@
   "logLevel": 0,
   "source": "tests/__data__",
   "jsonSchema": "schema",
-  "jsonDb": "db/db.json"
+  "jsonDb": "db/db.json",
+  "language": {
+    "enabled": true,
+    "languages": ["en", "pt-br"]
+  }
 }

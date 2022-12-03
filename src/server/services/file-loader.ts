@@ -22,15 +22,16 @@ const resolveTargets = (
 export const loadFile = <T = any>(
   configName: string,
   dotFiles?: boolean,
-  extensions?: string[]
+  extensions?: string[],
+  root = process.cwd()
 ): T | undefined => {
   try {
     const explorer = cosmiconfigSync(configName, {
       searchPlaces: resolveTargets(configName, extensions, dotFiles),
-      stopDir: process.cwd(),
+      stopDir: root,
     });
 
-    const result = explorer.search();
+    const result = explorer.search(root);
 
     if (result?.config) {
       return result.config;

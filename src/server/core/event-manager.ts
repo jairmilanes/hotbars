@@ -8,18 +8,22 @@ export enum ServerEvent {
   PRE_COMPILED_CHANGED = "hotbars/pre-compiled-changed",
   ROUTES_CHANGED = "hotbars/routes-changed",
   SASS_CHANGED = "hotbars/sass-changed",
+  USER_RUNTIME_CHANGED = "hotbars/user-runtime-changed",
+  DASHBOARD_RUNTIME_CHANGED = "hotbars/dashboard-runtime-changed",
   VIEWS_CHANGED = "hotbars/views-changed",
   AUTH_HANDLERS_CHANGED = "hotbars/auth-handlers-changed",
   CONTROLLERS_CHANGED = "hotbars/controllers-changed",
   FILES_CHANGED = "hotbars/files-changed",
   EMAIL_FILES_CHANGED = "hotbars/email-files-changed",
+
+  RELOAD = "reload",
 }
 
 export class EventManager {
   private static instance: EventEmitter;
 
   static create() {
-    logger.debug(`%p%P Event Manager`, 1, 1);
+    logger.info(`%p%P Event Manager`, 1, 1);
     this.instance = new EventEmitter();
   }
 

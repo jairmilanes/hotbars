@@ -1,10 +1,18 @@
 {{#block "_mail_list_item"}}
-  <div class="py-4 px-4 border-b border-gray-200">
-    <h4 class="text-slate-600 font-medium">{{default subject "No subject"}}</h4>
+  <a
+    href="/_mail/{{id}}"
+    data-name="email"
+    data-id="{{id}}"
+    class="block py-4 px-4 border-b border-gray-200"
+  >
+    <h4 class="text-slate-600 font-medium">{{default
+        subject
+        "(no subject)"
+      }}</h4>
     <div class="flex">
       <small class="font-medium text-slate-600 grow">to:
-        {{get "to.value.0.address" this}}</small>
+        {{get "to.text" this}}</small>
       <small class="font-medium">{{date}}</small>
     </div>
-  </div>
+  </a>
 {{/block}}

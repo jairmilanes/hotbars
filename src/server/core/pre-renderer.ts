@@ -2,12 +2,12 @@ import * as _ from "lodash";
 import glob from "glob";
 import prettier from "prettier";
 import uglify from "uglify-js";
-import { Env, HandlebarsWax } from "../types";
+import { Env, HandlebarsWax, WatcherChange } from "../types";
 import { logger } from "../../services";
 import { configureHandlebars } from "../services";
 import { HandlebarsException } from "../exceptions";
 import { loadTemplate } from "../utils";
-import { Config } from "../core";
+import { Config, DashboardConfig } from "../core";
 import { EventManager, ServerEvent } from "./event-manager";
 
 interface TemplateDefintion {
@@ -39,7 +39,7 @@ export class PreRenderer {
     this.instance = new PreRenderer();
 
     EventManager.i.on(
-      ServerEvent.HOT_RELOAD,
+      ServerEvent.PRE_COMPILED_CHANGED,
       this.instance.configure.bind(this)
     );
 
@@ -88,7 +88,7 @@ export class PreRenderer {
     }
   }
 
-  private configure(): void {
+  private configure(data?: WatcherChange): void {
     const { instance, error } = configureHandlebars();
 
     if ((error || !instance) && !this.hbs) {
@@ -97,6 +97,10 @@ export class PreRenderer {
 
     if (instance) {
       this.hbs = instance;
+    }
+
+    if (data) {
+      EventManager.i.emit(ServerEvent.HOT_RELOAD, data);
     }
   }
 
@@ -107,8 +111,8 @@ export class PreRenderer {
   private getTemplatesPath(isSystem?: boolean): string[] {
     return isSystem
       ? [
-          Config.fullGlobPath("serverShared", "hbs"),
-          Config.fullGlobPath("serverPrecompile", "hbs"),
+          DashboardConfig.fullGlobPath("shared"),
+          DashboardConfig.fullGlobPath("precompile"),
         ]
       : [Config.fullGlobPath("precompile"), Config.fullGlobPath("shared")];
   }
@@ -122,20 +126,17 @@ export class PreRenderer {
 
   private resolveTemplates(isSystem?: boolean) {
     const path = isSystem
-      ? Config.fullGlobPath("serverPrecompile", "hbs")
+      ? DashboardConfig.fullGlobPath("precompile")
       : Config.fullGlobPath("precompile");
-
-    console.log("resolveTemplates", isSystem, path);
 
     return this.resolve(path);
   }
 
   private resolvePartials(isSystem?: boolean) {
     const path = isSystem
-      ? Config.fullGlobPath("serverShared", "hbs")
+      ? DashboardConfig.fullGlobPath("shared")
       : Config.fullGlobPath("shared");
 
-    console.log("resolvePartials", isSystem, path);
     return this.resolve(path);
   }
 

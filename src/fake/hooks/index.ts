@@ -7,7 +7,7 @@ import { HookModule, HooksConfig } from "../types";
 
 export const initHooks = (): HooksConfig => {
   const hooks: HookModule | undefined = loadFile<HookModule>(
-    [Config.relPath("jsonSchema"), "hooks.js"].join("/")
+    Config.relPath("jsonSchema", "hooks.js")
   );
 
   return {

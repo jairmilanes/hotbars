@@ -25,7 +25,7 @@ export default class JsonDbAdaptor extends QueryBuilder {
       // Use LowDb from the enabled Json Server if porssible
       this._api = Server.get()
         ? Server.app._router?.stack.find((layer: any) => {
-            return layer?.handle._source === "json-db";
+            return layer?.handle._source === "jsonDb";
           })?.db
         : undefined;
 
@@ -38,8 +38,19 @@ export default class JsonDbAdaptor extends QueryBuilder {
     }
   }
 
+  collections(): Promise<string[]> {
+    return Promise.resolve(_.keys(this._api.getState()));
+  }
+
   from(collection: string): JsonDbAdaptor {
     return new JsonDbAdaptor(this._api, collection);
+  }
+
+  size(): Promise<number> {
+    if (this.collection) {
+      return Promise.resolve(this._api.get(this.collection).size().value());
+    }
+    return Promise.resolve(0);
   }
 
   protected query(
@@ -204,13 +215,6 @@ export default class JsonDbAdaptor extends QueryBuilder {
     }
 
     return collection.value();
-  }
-
-  size(): number {
-    if (this.collection) {
-      return this._api.size().value();
-    }
-    return -1;
   }
 
   async insert(record: Record<string, any>): Promise<Record<string, any>> {

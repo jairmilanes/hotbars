@@ -1,0 +1,6 @@
+const defaults = require("./defaults.runtime");
+const helpers = require("{{USER_HELPERS}}");
+
+Object.keys({ ...defaults, ...helpers }).forEach((name) => {
+  Handlebars.registerHelper(name, helpers[name]);
+});

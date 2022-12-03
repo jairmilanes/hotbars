@@ -1,3 +1,41 @@
+["pushState", "replaceState"].forEach((name) => {
+  window.history[name] = new Proxy(window.history[name], {
+    apply: (target, thisArg, argArray) => {
+      target.apply(thisArg, argArray);
+
+      window.dispatchEvent(
+        new CustomEvent(name, {
+          detail: new URL(argArray[2]),
+        })
+      );
+    },
+  });
+});
+
+function toCamelCase(str) {
+  return str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function (match, chr) {
+    return chr.toUpperCase();
+  });
+}
+
+$.fn.register = function (prefix) {
+  const targets = {};
+
+  $("[id]", this).each((i, elem) => {
+    const id = $(elem).attr("id");
+
+    if (id) {
+      const cleaned = id.replace(prefix, "");
+
+      if (!targets[cleaned]) {
+        targets[toCamelCase(cleaned)] = elem;
+      }
+    }
+  });
+
+  return targets;
+};
+
 $.fn.mutate = function (attributes, callback) {
   const config = {
     attributes: true,
@@ -26,146 +64,189 @@ $.fn.mutate = function (attributes, callback) {
   });
 };
 
-$.fn.queryParams = function () {
-  const url = new URL(window.location.href);
-  return url.searchParams;
+$.url = function () {
+  return new URL(window.location.href);
 };
 
-$.fn.updateUrl = function (params = {}) {
+$.query = function () {
+  return new URL(window.location.href).searchParams;
+};
+
+$.pushState = function (params = {}) {
   const url = new URL(window.location);
 
   Object.keys(params).forEach((key) => {
-    url.searchParams.set(key, value);
+    if ([null, undefined].indexOf(params[key]) > 0) {
+      if (url.searchParams.has(key)) {
+        url.searchParams.delete(key);
+      }
+    } else {
+      url.searchParams.set(key, params[key]);
+    }
   });
 
-  window.history.pushState(null, "", url.toString());
+  window.history.replaceState(null, "", url.toString());
 };
 
-$.fn.navigate = function (params = {}) {
+$.navigate = function (params = {}) {
   const url = new URL(window.location);
 
   Object.keys(params).forEach((key) => {
-    url.searchParams.set(key, value);
+    url.searchParams.set(key, params[key]);
   });
 
-  window.location.href = url.toString();
+  window.location.assign(url.toString());
 };
 
-$.fn.template = function (template, context, mode) {
-  const { templates } = Handlebars;
+$.onStateChange = function (callback) {
+  const cb = (e) => callback(e.detail.searchParams);
+  $(window).on("pushstate replaceState", cb);
+  return () => {
+    $(window).off("pushstate replaceState", cb);
+  };
+};
 
-  if (template in templates) {
+$.fn.click = function (callback) {
+  this.on("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    callback($(e.currentTarget));
+  });
+};
+
+$.fn.render = function (template, context, mode) {
+  const { templates, partials } = Handlebars;
+  const tpl = templates[template] || partials[template];
+
+  if (tpl) {
     if (mode === "append") {
-      return this.append(templates[template](context));
-    }
-    if (mode === "prepend") {
-      return this.prepend(templates[template](context));
+      return this.append(tpl(context));
     }
 
-    this.html(templates[template](context));
+    if (mode === "prepend") {
+      return this.prepend(tpl(context));
+    }
+
+    this.html(tpl(context));
   }
 };
 
-$.fn.partial = function (template, context, mode) {
+$.fn.modal = function (name, context) {
+  this.render("_confirm-modal", context, "append");
+};
+
+$.fn.confirm = function (name, context, callback) {
+  this.render(name, context, "append");
+  console.log(`#${context.id}`);
+  const modal = $(`#${context.id}`);
+  console.log(modal);
+  $("[data-modal-confirm]", modal).click(() => {
+    callback(modal);
+  });
+  $("[data-modal-cancel]", modal).click(() => {
+    modal.remove();
+  });
+};
+
+$.fn.openClose = function (callback) {
+  const target = this.data("toggle");
+
+  this.click((elem) => {
+    if (this.data("active") === true) {
+      $(`#${target}`).hide();
+      this.data("active", false);
+    } else {
+      $(`#${target}`).show();
+      this.data("active", true);
+    }
+
+    callback(this.data("active"), elem);
+  });
+};
+
+$.fn.list = function (template, emptyTemplate) {
   const { partials } = Handlebars;
-
-  if (template in partials) {
-    if (mode === "append") {
-      return this.append(partials[template](context));
-    }
-    if (mode === "prepend") {
-      return this.prepend(partials[template](context));
-    }
-
-    this.html(partials[template](context));
-  }
-};
-
-$.fn.list = function (prefix, template, emptyTemplate) {
   let count = 0;
-  const { partials } = Handlebars;
-  const children = this.children();
 
-  const idx = (id) => `${prefix}-${id || ++count}`;
+  const withId = (context) => ({ id: context.id || count + 1, ...context });
 
-  const withId = (context, id) => ({ id: idx(id), ...context });
+  const removable = (item) =>
+    $(".remove", item).click(() => this.removeItem(item));
 
-  const newItem = (context, id) => $(partials[template](withId(context, id)));
+  this.newItem = (context) => $(partials[template](withId(context)).trim());
 
-  const remove = (id) => {
-    --count;
+  this.reset = () => {
+    count = 0;
+    this.html("");
+  };
 
-    if (typeof id === "string") {
-      $(`#${id}`, this).remove();
+  this.getItem = (id) => $(`*[data-id="${id}"]`, this);
+
+  this.removeItem = (id) => {
+    if (typeof id === "number" || typeof id === "string") {
+      this.getItem(id).remove();
     } else {
       $(id).remove();
     }
+
+    --count;
 
     if (count === 0 && emptyTemplate) {
       this.html(partials[emptyTemplate]({}));
     }
 
-    return this.list(prefix, template, emptyTemplate);
+    return this;
   };
 
-  const removable = (elem) =>
-    $(".remove", elem).on("click", () => remove(elem));
-
-  const prepend = (context = {}) => {
-    const item = newItem(context);
+  this.prependItem = (context = {}) => {
+    const item = this.newItem(context);
 
     if (count === 0) {
-      this.html(item);
+      this.html(item.get(0).outerHTML);
     } else {
       this.prepend(item);
     }
 
     removable(item);
 
-    return this.list(prefix, template, emptyTemplate);
+    ++count;
+
+    return this;
   };
 
-  const append = (context = {}) => {
-    const item = newItem(context);
+  this.appendItem = (context = {}) => {
+    const item = this.newItem(context);
 
     if (count === 0) {
-      this.html(item);
+      this.html(item.get(0).outerHTML);
     } else {
       this.append(item);
     }
 
     removable(item);
 
-    return this.list(prefix, template, emptyTemplate);
+    ++count;
+
+    return this;
   };
 
-  const replace = (id, context) => {
-    const item = newItem(context, id);
+  this.replaceItem = (id, context) => {
+    const item = this.newItem(context);
 
-    $(idx(id), this).replaceWith(item);
+    this.getItem(id).replaceWith(item);
 
     removable(item);
 
-    return this.list(prefix, template, emptyTemplate);
+    return this;
   };
 
-  children.each((i, child) => {
-    if (!$(child).attr("id") || !$(child).attr("id").startsWith(prefix)) {
-      $(child).attr("id", idx(i));
-      ++count;
-    }
-
-    removable($(child));
-  });
+  this.click = (index) => {
+    this.children().eq(index).trigger("click");
+  };
 
   if (count === 0 && emptyTemplate) {
     this.html(partials[emptyTemplate]({}));
   }
 
-  return {
-    prepend,
-    append,
-    remove,
-    replace,
-  };
+  return this;
 };

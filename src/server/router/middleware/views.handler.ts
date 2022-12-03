@@ -58,19 +58,32 @@ const createMethodHandlers = (
 };
 
 const createViewHandler =
-  (view: string): RequestHandler =>
+  (route: string, view: string): RequestHandler =>
   async (req: Request, res: Response) => {
+    const mainResult = await Controllers.call("_main", req, res);
     const result = await Controllers.call(view, req, res);
     const authenticated = req.isAuthenticated && req.isAuthenticated();
+
+    const userContext = {};
+
+    if (_.isPlainObject(mainResult)) {
+      _.merge(userContext, mainResult);
+    }
+
+    if (_.isPlainObject(result)) {
+      _.merge(userContext, result);
+    }
+
     const context: Record<string, any> = {
       url: req.url,
+      page: route,
       query: { ...req.query },
       params: { ...req.params },
       secure: req.secure,
       authenticated,
       user: req.user,
       xhr: req.xhr,
-      ...(_.isPlainObject(result) ? result : {}),
+      ...userContext,
     };
 
     if (authenticated && !_.get(req.user, "confirmed")) {
@@ -83,7 +96,7 @@ const createViewHandler =
     res.status(200).render(view, context);
   };
 
-const getMiddlewares = (view: string) => {
+const getMiddlewares = (route: string, view: string) => {
   const middlewares: RequestHandler[] = [];
 
   // Add authentication check middleware if route is secure
@@ -92,7 +105,7 @@ const getMiddlewares = (view: string) => {
     middlewares.push(secureMiddleware);
   }
 
-  middlewares.push(createViewHandler(view));
+  middlewares.push(createViewHandler(route, view));
 
   return middlewares;
 };
@@ -108,13 +121,14 @@ const createRouter = () => {
     Config.relPath("views"),
     Config.get("extname"),
     Config.get("auth.securePath"),
-    (route, view) =>
-      createMethodHandlers(
+    (route, view) => {
+      return createMethodHandlers(
         route,
         pagesRouter,
         config[view] || config.methods,
-        getMiddlewares(view)
-      )
+        getMiddlewares(route, view)
+      );
+    }
   );
 
   if (!Config.is("env", Env.Prod)) {

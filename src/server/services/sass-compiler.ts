@@ -2,14 +2,17 @@ import { spawnSync } from "node:child_process";
 import { logger } from "../../services";
 import { Config, EventManager, ServerEvent } from "../core";
 import { joinPath } from "../utils";
+import { Env, WatcherChange } from "../types";
 
 export class SassCompiler {
   static create(): void {
-    logger.debug(`%p%P Sass compiler`, 1, 1);
-    EventManager.i.on(ServerEvent.SASS_CHANGED, this.compile);
+    if (Config.is("env", Env.Dev)) {
+      logger.debug(`%p%P Sass compiler`, 1, 1);
+      EventManager.i.on(ServerEvent.SASS_CHANGED, this.compile);
+    }
   }
 
-  static compile(): void {
+  static compile(data?: WatcherChange): void {
     logger.info(`%p%P Sass`, 1, 1);
 
     const sourcePath = Config.relPath("styles");
@@ -55,6 +58,10 @@ export class SassCompiler {
             logger.debug(`%p%P %s`, 3, 1, result);
           }
         });
+      }
+
+      if (data) {
+        EventManager.i.emit(ServerEvent.HOT_RELOAD, data);
       }
     } catch (e) {
       logger.error("%p%P %O", 3, 1, e);

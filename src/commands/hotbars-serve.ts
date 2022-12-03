@@ -4,7 +4,7 @@
 import { Command, Option } from "commander";
 import { callbackify } from "util";
 import { logger } from "../services";
-import { Config } from "../server/core";
+import { Config, DashboardConfig } from "../server/core";
 import { App } from "../server/app";
 
 const program = new Command();
@@ -35,7 +35,11 @@ program
     new Option("--logLevel <number>", "The json db schema files directory")
       .choices(["1", "2", "3", "4"])
       .argParser((value) => parseInt(value, 10))
-      .default(1)
+  )
+  .addOption(
+    new Option("-b, --browser", "Browser to launch in development mode")
+      .choices(["chrome", "firefox", "msedge", "safari"])
+      .default(null)
   )
   .addOption(
     new Option(
@@ -47,6 +51,7 @@ program
   .action(async (argv) => {
     try {
       Config.create(argv);
+      DashboardConfig.create(argv);
 
       const hotBars = new App();
 
@@ -73,13 +78,10 @@ program
         });
       });
     } catch (e) {
-      if (Config.get<number>("logLevel") > 1) {
-        logger.error(
-          "Failed to initialize server, use debug logging level to find out more."
-        );
-      } else {
-        logger.error(e);
-      }
+      console.warn(
+        "Failed to initialize server, use debug logging level to find out more."
+      );
+      console.error(e);
     }
   });
 

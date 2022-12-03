@@ -2,19 +2,17 @@
 
 ## [1.7.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.4...hotbars-v1.7.0) (2022-11-27)
 
-
 ### Features
 
-* added fake smtp server for email sending testing ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
-
+- added fake smtp server for email sending testing ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
 
 ### Bug Fixes
 
-* added more tests to fake generator ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
-* added more tests to server data manager, config, bootstrap and pages mapper ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
-* broken router into smaller logic parts ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
-* extended logger and improved cli log messages ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
-* moved logger to a more accessable location ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
+- added more tests to fake generator ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
+- added more tests to server data manager, config, bootstrap and pages mapper ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
+- broken router into smaller logic parts ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
+- extended logger and improved cli log messages ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
+- moved logger to a more accessable location ([4ddb68a](https://github.com/jairmilanes/hotbars/commit/4ddb68a10e16a1b775bc4c9eafdeb21625d98caa))
 
 ## [1.6.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.3...hotbars-v1.6.4) (2022-11-18)
 

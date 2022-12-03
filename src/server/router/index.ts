@@ -8,7 +8,7 @@ import { mountRoutes } from "./middleware";
 
 export class Router {
   configure(): void {
-    logger.info(`Configuring router...`);
+    logger.info(`HTTP Router...`);
 
     /**
      * Configure CORS, possibily dynamic if whitelist is set.

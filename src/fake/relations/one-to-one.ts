@@ -140,6 +140,15 @@ export const parseOneToOne = (
     const { module, valid, relation } = propsConfig[prop];
 
     if (module !== "one-to-one" || !valid || !relation) {
+      if (module === "one-to-one" && !valid) {
+        logger.warn(
+          "%p%P Invalid:One-to-One:%s.%s",
+          1,
+          1,
+          schemaConfig.name,
+          prop
+        );
+      }
       return;
     }
 

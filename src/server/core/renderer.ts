@@ -29,13 +29,14 @@ export class Renderer {
   ];
 
   static create(): void {
-    logger.debug(`%p%P Renderer`, 1, 1);
+    logger.info(`%p%P Renderer`, 1, 1);
     this.instance = new Renderer();
 
-    EventManager.i.on(
-      ServerEvent.FILES_CHANGED,
-      this.instance.configure.bind(this.instance)
-    );
+    const reconfigure = this.instance.configure.bind(this.instance);
+
+    EventManager.i.on(ServerEvent.FILES_CHANGED, reconfigure);
+    EventManager.i.on(ServerEvent.USER_RUNTIME_CHANGED, reconfigure);
+    EventManager.i.on(ServerEvent.DASHBOARD_RUNTIME_CHANGED, reconfigure);
 
     this.instance.configure();
   }
@@ -111,7 +112,8 @@ export class Renderer {
   private compile(content: string, context = {}) {
     return this.hbs?.compile(content)({
       lang: Config.get("currentLanguage"),
-      env: Config.value<string>("env"),
+      env: Config.get<string>("env"),
+      dev: Config.get("dev"),
       ...context,
     });
   }

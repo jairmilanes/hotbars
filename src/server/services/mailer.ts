@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as _ from "lodash";
-import { promisify } from "node:util";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import nodemailer, { Transporter } from "nodemailer";
 import Mail from "nodemailer/lib/mailer";
@@ -11,8 +10,8 @@ import handlebarsLayouts from "handlebars-layouts";
 import { readFile } from "fs/promises";
 import * as customHelpers from "../helpers";
 import { logger } from "../../services";
-import { joinPath, loadData } from "../utils";
-import { Config, EventManager, ServerEvent } from "../core";
+import { joinPath, loadDashboardData, loadData } from "../utils";
+import { Config, DashboardConfig, EventManager, ServerEvent } from "../core";
 import { existsSync } from "fs";
 
 export class Mailer {
@@ -136,7 +135,7 @@ export class Mailer {
     }
 
     const path = joinPath(
-      Config.get("serverMailTemplates"),
+      DashboardConfig.fullPath("mailer.templates"),
       `${templateName}.hbs`
     );
 
@@ -169,11 +168,11 @@ export class Mailer {
     return handlebarsWax(handlebars)
       .helpers(handlebarsLayouts)
       .helpers(customHelpers)
-      .data(loadData("serverMailData", "json"))
-      .partials(Config.fullGlobPath("serverMailLayouts", "hbs"))
-      .partials(Config.fullGlobPath("serverMailPartials", "hbs"))
-      .data(loadData("mailer.data", "json"))
-      .partials(Config.fullGlobPath("mailer.layouts", "hbs"))
-      .partials(Config.fullGlobPath("mailer.partials", "hbs"));
+      .data(loadDashboardData("mailer.data"))
+      .partials(DashboardConfig.fullGlobPath("mailer.layouts", ".hbs"))
+      .partials(DashboardConfig.fullGlobPath("mailer.partials", ".hbs"))
+      .data(loadData("mailer.data"))
+      .partials(Config.fullGlobPath("mailer.layouts", ".hbs"))
+      .partials(Config.fullGlobPath("mailer.partials", ".hbs"));
   }
 }
