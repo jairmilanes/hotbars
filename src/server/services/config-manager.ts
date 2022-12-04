@@ -8,7 +8,7 @@ export abstract class ConfigManager<T> {
   source = "";
   extname = "hbs";
 
-  protected customProps: SafeObject = {};
+  protected customProps: Record<string, any> = {};
 
   protected static instance: Readonly<ConfigManager<any>>;
 
@@ -59,11 +59,17 @@ export abstract class ConfigManager<T> {
 
   get(): Readonly<ConfigManager<T>>;
   get<P>(key?: string): P;
-  get<P = SafeAny>(key?: string): P | Readonly<ConfigManager<T>> {
+  get<P = SafeAny>(key?: string): P | Readonly<ConfigManager<T>> | undefined {
     if (!key) return this;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return (_.get(this, key) as P) || (_.get(this.customProps, key) as P);
+    if (_.has(this, key)) {
+      return _.get(this, key) as P;
+    }
+
+    if (_.has(this.customProps, key)) {
+      return _.get(this.customProps, key) as P;
+    }
   }
 
   is(key: string, value: any): boolean {

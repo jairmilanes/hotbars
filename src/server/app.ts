@@ -73,30 +73,36 @@ export class App {
       await DataManager.create("jsonDb");
     }
 
-    if (Config.is("env", Env.Dev)) {
-      SassCompiler.compile();
+    SassCompiler.compile();
 
-      await BrowserifyCompiler.compileUserRuntime();
+    if (Config.get("dev")) {
+      // compile dashboard runtime
       await BrowserifyCompiler.compileDashboardRuntime();
     }
 
+    await BrowserifyCompiler.compileUserRuntime();
+
+    // EventManager.i.emit(ServerEvent.INIT);
+
     this.router.configure();
 
-    EventManager.i.emit(ServerEvent.INIT);
+    if (Config.is("env", Env.Dev)) {
+      await this.watcher?.start();
+      await this.dashboardWatcher?.start();
 
-    await this.watcher?.start();
-    await this.dashboardWatcher?.start();
-
-    // SMTP Server only works in dev
-    if (Config.is("env", Env.Dev) && Config.enabled("smtpServer")) {
-      FakeSMPTServer.listen();
+      // SMTP Server only works in dev
+      if (Config.enabled("smtpServer")) {
+        FakeSMPTServer.listen();
+      }
     }
 
     await Server.listen();
 
     logger.log(`Server listening at %s`, Server.url);
 
-    await this.launch();
+    if (Config.is("env", Env.Dev)) {
+      await this.launch();
+    }
   }
 
   async close(force?: boolean): Promise<number> {

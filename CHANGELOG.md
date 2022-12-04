@@ -2,19 +2,17 @@
 
 ## [1.7.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.1...hotbars-v1.7.2) (2022-12-03)
 
-
 ### Bug Fixes
 
-* general improvements app wide ([aad0f2a](https://github.com/jairmilanes/hotbars/commit/aad0f2a071bff74af98767dffc342079060003ed))
+- general improvements app wide ([aad0f2a](https://github.com/jairmilanes/hotbars/commit/aad0f2a071bff74af98767dffc342079060003ed))
 
 ## [1.7.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.0...hotbars-v1.7.1) (2022-11-28)
 
-
 ### Bug Fixes
 
-* error when passing params to json server ([d5a8103](https://github.com/jairmilanes/hotbars/commit/d5a810324851fe8f574e4915632ed527e0b52f5e))
-* errors on dashboard preventing it from initializing ([d5a8103](https://github.com/jairmilanes/hotbars/commit/d5a810324851fe8f574e4915632ed527e0b52f5e))
-* removed date helper from runtime bundle to lower size and avoid bundling moment js ([d5a8103](https://github.com/jairmilanes/hotbars/commit/d5a810324851fe8f574e4915632ed527e0b52f5e))
+- error when passing params to json server ([d5a8103](https://github.com/jairmilanes/hotbars/commit/d5a810324851fe8f574e4915632ed527e0b52f5e))
+- errors on dashboard preventing it from initializing ([d5a8103](https://github.com/jairmilanes/hotbars/commit/d5a810324851fe8f574e4915632ed527e0b52f5e))
+- removed date helper from runtime bundle to lower size and avoid bundling moment js ([d5a8103](https://github.com/jairmilanes/hotbars/commit/d5a810324851fe8f574e4915632ed527e0b52f5e))
 
 ## [1.7.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.6.4...hotbars-v1.7.0) (2022-11-27)
 

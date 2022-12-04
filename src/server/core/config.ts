@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as _ from "lodash";
 import { loadFile } from "../services";
-import { joinPath, resolvePath } from "../utils";
+import { joinPath } from "../utils";
 import {
   AuthConfig,
   AutoRouteConfig,

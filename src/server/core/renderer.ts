@@ -17,7 +17,7 @@ export class Renderer {
     {
       regex: [
         // eslint-disable-next-line no-useless-escape
-        "<script.+/script>",
+        "<link.+/>",
         "</head>",
       ],
       tag: "hotbarsHead",
@@ -113,7 +113,7 @@ export class Renderer {
     return this.hbs?.compile(content)({
       lang: Config.get("currentLanguage"),
       env: Config.get<string>("env"),
-      dev: Config.get("dev"),
+      dev: Config.get<boolean>("dev"),
       ...context,
     });
   }
