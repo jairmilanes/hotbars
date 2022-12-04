@@ -18,14 +18,13 @@
     "watch": "node ./scripts/watch.js watch",
     "lint": "eslint src/ --fix",
     "format": "prettier . --write",
-    "client:browserify": "browserify ./src/client/_public/bundles/client.runtime.js -o ./dist/client/_public/bundles/client.runtime.js --external=Handlebars --ignore=Handlebars",
-    "hotbars:browserify": "browserify ./src/client/_public/bundles/hotbars.runtime.js -o ./dist/client/_public/bundles/hotbars.runtime.js --external=Handlebars --ignore=Handlebars",
-    "uglify": "uglifyjs --compress --mangle --source-map --output ./dist/client/_public/runtime.bundle.min.js ./dist/client/_public/runtime.bundle.js",
+    "runtime:bundle": "browserify ./dist/client/_public/bundles/dashboard.runtime.js -o ./dist/client/_public/bundles/dashboard.bundle.js --external=Handlebars --ignore=Handlebars",
+    "runtime:uglify": "uglifyjs --compress --mangle --source-map --output ./dist/client/_public/bundles/dashboard.bundle.min.js ./dist/client/_public/bundles/dashboard.bundle.js",
     "bundle": "npm run bundle && npm run uglify",
-    "copy": "copyfiles -u 1 -e \"./src/client/_public/bundles/**/*\" \"./src/client/**/*.*\"  dist",
+    "copy": "copyfiles -u 1 \"./src/client/**/*.*\" dist",
     "build": "tsc -p ./tsconfig.app.json",
-    "postbuild": "npm run copy",
-    "test": "jest --watch --runInBand --detectOpenHandles"
+    "postbuild": "npm run copy & npm run runtime:bundle & npm run runtime:uglify",
+    "test": "jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",

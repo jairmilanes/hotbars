@@ -1,4 +1,4 @@
-const defaults = require("./defaults.runtime");
+const defaults = require("{{DEFAULT_HELPERS}}");
 const helpers = require("{{USER_HELPERS}}");
 
 Object.keys({ ...defaults, ...helpers }).forEach((name) => {

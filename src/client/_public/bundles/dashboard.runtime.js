@@ -1,3 +1,5 @@
+console.info(process.cwd());
+
 const defaults = require("./defaults.runtime");
 const helpers = require("../../_helpers");
 
