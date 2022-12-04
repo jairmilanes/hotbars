@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.3...hotbars-v1.7.4) (2022-12-04)
+
+
+### Bug Fixes
+
+* config returning undefined for false values ([f33d55d](https://github.com/jairmilanes/hotbars/commit/f33d55d92b14d3efa70b9435e3500d1b93d22016))
+* fixed where user runtime is generated ([f33d55d](https://github.com/jairmilanes/hotbars/commit/f33d55d92b14d3efa70b9435e3500d1b93d22016))
+
 ## [1.7.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.2...hotbars-v1.7.3) (2022-12-03)
 
 
