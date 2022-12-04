@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.2...hotbars-v1.7.3) (2022-12-03)
+
+
+### Bug Fixes
+
+* update browserify dep location on package json ([457a357](https://github.com/jairmilanes/hotbars/commit/457a357e3826954121738113c77d6047943febc1))
+
 ## [1.7.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.1...hotbars-v1.7.2) (2022-12-03)
 
 ### Bug Fixes
