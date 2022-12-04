@@ -23,7 +23,7 @@
     "bundle": "npm run bundle && npm run uglify",
     "copy": "copyfiles -u 1 \"./src/client/**/*.*\" dist",
     "build": "tsc -p ./tsconfig.app.json",
-    "postbuild": "npm run copy & npm run runtime:bundle & npm run runtime:uglify",
+    "postbuild": "npm run copy && npm run runtime:bundle && npm run runtime:uglify",
     "test": "jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
