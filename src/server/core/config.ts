@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as _ from "lodash";
 import { loadFile } from "../services";
-import { joinPath } from "../utils";
+import { joinPath, slash } from "../utils";
 import {
   AuthConfig,
   AutoRouteConfig,
@@ -25,7 +25,7 @@ const moduleName = "hotbars";
 
 export class Config extends ConfigManager<Options> implements Options {
   dev = false;
-  root = process.cwd();
+  root = slash(process.cwd());
   env = Env.Dev;
   port = 3000;
   socketPort = 5001;

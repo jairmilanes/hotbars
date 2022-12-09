@@ -32,7 +32,7 @@ const relateRandomly = (propConfig: PropConfig, data: GeneratedData): any => {
     propConfig.args[0] || column || "id"
   );
   logger.debug(`%p%P Ramdom %s.%s => %s.%s`, 3, 0, table, column);
-  return value;
+  return value || "";
 };
 
 const relateByMapping = (
@@ -62,6 +62,8 @@ const relateByMapping = (
     );
     return value;
   }
+
+  return "";
 };
 
 const relatebyValue = (
@@ -89,6 +91,8 @@ const relatebyValue = (
     );
     return value;
   }
+
+  return "";
 };
 
 const resolveForProp = (

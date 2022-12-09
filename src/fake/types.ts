@@ -66,6 +66,9 @@ export interface SchemaConfig {
   size: number;
   name: string;
   schema: { [prop: string]: string };
+  mappings?: {
+    [propName: string]: Record<string, string|number|boolean>
+  }
   relations?: RalationMapping;
   hooks?: {
     afterRecord?: string[];
@@ -87,6 +90,7 @@ export type SchemasPropsMap = Record<string, PropsConfig>;
 export interface FlowParams {
   entry: Record<string, SafeAny>;
   config: PropConfig;
+  schemaConfig: SchemaConfig
 }
 
 export interface GeneratedEntry {

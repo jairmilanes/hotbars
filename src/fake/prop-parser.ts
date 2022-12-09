@@ -121,6 +121,12 @@ export const parsePropConfig = (name: string, value: string): PropConfig => {
     return result;
   }
 
+  if (parts[0] === "mapped") {
+    result.module = parts[0];
+    result.args = [parts[1]];
+    return result;
+  }
+
   if (_.indexOf(parts[0], ".") > -1) {
     const [module, helper] = split(parts[0], ".");
     result.module = module;

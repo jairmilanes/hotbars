@@ -1,12 +1,12 @@
 import * as _ from "lodash";
 import { NextFunction, Request, Response } from "express";
-import { AuthManager } from "../../auth";
+import session, { SessionOptions } from "express-session";
 import passport from "passport";
+import { AuthManager } from "../../auth";
 import { Config, Server } from "../../core";
 import { logger } from "../../../services";
 import { Mailer } from "../../services";
 import { User } from "../../types";
-import session, { SessionOptions } from "express-session";
 
 /**
  * Renders the sign-in page, or redirects to home if the user is
@@ -20,7 +20,13 @@ const signInHandler = (req: Request, res: Response) => {
     return res.redirect("/");
   }
 
-  return res.render("sign-in");
+  const context: Record<string, any> = {}
+
+  if (Array.isArray(req.session.messages)) {
+    context.messages = req.session.messages;
+  }
+
+  return res.render("sign-in", context);
 };
 
 /**
