@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.5](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.4...hotbars-v1.7.5) (2022-12-04)
+
+
+### Bug Fixes
+
+* build command to run sequencially ([a129212](https://github.com/jairmilanes/hotbars/commit/a129212b1ff98f9488048d45fb5d8d027b0e8134))
+
 ## [1.7.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.3...hotbars-v1.7.4) (2022-12-04)
 
 
