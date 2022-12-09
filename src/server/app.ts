@@ -13,7 +13,6 @@ import {
   Renderer,
   Watcher,
   EventManager,
-  ServerEvent,
   PreRenderer,
   DashboardConfig,
 } from "./core";

@@ -12,11 +12,14 @@ export class DataManager {
 
   private static default?: string;
 
-  static register(name: string, instance: QueryBuilder): QueryBuilder {
+  static register<T extends QueryBuilder>(name: string, instance: T): T {
     if (instance instanceof QueryBuilder) {
       this.instances[name] = instance;
 
-      if (!this.default) this.setDefault(name);
+      // The mails json db should never be a default
+      if (!this.default && name !== "smtpDb") {
+        this.setDefault(name)
+      }
 
       return instance;
     }
@@ -37,13 +40,13 @@ export class DataManager {
     }
   }
 
-  static get(name?: string): QueryBuilder {
+  static get<T extends QueryBuilder>(name?: string): T {
     if (name && name in this.instances) {
-      return this.instances[name];
+      return this.instances[name] as T;
     }
 
     if (this.default) {
-      return this.instances[this.default];
+      return this.instances[this.default] as T;
     }
 
     throw new UnregistredDataAdapterException(name);

@@ -2,7 +2,7 @@ import get from "lodash/get";
 import { compare } from "bcryptjs";
 import { Strategy as LocalStrategy } from "passport-local";
 import { logger } from "../../../services";
-import { AuthenticateCallback, User } from "../../types";
+import { User } from "../../types";
 import { Config } from "../../core";
 import { StrategyAbstract } from "./strategy.abstract";
 
@@ -21,6 +21,7 @@ export abstract class LocalAuthStrategyAbstract extends StrategyAbstract {
     return {
       successRedirect: this.successRedirect,
       failureRedirect: this.failureRedirect,
+      failureMessage: true
     };
   }
 
@@ -41,13 +42,22 @@ export abstract class LocalAuthStrategyAbstract extends StrategyAbstract {
       );
 
       if (valid) {
-        logger.info("User authenticated successfully", user);
+        logger.info("User authenticated successfully.", user);
+
         return done(undefined, user);
       }
 
-      return done(undefined, false);
+      logger.warn("Incorrect password for user %s.", user.username);
+
+      return done(undefined, false, {
+        message: "Incorrect username or password.",
+      });
     } catch (e) {
-      return done(e as Error, false);
+      logger.error("Authentication error %O.", e);
+
+      return done(e as Error, false, {
+        message: "Unknown error.",
+      });
     }
   }
 

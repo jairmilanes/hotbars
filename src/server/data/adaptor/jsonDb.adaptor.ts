@@ -38,6 +38,10 @@ export default class JsonDbAdaptor extends QueryBuilder {
     }
   }
 
+  get db() {
+    return this._api;
+  }
+
   collections(): Promise<string[]> {
     return Promise.resolve(_.keys(this._api.getState()));
   }

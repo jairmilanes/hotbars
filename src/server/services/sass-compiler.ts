@@ -1,10 +1,15 @@
 import { spawnSync } from "node:child_process";
+import sass from "sass"
+import sassGraph from "sass-graph";
 import { logger } from "../../services";
 import { Config, EventManager, ServerEvent } from "../core";
-import { joinPath } from "../utils";
-import { Env, WatcherChange } from "../types";
+import { basename, joinPath, slash } from "../utils";
+import { Env, WatcherChange, WatcherChangeType } from "../types";
 
 export class SassCompiler {
+
+  static graph: any;
+
   static create(): void {
     if (Config.is("env", Env.Dev)) {
       logger.debug(`%p%P Sass compiler`, 1, 1);
@@ -13,23 +18,46 @@ export class SassCompiler {
   }
 
   static compile(data?: WatcherChange): void {
-    logger.info(`%p%P Sass`, 1, 1);
+    logger.debug(`%p%P Sass compiler`, 1, 1);
 
     const sourcePath = Config.relPath("styles");
-    const destPath = joinPath(
-      Config.relPath("public"),
-      Config.value<string>("styles")
+
+    const files = SassCompiler.findBaseFiles(
+      sourcePath,
+      data ? data?.structural : true,
+      data?.path
     );
+
+    logger.debug("%p%P targets %O", 3, 0, files);
+
     const cwd = Config.value<string>("root");
     const env = Config.get("env");
-    const path = `${sourcePath}:${destPath}`;
 
-    logger.debug(`%p%P compiling ${path}`, 3, 0);
+    const paths = files
+      .map((file: string) => `${file}:${file
+        .replace(
+          Config.get("styles"),
+          joinPath(Config.get("public"), Config.get("styles"))
+        )
+        .replace("scss", "css")}`
+      )
+
+    if (!paths.length) {
+      logger.warn("%p%P No targets found for path %s", 3, 0)
+      logger.debug(this.graph);
+      return;
+    }
+
+    logger.debug(`%p%P compiling:`, 3, 0);
+
+    paths.forEach((path: string) => {
+      logger.debug(`%p%P %s`, 5, 1, path);
+    })
 
     try {
       const result = spawnSync(
         "sass",
-        [path, "--style", env !== "development" ? "compressed" : "expanded"],
+        [paths.join(" "), "--style", env !== "development" ? "compressed" : "expanded"],
         {
           cwd,
           shell: true,
@@ -61,10 +89,66 @@ export class SassCompiler {
       }
 
       if (data) {
-        EventManager.i.emit(ServerEvent.HOT_RELOAD, data);
+        EventManager.i.emit(ServerEvent.HOT_RELOAD, {
+          ...data,
+          type: WatcherChangeType.Css,
+          path: paths.map(path => path.split(":")[1])
+        });
       }
     } catch (e) {
       logger.error("%p%P %O", 3, 1, e);
     }
+  }
+
+  private static findBaseFiles(source: string, reMap: boolean, path?: string): string[] {
+    if (reMap) {
+      this.graph = sassGraph.parseDir(source, {
+        extensions: ["scss"]
+      });
+    }
+
+    logger.info("%p%P Processing path %s", 3, 0, path);
+
+    const files = Object.keys(this.graph.index)
+      .map(path => {
+        const filename = basename(path);
+
+        return {
+          ...this.graph.index[path],
+          path: slash(path),
+          filename: filename
+        }
+      });
+
+    if (path) {
+      const target = files.find((file) => {
+        return file.path.endsWith(path);
+      });
+
+      if (target) {
+        if (target.importedBy.length) {
+          return target?.importedBy
+            .map((path: string) =>
+              slash(path)
+                .replace(`${Config.get("root")}/`, "")
+            )
+            .filter((path: string) =>
+              !basename(path).startsWith("_")
+            );
+        }
+
+        if (!basename(target.path).startsWith("_")) {
+          return [
+            target.path.replace(`${Config.get("root")}/`, "")
+          ]
+        }
+      }
+
+      return [];
+    }
+
+    return files
+      .filter(file => !file.filename.startsWith("_"))
+      .map(file => file.path.replace(`${Config.get("root")}/`, ""))
   }
 }

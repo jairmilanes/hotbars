@@ -6,6 +6,7 @@ import { NextFunction, Response } from "express";
 import { DataManager } from "../data";
 import { split } from "../../utils";
 import { EnhancedJsonDbPayload, RequestEnhanced } from "../types";
+import JsonDbAdaptor from "../data/adaptor/jsonDb.adaptor";
 
 const PAGES_SIZE = 10;
 
@@ -104,9 +105,15 @@ export const createJsonRouter = (
         return db;
       }
 
-      const jsonDb = Config.value<string>("jsonDb");
+      const jsonDb = DataManager.get<JsonDbAdaptor>("jsonDb");
 
-      if (jsonDb.endsWith(".json")) {
+      if (jsonDb) {
+        return jsonDb.db;
+      }
+
+      const jsonDbConfig = Config.value<string>("jsonDb");
+
+      if (jsonDbConfig.endsWith(".json")) {
         logger.debug(
           "%p%P Loading LowDb from %s",
           3,

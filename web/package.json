@@ -16,7 +16,7 @@
     "eslint-config-prettier": "^8.5.0"
   },
   "dependencies": {
-    "@jmilanes/hotbars": "^1.6.4",
+    "@jmilanes/hotbars": "file:../pack/jmilanes-hotbars-1.7.4.tgz",
     "@supabase/supabase-js": "^2.1.0",
     "passport-github2": "^0.1.12"
   }

@@ -16,8 +16,13 @@ import {
   parseUse,
 } from "./parsers";
 import { Config } from "../server/core";
+import { parseMapped } from "./parsers/mapped";
 
-export const generateProp = (entry: GeneratedEntry, config: PropConfig) => {
+export const generateProp = (
+  entry: GeneratedEntry,
+  config: PropConfig,
+  schemaConfig: SchemaConfig
+) => {
   const { module } = config;
 
   if (_.includes(["one-to-one", "one-to-many"], module)) {
@@ -27,10 +32,11 @@ export const generateProp = (entry: GeneratedEntry, config: PropConfig) => {
   return _.flow([
     parseArgs,
     parseUse,
+    parseMapped,
     parseElementArray,
     parseHelper,
     _.partialRight(_.get, "entry"),
-  ])({ entry, config });
+  ])({ entry, config, schemaConfig });
 };
 
 export const generateRecords = (
@@ -54,7 +60,11 @@ export const generateRecords = (
         props,
         (entry, prop) => {
           logger.debug(`%p%P %s:`, 3, 0, prop);
-          const updated = generateProp(entry, _.cloneDeep(propsConfig[prop]));
+          const updated = generateProp(
+            entry,
+            _.cloneDeep(propsConfig[prop]),
+            schemaConfig
+          );
           logger.debug(
             `%p%P ${
               propsConfig[prop].module ? `${propsConfig[prop].module}.` : ""
