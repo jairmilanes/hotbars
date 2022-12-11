@@ -52,6 +52,10 @@ export class DataManager {
     throw new UnregistredDataAdapterException(name);
   }
 
+  static getDefault(): string | undefined {
+    return this.default
+  }
+
   static setDefault(name: string): void {
     this.default = name;
   }

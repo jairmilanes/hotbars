@@ -119,7 +119,7 @@ export class AuthManager {
     passport.deserializeUser(function (userId: any, cb) {
       logger.debug("%P Auth:Deserialize session user %s", 2, userId);
       process.nextTick(function () {
-        const usersDb = DataManager.get("jsonDb").from(
+        const usersDb = DataManager.get().from(
           Config.get<string>("auth.usersTable")
         );
         return usersDb

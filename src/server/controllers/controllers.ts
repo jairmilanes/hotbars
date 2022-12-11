@@ -25,13 +25,13 @@ export class Controllers {
     const controllers = glob.sync(Config.fullGlobPath("controllers"));
 
     for (let i = 0; i < (controllers || []).length; i++) {
-      const module = importFresh(controllers[i]);
-      const name = this.normalizePath(controllers[i]);
-      const fullName = `${name}.${controllers[i].split(".").pop()}`;
-
-      logger.debug(`%p%P %s`, 3, 1, Config.relPath("controllers", fullName));
-
       try {
+        const module = importFresh(controllers[i]);
+        const name = this.normalizePath(controllers[i]);
+        const fullName = `${name}.${controllers[i].split(".").pop()}`;
+
+        logger.debug(`%p%P %s`, 3, 1, Config.relPath("controllers", fullName));
+
         this.instantiate(module, name, this.getModuleKey(module));
       } catch (e) {
         logger.warn(
@@ -57,11 +57,17 @@ export class Controllers {
     if (path in this.controllers) {
       logger.debug(`%P Invoking controller at ${path}`, 2);
 
-      if (this.controllers[path] instanceof ControllerAbstract) {
-        return (<ControllerAbstract>this.controllers[path]).handle(req);
+      try {
+        if (this.controllers[path] instanceof ControllerAbstract) {
+          return (<ControllerAbstract>this.controllers[path]).handle(req);
+        }
+        return (<ControllerFunction>this.controllers[path])(req, res);
+      } catch(e) {
+        logger.error("%p%P Error while executing controller %s call", 3, 0, path)
+        logger.error("%O", e)
       }
-      return (<ControllerFunction>this.controllers[path])(req, res);
     }
+
     return {};
   }
 

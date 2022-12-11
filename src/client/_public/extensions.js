@@ -137,9 +137,9 @@ $.fn.modal = function (name, context) {
 
 $.fn.confirm = function (name, context, callback) {
   this.render(name, context, "append");
-  console.log(`#${context.id}`);
+
   const modal = $(`#${context.id}`);
-  console.log(modal);
+
   $("[data-modal-confirm]", modal).click(() => {
     callback(modal);
   });
