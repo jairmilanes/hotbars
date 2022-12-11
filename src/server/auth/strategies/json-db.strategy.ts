@@ -11,7 +11,7 @@ export abstract class JsonDbAuthStrategy extends LocalAuthStrategyAbstract {
   }
 
   async getUser(username: string): Promise<User> {
-    const usersDb = DataManager.get("jsonDb").from(
+    const usersDb = DataManager.get().from(
       Config.get<string>("auth.usersTable")
     );
 
@@ -25,7 +25,7 @@ export abstract class JsonDbAuthStrategy extends LocalAuthStrategyAbstract {
   async createUser(data: Record<string, any>) {
     const profile = _.pick(data, ["username", "email", "password"]) as NewUser;
 
-    const usersDb = DataManager.get("jsonDb").from(
+    const usersDb = DataManager.get().from(
       Config.get<string>("auth.usersTable")
     );
 
@@ -41,7 +41,7 @@ export abstract class JsonDbAuthStrategy extends LocalAuthStrategyAbstract {
   }
 
   async confirmEmail(username: string): Promise<User> {
-    const usersDb = DataManager.get("jsonDb").from(
+    const usersDb = DataManager.get().from(
       Config.get<string>("auth.usersTable")
     );
 

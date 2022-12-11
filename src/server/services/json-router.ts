@@ -111,7 +111,7 @@ export const createJsonRouter = (
         return jsonDb.db;
       }
 
-      const jsonDbConfig = Config.value<string>("jsonDb");
+      const jsonDbConfig = Config.get<string>("jsonDb");
 
       if (jsonDbConfig.endsWith(".json")) {
         logger.debug(

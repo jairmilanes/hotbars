@@ -128,8 +128,6 @@ function EmailPage() {
       };
 
       $("body").confirm("_confirm-modal", context, async (modal) => {
-        console.log("Confirmed", this);
-
         await this.remove(id);
         await this.load(this.page);
 
