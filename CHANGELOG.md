@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.7](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.6...hotbars-v1.7.7) (2022-12-11)
+
+
+### Bug Fixes
+
+* better error handling for users controllers ([f3f46a5](https://github.com/jairmilanes/hotbars/commit/f3f46a5a4299001c0f3aa6e9a7d6188bc9d0c920))
+* use default data adaptor for sign-in and sign-up process ([f3f46a5](https://github.com/jairmilanes/hotbars/commit/f3f46a5a4299001c0f3aa6e9a7d6188bc9d0c920))
+
 ## [1.7.6](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.5...hotbars-v1.7.6) (2022-12-09)
 
 
