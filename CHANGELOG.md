@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.7.6](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.5...hotbars-v1.7.6) (2022-12-09)
+
+
+### Bug Fixes
+
+* jsonDb not sharing lowDb with Data Manager ([9685c71](https://github.com/jairmilanes/hotbars/commit/9685c71d9277e715b0cc77481121c729dfe90d0a))
+* new method for mappend values in Faker ([9685c71](https://github.com/jairmilanes/hotbars/commit/9685c71d9277e715b0cc77481121c729dfe90d0a))
+* sign error messages not being passed by to the context of the page ([9685c71](https://github.com/jairmilanes/hotbars/commit/9685c71d9277e715b0cc77481121c729dfe90d0a))
+
 ## [1.7.5](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.4...hotbars-v1.7.5) (2022-12-04)
 
 
