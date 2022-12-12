@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.8](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.7...hotbars-v1.7.8) (2022-12-12)
+
+
+### Bug Fixes
+
+* fixed child process import name causing problems in apps deployments ([1c7376c](https://github.com/jairmilanes/hotbars/commit/1c7376c6f610e2bab09af2617a16bae90e587767))
+
 ## [1.7.7](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.6...hotbars-v1.7.7) (2022-12-11)
 
 
