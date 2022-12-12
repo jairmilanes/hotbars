@@ -1,4 +1,4 @@
-import { spawnSync } from "node:child_process";
+import { spawnSync } from "child_process";
 import sass from "sass"
 import sassGraph from "sass-graph";
 import { logger } from "../../services";
