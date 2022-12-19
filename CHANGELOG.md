@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.8.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.8...hotbars-v1.8.0) (2022-12-19)
+
+
+### Features
+
+* **auth:** new default authentication pages including sign-in, sign-up and password recovery ([d8793c2](https://github.com/jairmilanes/hotbars/commit/d8793c2d7a7f12e901cf235fe2ac994f4c3c6863))
+* **ts:** updates to allow to run dashboard in dev mode with ts-node ([d8793c2](https://github.com/jairmilanes/hotbars/commit/d8793c2d7a7f12e901cf235fe2ac994f4c3c6863))
+
+
+### Bug Fixes
+
+* authentication routes throwing error ([d8793c2](https://github.com/jairmilanes/hotbars/commit/d8793c2d7a7f12e901cf235fe2ac994f4c3c6863))
+* better watcher support for dashboard development ([d8793c2](https://github.com/jairmilanes/hotbars/commit/d8793c2d7a7f12e901cf235fe2ac994f4c3c6863))
+* dashboard tailwind integration ([d8793c2](https://github.com/jairmilanes/hotbars/commit/d8793c2d7a7f12e901cf235fe2ac994f4c3c6863))
+* switched from cash to jquery for better compatibility with plugins ([d8793c2](https://github.com/jairmilanes/hotbars/commit/d8793c2d7a7f12e901cf235fe2ac994f4c3c6863))
+
 ## [1.7.8](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.7...hotbars-v1.7.8) (2022-12-12)
 
 
