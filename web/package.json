@@ -4,7 +4,7 @@
   "description": "An example project running Cobra Handlebars Hot Server",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "hotbars serve -D",
+    "start": "nodemon --watch ../src/**/*.ts --exec ts-node --project=../tsconfig.web.json ../src/cli.ts serve -D",
     "fake": "hotbars fake",
     "bundle": "browserify ../dist/client/_public/tailwind.js -o ../dist/client/_public/tailwind.bundle.js --external=Handlebars --ignore=Handlebars",
     "uglify": "uglifyjs --compress --mangle --source-map --output ../dist/client/_public/tailwind.bundle.min.js ../dist/client/_public/tailwind.bundle.js",
@@ -13,7 +13,8 @@
   "author": "Jair Milanes Junior",
   "license": "MIT",
   "devDependencies": {
-    "eslint-config-prettier": "^8.5.0"
+    "eslint-config-prettier": "^8.5.0",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "@jmilanes/hotbars": "file:../pack/jmilanes-hotbars-1.7.4.tgz",

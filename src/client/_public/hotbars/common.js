@@ -16,23 +16,13 @@ $(() => {
     .removeClass("bg-rose-800 text-white")
     .removeAttr("aria-current");
 
-  $("body").on("click", (e) => {
-    const elem = $(e.target).closest("[data-toggle]");
+  $("[data-toggle]").on("click", (e) => {
+    const elem = $(e.target);
 
     if (elem) {
       e.preventDefault();
-
       const id = elem.data("toggle");
-
-      if (elem.data("toggle-active")) {
-        $(id).hide();
-        elem.text(elem.data("toggle-text-off"));
-        elem.data("toggle-active", false);
-      } else {
-        $(id).show();
-        elem.text(elem.data("toggle-text-on"));
-        elem.data("toggle-active", true);
-      }
+      $(`#${id}`).toggle();
     }
   });
 });

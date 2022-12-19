@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 import fetch, { BodyInit, RequestInit } from "node-fetch";
 import * as _ from "lodash";
 import { Config, Server } from "../../core";
@@ -84,7 +84,11 @@ export abstract class ControllerAbstract {
     });
   }
 
-  abstract handle(req: Request): Promise<Record<string, SafeAny>>;
+  abstract handle(
+    req: Request,
+    res: Response,
+    context: Record<string, any>
+  ): Promise<Record<string, SafeAny>>;
 
   private async try<T>(
     relativeUrl: string,

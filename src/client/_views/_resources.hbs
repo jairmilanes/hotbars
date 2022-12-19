@@ -74,6 +74,7 @@
   {{/content}}
 
   {{#content "scripts"}}
-      <script src="/public/resources.js"></script>
+    {{scripts "https://cdn.jsdelivr.net/npm/ace-builds@1.12.5/src-noconflict/ace[.min].js,
+               /public/resources.js"}}
   {{/content}}
 {{/extend}}

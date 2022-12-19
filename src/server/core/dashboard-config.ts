@@ -27,6 +27,7 @@ export class DashboardConfig
   };
   data = "_data";
   helpers = "_helpers";
+  lib = "_lib";
   layouts = "_layouts";
   partials = "_partials";
   precompile = "_precompile";
@@ -63,20 +64,6 @@ export class DashboardConfig
       this.set("currentLanguage", this.language.default);
     }
 
-    /* this.ignore.push(
-      this.fullGlobPath("public", "bundles", ".js")
-    ); */
-
-    if (this.env !== Env.Prod) {
-      this.watch.push(this.fullGlobPath("data"));
-      this.watch.push(this.fullGlobPath("helpers"));
-      this.watch.push(this.fullGlobPath("layouts"));
-      this.watch.push(this.fullGlobPath("partials"));
-      this.watch.push(this.fullGlobPath("shared"));
-      this.watch.push(this.fullGlobPath("views"));
-      this.watch.push(this.fullGlobPath("public"));
-    }
-
     ["data", "partials", "layouts", "templates"].forEach((name) =>
       _.set(
         this.mailer,
@@ -84,6 +71,24 @@ export class DashboardConfig
         joinPath(this.mailer.source, _.get(this.mailer, name))
       )
     );
+
+    if (this.env !== Env.Prod) {
+      this.watch.push(this.fullGlobPath("data"));
+      this.watch.push(this.fullGlobPath("helpers"));
+      this.watch.push(this.fullGlobPath("lib"));
+      this.watch.push(this.fullGlobPath("layouts"));
+      this.watch.push(this.fullGlobPath("partials"));
+      this.watch.push(this.fullGlobPath("shared"));
+      this.watch.push(this.fullGlobPath("views"));
+      this.watch.push(this.fullGlobPath("public"));
+      this.watch.push(this.fullGlobPath("default_views"));
+      this.watch.push(this.fullGlobPath("mailer.data"));
+      this.watch.push(this.fullGlobPath("mailer.partials"));
+      this.watch.push(this.fullGlobPath("mailer.layouts"));
+      this.watch.push(this.fullGlobPath("mailer.templates"));
+    }
+
+    this.ignore = [this.fullPath("public", "bundles")];
   }
 
   static create(argv: CliOptions): Readonly<DashboardConfig> {

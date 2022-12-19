@@ -1,0 +1,5 @@
+<div id="{{append id "-hint"}}" class="absolute right-0 left-0 pt-1 text-right text-red-500 text-sm">
+  <label class="mt-2 text-sm text-{{#is (invalid)}}red{{else}}green{{/is}}-600 dark:text-{{#is (invalid)}}red{{else}}green{{/is}}-500">
+    {{hint}}
+  </label>
+</div>

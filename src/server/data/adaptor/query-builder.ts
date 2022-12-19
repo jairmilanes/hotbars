@@ -36,6 +36,8 @@ export abstract class QueryBuilder {
 
   abstract collections(): Promise<string[]>;
 
+  abstract createCollection(name: string): void;
+
   abstract from(collection: string): QueryBuilder;
 
   abstract size(): Promise<number>;

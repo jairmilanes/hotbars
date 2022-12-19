@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  />
+  <title>Hotbars: {{default title "User Api"}}</title>
+  {{> hotbarsHead}}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  {{#embed "_tailwind-config" }}{{/embed}}
+
+  {{{block "head"}}}
+</head>
+<body class="bg-slate-200 dark:bg-neutral-800 text-slate-800 dark:text-slate-100 flex flex-col overflow-hidden h-full">
+  <main class="px-5 pb-5 flex-auto flex flex-col {{#if scroll}}overflow-y-scroll{{else}}overflow-hidden{{/if}} bg-gray-50 dark:bg-gray-900">
+    {{{block "main"}}}
+  </main>
+
+  {{> hotbarsFooter}}
+
+  {{#and (isTruthy auth.reCaptcha) (isTruthy vars.googleCaptchaKey)}}
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  {{/and}}
+
+  {{scripts "https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate[.min].js,
+             https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/additional-methods[.min].js,
+             https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
+             /public/hotbars.js,
+             /public/scripts/_forms.js"}}
+
+  {{{block "scripts"}}}
+</body>
+</html>
+
+

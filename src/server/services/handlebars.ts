@@ -17,7 +17,12 @@ export const configureHandlebars = (
 
   hbsHelpers({ handlebars });
 
-  logger.info(`%p%P Renderer`, 1, 1);
+  logger.debug(
+    `%p%P Handlebars... %s`,
+    1,
+    1,
+    DashboardConfig.fullGlobPath("helpers")
+  );
 
   try {
     const instance = handlebarsWax(handlebars)
@@ -34,13 +39,12 @@ export const configureHandlebars = (
       .helpers(DashboardConfig.fullGlobPath("helpers"))
       .partials(DashboardConfig.fullGlobPath("layouts"))
       .partials(DashboardConfig.fullGlobPath("partials"))
-      .partials(DashboardConfig.fullGlobPath("shared"))
-      .partials(DashboardConfig.fullGlobPath("views"));
+      .partials(DashboardConfig.fullGlobPath("shared"));
 
     return { instance, handlebars };
   } catch (e) {
     const error = e as Error;
-
+    logger.error(e);
     return { error };
   }
 };

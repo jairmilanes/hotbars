@@ -60,40 +60,11 @@ const createMethodHandlers = (
 const createViewHandler =
   (route: string, view: string): RequestHandler =>
   async (req: Request, res: Response) => {
-    const mainResult = await Controllers.call("_main", req, res);
-    const result = await Controllers.call(view, req, res);
-    const authenticated = req.isAuthenticated && req.isAuthenticated();
+    const context = await Controllers.handle(route, view, req, res);
 
-    const userContext = {};
-
-    if (_.isPlainObject(mainResult)) {
-      _.merge(userContext, mainResult);
+    if (!res.headersSent) {
+      res.status(200).render(view, context);
     }
-
-    if (_.isPlainObject(result)) {
-      _.merge(userContext, result);
-    }
-
-    const context: Record<string, any> = {
-      url: req.url,
-      page: route,
-      query: { ...req.query },
-      params: { ...req.params },
-      secure: req.secure,
-      authenticated,
-      user: req.user,
-      xhr: req.xhr,
-      ...userContext,
-    };
-
-    if (authenticated && !_.get(req.user, "confirmed")) {
-      const url = new URL("/sign-up/confirm/re-send", Server.url);
-      url.searchParams.append("username", _.get(req.user, "username", ""));
-      url.searchParams.append("provider", _.get(req.user, "provider", ""));
-      context.resendUrl = url.href;
-    }
-
-    res.status(200).render(view, context);
   };
 
 const getMiddlewares = (route: string, view: string) => {

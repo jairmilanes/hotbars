@@ -1,0 +1,62 @@
+{{#block "re-captcha"}}
+  {{#eq version "v2"}}
+    {{#eq size "invisible"}}
+      <div
+        id="{{id}}"
+        class="g-recaptcha"
+        data-sitekey="{{vars.googleCaptchaKey}}"
+        data-callback="{{default
+          googleReCaptchaCallback
+          'onSubmitWithCaptcha'
+        }}"
+        data-size="invisible"
+      >
+      </div>
+      {{#embed
+        "_button"
+        type="submit"
+        size="lg"
+        width="full"
+        classNames="g-recaptcha"
+        disabled=true
+        text=text
+      }}{{/embed}}
+    {{else}}
+      <div
+        id="{{id}}"
+        data-sitekey="{{vars.googleCaptchaKey}}"
+        data-callback="{{default
+          googleReCaptchaCallback
+          'onSubmitWithCaptcha'
+        }}"
+      ></div>
+      {{#embed
+        "_button"
+        type="submit"
+        size="lg"
+        style="dark"
+        width="full"
+        disabled=true
+        text=text
+      }}{{/embed}}
+    {{/eq}}
+  {{/eq}}
+  {{#eq version "v3"}}
+    {{#embed
+      "_button"
+      type="submit"
+      size="lg"
+      width="full"
+      classNames="g-recaptcha"
+      disabled=true
+      text=text
+    }}
+      {{#block "data"}}
+        data-sitekey="{{vars.googleCaptchaKey}}" data-callback='{{default
+          googleReCaptchaCallback
+          "onSubmitWithCaptcha"
+        }}' data-action={{action}}
+      {{/block}}
+    {{/embed}}
+  {{/eq}}
+{{/block}}

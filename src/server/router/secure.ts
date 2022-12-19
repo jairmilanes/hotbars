@@ -21,7 +21,7 @@ export const forceConfirmationMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  if (Config.enabled("auth")) {
+  if (Config.enabled("auth") && Config.get("auth.confirmEmail")) {
     if (req.isAuthenticated() && !_.get(req.user, "confirmed")) {
       return res.redirect("/sign-up/pending");
     }

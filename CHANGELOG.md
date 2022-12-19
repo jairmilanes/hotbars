@@ -2,42 +2,37 @@
 
 ## [1.7.7](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.6...hotbars-v1.7.7) (2022-12-11)
 
-
 ### Bug Fixes
 
-* better error handling for users controllers ([f3f46a5](https://github.com/jairmilanes/hotbars/commit/f3f46a5a4299001c0f3aa6e9a7d6188bc9d0c920))
-* use default data adaptor for sign-in and sign-up process ([f3f46a5](https://github.com/jairmilanes/hotbars/commit/f3f46a5a4299001c0f3aa6e9a7d6188bc9d0c920))
+- better error handling for users controllers ([f3f46a5](https://github.com/jairmilanes/hotbars/commit/f3f46a5a4299001c0f3aa6e9a7d6188bc9d0c920))
+- use default data adaptor for sign-in and sign-up process ([f3f46a5](https://github.com/jairmilanes/hotbars/commit/f3f46a5a4299001c0f3aa6e9a7d6188bc9d0c920))
 
 ## [1.7.6](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.5...hotbars-v1.7.6) (2022-12-09)
 
-
 ### Bug Fixes
 
-* jsonDb not sharing lowDb with Data Manager ([9685c71](https://github.com/jairmilanes/hotbars/commit/9685c71d9277e715b0cc77481121c729dfe90d0a))
-* new method for mappend values in Faker ([9685c71](https://github.com/jairmilanes/hotbars/commit/9685c71d9277e715b0cc77481121c729dfe90d0a))
-* sign error messages not being passed by to the context of the page ([9685c71](https://github.com/jairmilanes/hotbars/commit/9685c71d9277e715b0cc77481121c729dfe90d0a))
+- jsonDb not sharing lowDb with Data Manager ([9685c71](https://github.com/jairmilanes/hotbars/commit/9685c71d9277e715b0cc77481121c729dfe90d0a))
+- new method for mappend values in Faker ([9685c71](https://github.com/jairmilanes/hotbars/commit/9685c71d9277e715b0cc77481121c729dfe90d0a))
+- sign error messages not being passed by to the context of the page ([9685c71](https://github.com/jairmilanes/hotbars/commit/9685c71d9277e715b0cc77481121c729dfe90d0a))
 
 ## [1.7.5](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.4...hotbars-v1.7.5) (2022-12-04)
 
-
 ### Bug Fixes
 
-* build command to run sequencially ([a129212](https://github.com/jairmilanes/hotbars/commit/a129212b1ff98f9488048d45fb5d8d027b0e8134))
+- build command to run sequencially ([a129212](https://github.com/jairmilanes/hotbars/commit/a129212b1ff98f9488048d45fb5d8d027b0e8134))
 
 ## [1.7.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.3...hotbars-v1.7.4) (2022-12-04)
 
-
 ### Bug Fixes
 
-* config returning undefined for false values ([f33d55d](https://github.com/jairmilanes/hotbars/commit/f33d55d92b14d3efa70b9435e3500d1b93d22016))
-* fixed where user runtime is generated ([f33d55d](https://github.com/jairmilanes/hotbars/commit/f33d55d92b14d3efa70b9435e3500d1b93d22016))
+- config returning undefined for false values ([f33d55d](https://github.com/jairmilanes/hotbars/commit/f33d55d92b14d3efa70b9435e3500d1b93d22016))
+- fixed where user runtime is generated ([f33d55d](https://github.com/jairmilanes/hotbars/commit/f33d55d92b14d3efa70b9435e3500d1b93d22016))
 
 ## [1.7.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.2...hotbars-v1.7.3) (2022-12-03)
 
-
 ### Bug Fixes
 
-* update browserify dep location on package json ([457a357](https://github.com/jairmilanes/hotbars/commit/457a357e3826954121738113c77d6047943febc1))
+- update browserify dep location on package json ([457a357](https://github.com/jairmilanes/hotbars/commit/457a357e3826954121738113c77d6047943febc1))
 
 ## [1.7.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.1...hotbars-v1.7.2) (2022-12-03)
 

@@ -1,0 +1,88 @@
+{{#extend "_auth" title="Sign Up"}}
+  {{#content "main"}}
+    <section>
+      <div
+        class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
+      >
+        <a
+          href="#"
+          class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
+        >
+          <img
+            class="w-8 h-8 mr-2"
+            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
+            alt="logo"
+          />
+          Flowbite
+        </a>
+        {{#embed "_card" title=(i "auth.createAccount")}}
+          {{#content "body"}}
+            <form
+              class="space-y-4 md:space-y-6"
+              method="post"
+              action="{{append auth.signUp '/local'}}"
+              data-captcha="signup"
+            >
+              {{#each messages}}
+                {{#embed "_alert-message" message=this level="error"}}{{/embed}}
+              {{/each}}
+              {{{embed
+                "_input"
+                label=(i "auth.yourUsername")
+                name="username"
+                required=true
+              }}}
+              {{{embed
+                "_input"
+                type="email"
+                label=(i "auth.yourEmail")
+                name="email"
+                required=true
+              }}}
+              {{{embed
+                "_input"
+                type="password"
+                label=(i "auth.yourPassword")
+                name="password"
+                required=true
+              }}}
+              {{{embed
+                "_input"
+                type="password"
+                label=(i "auth.confirmPassword")
+                name="confirm-password"
+                required=true
+              }}}
+              {{#if auth.terms}}
+                {{#embed "_input" type="checkbox" name="terms"}}
+                  {{#content "label"}}
+                    {{{embed
+                      "_link"
+                      url=auth.terms
+                      prefix=(i "auth.acceptThe")
+                      text=(i "auth.termsAndCOnditions")
+                    }}}
+                  {{/content}}
+                {{/embed}}
+              {{/if}}
+              {{{embed
+                "_re-captcha"
+                id="signup"
+                version=auth.reCaptcha
+                text=(i "auth.createAccount")
+              }}}
+              <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                {{{embed
+                  "_link"
+                  url=auth.signIn
+                  prefix=(i "auth.alreadHaveAnAccount")
+                  text=(i "auth.signInHere")
+                }}}
+              </p>
+            </form>
+          {{/content}}
+        {{/embed}}
+      </div>
+    </section>
+  {{/content}}
+{{/extend}}

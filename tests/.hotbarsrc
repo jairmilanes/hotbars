@@ -5,6 +5,9 @@
   "source": "tests/__data__",
   "jsonSchema": "schema",
   "jsonDb": "db/db.json",
+  "auth": {
+    "enabled": true
+  },
   "language": {
     "enabled": true,
     "languages": ["en", "pt-br"]

@@ -178,7 +178,10 @@ export class Watcher {
       return WatcherChangeType.PreCompiled;
     }
 
-    if (changePath.indexOf(this.config.relPath("helpers")) > -1) {
+    if (
+      changePath.indexOf(this.config.relPath("helpers")) > -1 ||
+      changePath.indexOf(this.config.relPath("lib")) > -1
+    ) {
       if (this.config.get("dev")) {
         return WatcherChangeType.DashboardRuntime;
       }

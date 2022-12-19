@@ -140,7 +140,7 @@ function EmailPage() {
 
   this.load($.query().get("page") || 1).then(() => this.list.click(0));
 
-  $.onStateChange((params) => {
+  $.stateChange((params) => {
     this.load(params.get("page") || 1);
   });
 }

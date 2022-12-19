@@ -1,5 +1,5 @@
 const GithubStrategy = require("passport-github2");
-const { StrategyAbstract } = require("@jmilanes/hotbars");
+const { StrategyAbstract } = require("../../../src");
 
 class GithubAuth extends StrategyAbstract {
   constructor() {

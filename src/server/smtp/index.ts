@@ -17,7 +17,7 @@ import { SMTPServerConfig } from "../types";
 import JsonDbAdaptor from "../data/adaptor/jsonDb.adaptor";
 import { createJsonRouter } from "../services";
 import { DataManager } from "../data";
-import { emails } from "./dummy-db";
+import { saveServerFile } from "../utils/get-server-data-dir";
 
 export class FakeSMPTServer {
   private static instance: FakeSMPTServer;
@@ -38,12 +38,13 @@ export class FakeSMPTServer {
     this.config = Config.get("smtpServer");
     logger.info(`%p%P SMTP server`, 1, 1);
 
-    this.router = createJsonRouter(
-      {
-        mails: emails,
-      },
-      this.dbName
+    const path = saveServerFile(
+      "smtp-db.json",
+      JSON.stringify({ mails: [] }),
+      false
     );
+
+    this.router = createJsonRouter(path, this.dbName);
 
     this._db = new JsonDbAdaptor(this.router.db, "mails");
 

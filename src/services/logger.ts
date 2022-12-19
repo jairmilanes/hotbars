@@ -73,6 +73,16 @@ export const logger: Logger = {
       }
     }
 
+    for (let i = 5; i < _.keys(levelNames).length; i++) {
+      const parts = _.split(levelNames[i], ":");
+
+      if (parts[0] === "method") {
+        enabledStr += `,hotbars:${_.toUpper(parts[1])}`;
+      } else {
+        enabledStr += `,hotbars:${parts[1]}`;
+      }
+    }
+
     createLogger.enable(enabledStr);
   },
 };

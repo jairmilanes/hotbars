@@ -53,6 +53,10 @@ program
       Config.create(argv);
       DashboardConfig.create(argv);
 
+      if (Config.get("dev")) {
+        process.env.HOTBARS_DEV = "true";
+      }
+
       const hotBars = new App();
 
       await hotBars.start();

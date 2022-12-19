@@ -6,7 +6,7 @@ export const parseMapped = (params: FlowParams) => {
   const { prop, module, args } = config;
 
   if (module === "mapped") {
-    const { mappings } = schemaConfig
+    const { mappings } = schemaConfig;
     if (mappings && prop in mappings && args[0]) {
       entry[prop] = mappings[prop][args[0]] || "";
     }

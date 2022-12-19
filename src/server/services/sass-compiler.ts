@@ -1,5 +1,5 @@
 import { spawnSync } from "child_process";
-import sass from "sass"
+import sass from "sass";
 import sassGraph from "sass-graph";
 import { logger } from "../../services";
 import { Config, EventManager, ServerEvent } from "../core";
@@ -7,7 +7,6 @@ import { basename, joinPath, slash } from "../utils";
 import { Env, WatcherChange, WatcherChangeType } from "../types";
 
 export class SassCompiler {
-
   static graph: any;
 
   static create(): void {
@@ -33,17 +32,18 @@ export class SassCompiler {
     const cwd = Config.value<string>("root");
     const env = Config.get("env");
 
-    const paths = files
-      .map((file: string) => `${file}:${file
-        .replace(
-          Config.get("styles"),
-          joinPath(Config.get("public"), Config.get("styles"))
-        )
-        .replace("scss", "css")}`
-      )
+    const paths = files.map(
+      (file: string) =>
+        `${file}:${file
+          .replace(
+            Config.get("styles"),
+            joinPath(Config.get("public"), Config.get("styles"))
+          )
+          .replace("scss", "css")}`
+    );
 
     if (!paths.length) {
-      logger.warn("%p%P No targets found for path %s", 3, 0)
+      logger.warn("%p%P No targets found for path %s", 3, 0);
       logger.debug(this.graph);
       return;
     }
@@ -52,12 +52,16 @@ export class SassCompiler {
 
     paths.forEach((path: string) => {
       logger.debug(`%p%P %s`, 5, 1, path);
-    })
+    });
 
     try {
       const result = spawnSync(
         "sass",
-        [paths.join(" "), "--style", env !== "development" ? "compressed" : "expanded"],
+        [
+          paths.join(" "),
+          "--style",
+          env !== "development" ? "compressed" : "expanded",
+        ],
         {
           cwd,
           shell: true,
@@ -92,7 +96,7 @@ export class SassCompiler {
         EventManager.i.emit(ServerEvent.HOT_RELOAD, {
           ...data,
           type: WatcherChangeType.Css,
-          path: paths.map(path => path.split(":")[1])
+          path: paths.map((path) => path.split(":")[1]),
         });
       }
     } catch (e) {
@@ -100,25 +104,28 @@ export class SassCompiler {
     }
   }
 
-  private static findBaseFiles(source: string, reMap: boolean, path?: string): string[] {
+  private static findBaseFiles(
+    source: string,
+    reMap: boolean,
+    path?: string
+  ): string[] {
     if (reMap) {
       this.graph = sassGraph.parseDir(source, {
-        extensions: ["scss"]
+        extensions: ["scss"],
       });
     }
 
     logger.info("%p%P Processing path %s", 3, 0, path);
 
-    const files = Object.keys(this.graph.index)
-      .map(path => {
-        const filename = basename(path);
+    const files = Object.keys(this.graph.index).map((path) => {
+      const filename = basename(path);
 
-        return {
-          ...this.graph.index[path],
-          path: slash(path),
-          filename: filename
-        }
-      });
+      return {
+        ...this.graph.index[path],
+        path: slash(path),
+        filename: filename,
+      };
+    });
 
     if (path) {
       const target = files.find((file) => {
@@ -129,18 +136,13 @@ export class SassCompiler {
         if (target.importedBy.length) {
           return target?.importedBy
             .map((path: string) =>
-              slash(path)
-                .replace(`${Config.get("root")}/`, "")
+              slash(path).replace(`${Config.get("root")}/`, "")
             )
-            .filter((path: string) =>
-              !basename(path).startsWith("_")
-            );
+            .filter((path: string) => !basename(path).startsWith("_"));
         }
 
         if (!basename(target.path).startsWith("_")) {
-          return [
-            target.path.replace(`${Config.get("root")}/`, "")
-          ]
+          return [target.path.replace(`${Config.get("root")}/`, "")];
         }
       }
 
@@ -148,7 +150,7 @@ export class SassCompiler {
     }
 
     return files
-      .filter(file => !file.filename.startsWith("_"))
-      .map(file => file.path.replace(`${Config.get("root")}/`, ""))
+      .filter((file) => !file.filename.startsWith("_"))
+      .map((file) => file.path.replace(`${Config.get("root")}/`, ""));
   }
 }

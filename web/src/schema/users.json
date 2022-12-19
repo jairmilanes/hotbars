@@ -10,7 +10,6 @@
     "username": "lodash.join:prop.firstName+prop.lastName,_",
     "password": "hash:internet.password",
     "avatar": "unique:internet.avatar",
-    "jobTitle": "name.jobTitle",
     "country": "use:Brasil",
     "countryCode": "use:BR",
     "age": "datatype.number:min_18+max_50",
