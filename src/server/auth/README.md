@@ -12,7 +12,7 @@ First, make sure to enable authentication in your `.hotbarsrc` file:
     "path": "auth", // Path where your authentication strategies will be placed
     "securePath": "secure", // Name of the secure views folder.
     "usersTable": "users", // Name of the table where users are stored in your database
-    "usernameColumn": "username", // Name of the username column in your users table
+    "emailColumn": "email", // Name of the email column in your users table
     "passwordColumn": "password", // Name of the password column in your users table
   },
   ...

@@ -46,6 +46,13 @@ export default class JsonDbAdaptor extends QueryBuilder {
     return Promise.resolve(_.keys(this._api.getState()));
   }
 
+  async createCollection(name: string): Promise<void> {
+    const state = this._api.getState();
+    state[name] = [];
+    this._api.setState(state);
+    await this._api.write();
+  }
+
   from(collection: string): JsonDbAdaptor {
     return new JsonDbAdaptor(this._api, collection);
   }

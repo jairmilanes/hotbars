@@ -1,8 +1,10 @@
+const requireFresh = require("../_lib/require-fresh")(require);
+const components = requireFresh("../_lib/tailwind");
+
 const tailwind = module.exports;
 
-tailwind.position = function (position, options) {
+tailwind._position = function (position) {
   const ps = "absolute";
-
   switch (position) {
     case "top-left":
       return ps.concat("top-0 left-0");
@@ -19,114 +21,72 @@ tailwind.position = function (position, options) {
   }
 };
 
-/**
- * Button styles
- *
- * @param {string} style
- * @param {String} color
- * @param {object} options
- * @returns {(string)}
- */
-tailwind.button = function (style, color, options) {
-  if (typeof color !== "string") {
-    options = color;
-    color = undefined;
+tailwind._button = function (options) {
+  if (options.hash.color && !options.hash.bg) {
+    options.hash.bg = options.hash.color;
   }
-  const theme = {
-    default: [
-      "px-5 py-2.5",
-      "text-sm font-medium",
+  if (options.hash.color && !options.hash.border) {
+    options.hash.border = options.hash.color;
+  }
+  return components._button(options.hash || {});
+};
 
-      "text-white",
-      "bg-%s-800 hover:bg-%s-900",
-      "focus:ring-4 focus:ring-%s-300",
-      "focus:outline-none",
+tailwind._label = function (options) {
+  return components._label(options.hash || {});
+};
 
-      "dark:bg-%s-800 dark:hover:bg-%s-700",
-      "dark:border-%s-700",
-      "dark:focus:ring-%s-700",
+tailwind._input = function (options) {
+  const props = options.hash || {};
 
-      "rounded-lg",
-    ],
-    outline: [
-      "px-5 py-2.5",
-      "text-sm font-medium",
+  if (props.style === "underline") {
+    props.rounded = false;
+  }
 
-      "text-%s-700 hover:text-%s-500",
-      "border border-%s-700 hover:border-%s-600",
-      "focus:ring-4 focus:ring-%s-300",
-      "focus:outline-none",
+  return components._input(props);
+};
 
-      "dark:text-%s-500",
-      "dark:border-%s-500",
-      "dark:focus:ring-%s-800",
+tailwind._alert = function (options) {
+  if (options.hash.color && !options.bg) {
+    options.hash.bg = options.hash.color;
+  }
 
-      "rounded-lg",
-    ],
-    dark: [
-      "px-5 py-2.5",
-      "text-sm font-medium",
-
-      "text-white",
-      "bg-gray-800 hover:bg-gray-900",
-      "focus:ring-4 focus:ring-gray-300",
-      "focus:outline-none",
-
-      "dark:bg-gray-800 dark:hover:bg-gray-700",
-      "dark:border-gray-700",
-      "dark:focus:ring-gray-700",
-
-      "rounded-lg",
-    ],
-    light: [
-      "px-5 py-2.5",
-      "text-sm font-medium",
-
-      "text-gray-900",
-      "bg-white hover:bg-gray-100",
-      "border border-gray-300",
-      "focus:ring-4 focus:ring-gray-200",
-      "focus:outline-none",
-
-      "dark:text-white",
-      "dark:bg-gray-800 dark:hover:bg-gray-700",
-      "dark:border-gray-600 dark:hover:border-gray-600",
-      "dark:focus:ring-gray-700",
-    ],
-    icon: [
-      "p-2",
-
-      "text-sm font-medium",
-
-      "text-white",
-      "bg-%s-800 hover:bg-%s-900",
-      "focus:ring-4 focus:ring-%s-300",
-      "focus:outline-none",
-
-      "dark:bg-%s-800 dark:hover:bg-%s-700",
-      "dark:border-%s-700",
-      "dark:focus:ring-%s-700",
-
-      "rounded-full",
-    ],
-    iconOutline: [
-      "p-2",
-
-      "text-%s-700 hover:text-%s-500",
-      "border border-%s-700 hover:border-%s-600",
-      "focus:ring-4 focus:ring-%s-300",
-      "focus:outline-none",
-
-      "dark:text-%s-500",
-      "dark:border-%s-500",
-      "dark:focus:ring-%s-800",
-
-      "rounded-full",
-    ],
+  const colors = {
+    info: "blue",
+    error: "red",
+    warning: "yellow",
+    success: "grren",
   };
 
-  return (theme[style] || theme.default)
-    .map((st) => st.replace(/%s/g, color || "blue"))
-    .join(" ")
-    .trim();
+  if (colors[options.hash.color]) {
+    options.hash.color = colors[options.hash.color];
+  }
+
+  if (!options.hash.color) {
+    options.hash.color = "gray";
+    options.hash.theme = "opaque";
+  }
+
+  return components._alert._body(options.hash || {});
+};
+
+tailwind._alertText = function (options) {
+  return components._alert._text(options.hash || {});
+};
+
+tailwind._alertTitle = function (options) {
+  return components._alert._title(options.hash || {});
+};
+
+tailwind._alertIcon = function (options) {
+  if (options.hash.color && !options.bg) {
+    options.hash.bg = options.hash.color;
+  }
+  return components._alert._icon(options.hash || {});
+};
+
+tailwind._alertClose = function (options) {
+  if (options.hash.color && !options.bg) {
+    options.hash.bg = options.hash.color;
+  }
+  return components._alert._close(options.hash || {});
 };

@@ -3,23 +3,21 @@ import passport from "passport";
 import { logger } from "../../services";
 import { Config, EventManager, ServerEvent } from "../core";
 import { DataManager } from "../data";
-import { StrategyAbstract } from "./strategies/strategy.abstract";
 import { WatcherChange } from "../types";
+import { LocalAuthStrategy } from "./strategies/local.strategy";
+import { StrategyAbstract } from "./strategies/strategy.abstract";
+import { RememberMeAuthStrategy } from "./strategies/remember-me.strategy";
 
 export class AuthManager {
   private static strategies: { [name: string]: StrategyAbstract } = {};
 
   static create() {
-    if (!Config.enabled("mailer")) {
+    if (Config.get("auth.confirmEmail") && !Config.enabled("mailer")) {
       logger.warn(
-        `%p%P Mailer is currently disabled, authentication 
-                        depends on email capabilities, add our email 
-                        configurations before enabling authentication.`,
+        `%p%P When email confirmation is enabled, you must also enable and configure the mailer service to enable authentication.`,
         1,
         1
       );
-
-      logger.error(`%p%P Authentication has not been enabled.`, 3, 0);
       return;
     }
 
@@ -37,7 +35,7 @@ export class AuthManager {
     }
   }
 
-  static async load(data?: WatcherChange) {
+  static async load() {
     if (!this.enabled()) {
       return;
     }
@@ -54,6 +52,20 @@ export class AuthManager {
     }
 
     logger.info("%p%P Auth strategies", 1, 1);
+
+    // Add local as default loaded strategy
+    const local = new LocalAuthStrategy();
+    this.strategies[local.name] = local;
+    passport.use(local.createStrategy());
+
+    // Add remember me strategy
+    if (Config.get("auth.rememberMe")) {
+      const rememberMe = new RememberMeAuthStrategy();
+      this.strategies[rememberMe.name] = rememberMe;
+      passport.use(rememberMe.createStrategy());
+    }
+
+    logger.debug("%p%P Default %s strategy loaded %s", 3, 0, local.name);
 
     const strategies = glob.sync(Config.fullGlobPath("auth.path", ".js"));
 
@@ -148,7 +160,7 @@ export class AuthManager {
     return this.strategies[name] !== undefined;
   }
 
-  static get(name: string): StrategyAbstract {
-    return this.strategies[name];
+  static get<T extends StrategyAbstract>(name: string): T {
+    return this.strategies[name] as T;
   }
 }

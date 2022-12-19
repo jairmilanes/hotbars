@@ -18,7 +18,7 @@ export class DataManager {
 
       // The mails json db should never be a default
       if (!this.default && name !== "smtpDb") {
-        this.setDefault(name)
+        this.setDefault(name);
       }
 
       return instance;
@@ -53,7 +53,7 @@ export class DataManager {
   }
 
   static getDefault(): string | undefined {
-    return this.default
+    return this.default;
   }
 
   static setDefault(name: string): void {

@@ -9,5 +9,3 @@ interface "@handlebars/parser" {
   import { AST } from "@handlebars/parser";
   print(AST);
 } */
-
-

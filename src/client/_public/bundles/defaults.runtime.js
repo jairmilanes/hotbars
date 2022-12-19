@@ -9,7 +9,7 @@ const object = require(`handlebars-helpers/lib/object`);
 const regex = require(`handlebars-helpers/lib/regex`);
 const string = require(`handlebars-helpers/lib/string`);
 const url = require(`handlebars-helpers/lib/url`);
-const i18n = require("../../../server/helpers/i18n");
+const i18n = require("../../_helpers/i18n");
 
 const helpers = [
   array,

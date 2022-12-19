@@ -130,9 +130,11 @@ export abstract class ConfigManager<T> {
         case "jsonSchema":
           return "json";
         case "data":
+        case "mailer.data":
           return "{json,js,cjs}";
         case "public":
         case "helpers":
+        case "lib":
         case "controllers":
         case "auth":
           return "{js,cjs}";

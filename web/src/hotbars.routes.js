@@ -1,4 +1,4 @@
-const { DataManager } = require("@jmilanes/hotbars");
+const { DataManager } = require("../../src");
 
 const userRoutes = (router) => {
   const db = DataManager.get("jsonDb");

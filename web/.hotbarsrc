@@ -15,7 +15,8 @@
     "enabled": true
   },
   "auth": {
-    "enabled": true
+    "enabled": true,
+    "reCaptcha": "v2"
   },
   "upload": {
     "enabled": true,

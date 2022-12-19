@@ -1,0 +1,80 @@
+{{#extend "_auth" title="Sign In"}}
+  {{#content "main"}}
+    <section>
+      <div
+        class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
+      >
+        <a
+          href="#"
+          class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
+        >
+          <img
+            class="w-8 h-8 mr-2"
+            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
+            alt="logo"
+          />
+          Hotbars
+        </a>
+        {{#embed "_card" title=(i "auth.signIn")}}
+          {{#content "body"}}
+            <form
+              class="space-y-4 md:space-y-6"
+              method="post"
+              action="{{append auth.signIn '/local'}}"
+            >
+              {{#each messages}}
+                {{#embed "_alert-message" message=this level="error"}}{{/embed}}
+              {{/each}}
+              {{{embed
+                "_input"
+                label=(i "auth.yourEmailOrUsername")
+                name="username"
+                required=true
+                minLength=3
+                maxLength=30
+              }}}
+              {{{embed
+                "_input"
+                type="password"
+                name="password"
+                label=(i "auth.yourPassword")
+                placeholder="••••••••"
+                required=true
+              }}}
+              <div class="flex items-center justify-between">
+                {{{embed
+                  "_input"
+                  type="checkbox"
+                  value="remember"
+                  label=(i "auth.rememberMe")
+                  name="remember"
+                }}}
+                {{{embed
+                  "_link"
+                  url=auth.passwordRecovery
+                  text=(i "auth.forgotPassword")
+                }}}
+              </div>
+              {{{embed
+                "_button"
+                type="submit"
+                text=(i "auth.signIn")
+                width="full"
+                size="lg"
+                disabled=true
+              }}}
+              <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                {{{embed
+                  "_link"
+                  prefix=(i "auth.dontHaveAnAccount")
+                  url=auth.signUp
+                  text=(i "auth.signUp")
+                }}}
+              </p>
+            </form>
+          {{/content}}
+        {{/embed}}
+      </div>
+    </section>
+  {{/content}}
+{{/extend}}

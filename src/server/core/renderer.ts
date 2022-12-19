@@ -1,7 +1,12 @@
 import * as _ from "lodash";
 import frontMatter from "front-matter";
 import { logger } from "../../services";
-import { HandlebarsWax, InjectionData, SafeObject } from "../types";
+import {
+  HandlebarsWax,
+  InjectionData,
+  SafeObject,
+  WatcherChange,
+} from "../types";
 import { loadTemplate } from "../utils";
 import { HandlebarsException } from "../exceptions";
 import { configureHandlebars } from "../services";
@@ -58,7 +63,8 @@ export class Renderer {
     }
   }
 
-  configure(): void {
+  configure(data?: WatcherChange): void {
+    logger.debug(`%p%P Configuring renderer`, 1, 1);
     const { instance, error } = configureHandlebars();
 
     if (instance) {
@@ -67,6 +73,10 @@ export class Renderer {
 
     if ((error || !instance) && !this.hbs) {
       throw new HandlebarsException("Failed to initialize Handlebars", error);
+    }
+
+    if (data) {
+      EventManager.i.emit(ServerEvent.HOT_RELOAD, data);
     }
   }
 

@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { logger } from "../../../services";
 import { Config, Server } from "../../core";
 import { Mailer } from "../../services";
-import { FakeSMPTServer } from "../../smtp";
 
 const verifySettingsHandler = async (
   req: Request,
@@ -52,7 +51,7 @@ const sendEmailHandler = async (req: Request, res: Response) => {
     } else if (html) {
       await Mailer.sendHtml(to, subject, html);
     } else {
-      await Mailer.sendTemplate(to, template, context);
+      await Mailer.sendTemplate(to, subject || "", template, context);
     }
 
     res.json({

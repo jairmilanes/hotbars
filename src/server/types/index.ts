@@ -8,6 +8,7 @@ import { CorsOptions } from "cors";
 import { SessionOptions } from "express-session";
 import { ParamsDictionary } from "express-serve-static-core";
 import { ParsedQs } from "qs";
+import { IVerifyOptions } from "passport-local";
 
 export enum Env {
   Prod = "production",
@@ -83,15 +84,37 @@ export interface CorsConfig extends OptionalFeature, CorsOptions {
   whitelist?: string[];
 }
 
+export type AuthReCaptcha = "v2" | "v3" | false;
+
 export interface AuthConfig extends OptionalFeature {
   path: string;
   https?: boolean;
   securePath: string;
   usersTable: string;
   usernameColumn: string;
+  emailColumn: string;
   passwordColumn: string;
+  confirmEmail: boolean;
+  reCaptcha: AuthReCaptcha;
+  rememberMe?: number;
+  terms?: string;
+  views: {
+    signIn: string;
+    signUp: string;
+    signUpPending: string;
+    signOut: string;
+    passwordRecovery: string;
+    passwordRecovered: string;
+    passwordReset: string;
+  };
   session: SessionOptions;
 }
+
+export type AuthDoneCallback<T> = (
+  error?: Error | null,
+  data?: string | boolean | User | null,
+  info?: T
+) => void;
 
 export interface LanguageConfig extends OptionalFeature {
   languages: string[];
@@ -429,3 +452,9 @@ export type AuthenticateCallback = (
   user?: User | false,
   options?: AuthenticateCallbackOptions
 ) => void;
+
+export interface ActionResponse<T = Error, D = Record<string, any>> {
+  data?: D;
+  error?: T | null;
+  [key: string]: any;
+}

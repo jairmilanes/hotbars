@@ -1,27 +1,11 @@
 <!-- hotbarsFooter -->
-<script
-  type="text/javascript"
-  src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime.js"
-></script>
-<!-- Runtime ready helpers bundle -->
-{{#isTruthy config.dev}}
-<script type="text/javascript" src="/public/bundles/dashboard.bundle{{#eq config.env "production"}}.min{{/eq}}.js"></script>
-{{else}}
-<script type="text/javascript" src="/_runtime/user.bundle{{#eq config.env "production"}}.min{{/eq}}.js"></script>
-{{/isTruthy}}
-{{#eq env "development"}}
-  <!-- Hot reloading -->
-  <script type="text/javascript" src="/public/socket-connector.js"></script>
-{{/eq}}
-<!-- Precompiled templates -->
-<script type="text/javascript" src="/_precompiled"></script>
-<!-- Cash jquery like helper -->
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/cash/8.1.1/cash.min.js"
-></script>
-<!-- Cash extensions -->
-<script src="/public/extensions.js"></script>
-{{#isTruthy dev}}
-  <!-- Dashboard scripts -->
-  <script src="/public/hotbars.js"></script>
-{{/isTruthy}}
+{{scripts
+  "https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime[.min].js,
+           [dash]/public/bundles/dashboard.bundle[.min].js,
+           [!dash]/_runtime/user.bundle[.min].js,
+           [!prod]/public/socket-connector.js,
+           /_precompiled,
+           https://code.jquery.com/jquery-3.6.2[.min].js,
+           https://code.jquery.com/pep/0.4.3/pep[.min].js,
+           /public/extensions.js"
+}}

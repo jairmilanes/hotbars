@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import jsonRouter from "json-server";
 import { logger } from "../../services";
 import { Config } from "../core";
@@ -25,6 +26,10 @@ const getPageSize = (items: Record<string, any>[], qLimit?: string): number => {
  */
 const render = (name: string) => {
   return async (req: RequestEnhanced, res: Response, next: NextFunction) => {
+    if (_.toLower(req.method) !== "get") {
+      return res.jsonp(res.locals.data);
+    }
+
     const manager = DataManager.get(name);
 
     const [collection, identifyer] = split(req.path, "/");
@@ -95,13 +100,17 @@ const render = (name: string) => {
 };
 
 export const createJsonRouter = (
-  db?: Record<string, Record<string, any>[]>,
+  db?: Record<string, Record<string, any>[]> | string,
   name?: string
 ) => {
   const apiRouter = jsonRouter.router<any>(
     (() => {
-      if (db) {
+      if (_.isPlainObject(db)) {
         logger.debug("%p%P LowDb data provided in memory", 3, 0);
+        return db;
+      }
+
+      if (_.isString(db)) {
         return db;
       }
 

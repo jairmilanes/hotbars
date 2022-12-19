@@ -16,25 +16,21 @@ export class BrowserifyCompiler {
       ServerEvent.USER_RUNTIME_CHANGED,
       this.compileUserRuntime
     );
-    EventManager.i.on(
+    /* EventManager.i.on(
       ServerEvent.DASHBOARD_RUNTIME_CHANGED,
       this.compileDashboardRuntime
-    );
+    ); */
   }
 
   static compileDashboardRuntime(data?: WatcherChange): Promise<void> {
-    logger.info(`%p%P Browserify: Compiling dashboard's runtime...`, 1, 1);
+    logger.debug(`%p%P Browserify: Compiling dashboard's runtime...`, 1, 1);
     const runtime = DashboardConfig.fullPath(
       "public",
       "bundles",
       "dashboard.runtime.js"
     );
     const writeStream = createWriteStream(
-      DashboardConfig.fullPath(
-        "public",
-        "bundles",
-        "dashboard.bundle.js"
-      ).replace("src", "dist")
+      DashboardConfig.fullPath("public", "bundles", "dashboard.bundle.js") // .replace("src", "dist")
     );
 
     return new Promise((resolve) => {
@@ -59,7 +55,7 @@ export class BrowserifyCompiler {
   }
 
   static async compileUserRuntime(data?: WatcherChange): Promise<void> {
-    logger.info(`%p%P Browserify: Compiling users's runtime...`, 1, 1);
+    logger.debug(`%p%P Browserify: Compiling users's runtime...`, 1, 1);
 
     const userHelpersPath = Config.fullPath("helpers");
     const defaults = DashboardConfig.fullPath(

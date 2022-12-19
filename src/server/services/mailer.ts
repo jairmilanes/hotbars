@@ -82,13 +82,17 @@ export class Mailer {
 
   static async sendTemplate(
     to: string,
+    subject: string,
     templateName: string,
     context: Record<string, any>
   ) {
     const html = await this.template(templateName, context);
-    const subject = this.instance.getFromContext(
-      _.join([_.camelCase(templateName), "subject"], ".")
-    );
+
+    subject =
+      subject ||
+      this.instance.getFromContext(
+        _.join([_.camelCase(templateName), "subject"], ".")
+      );
 
     return this.instance.transport.sendMail(
       this.instance.options(to, subject, "", html)

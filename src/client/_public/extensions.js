@@ -18,153 +18,7 @@ function toCamelCase(str) {
   });
 }
 
-$.fn.register = function (prefix) {
-  const targets = {};
-
-  $("[id]", this).each((i, elem) => {
-    const id = $(elem).attr("id");
-
-    if (id) {
-      const cleaned = id.replace(prefix, "");
-
-      if (!targets[cleaned]) {
-        targets[toCamelCase(cleaned)] = elem;
-      }
-    }
-  });
-
-  return targets;
-};
-
-$.fn.mutate = function (attributes, callback) {
-  const config = {
-    attributes: true,
-    childList: true,
-    attributeOldValue: true,
-    attributeFilter: attributes,
-  };
-
-  const observer = new MutationObserver((mutationList, observer) => {
-    const { target, attributeName } = mutationList[0] || {};
-
-    if (attributes.indexOf(attributeName) > -1) {
-      callback(
-        attributes.reduce((values, attribute) => {
-          return {
-            ...values,
-            [attribute]: target.getAttribute(attribute),
-          };
-        }, {})
-      );
-    }
-  });
-
-  this.each((i, el) => {
-    observer.observe(el, config);
-  });
-};
-
-$.url = function () {
-  return new URL(window.location.href);
-};
-
-$.query = function () {
-  return new URL(window.location.href).searchParams;
-};
-
-$.pushState = function (params = {}) {
-  const url = new URL(window.location);
-
-  Object.keys(params).forEach((key) => {
-    if ([null, undefined].indexOf(params[key]) > 0) {
-      if (url.searchParams.has(key)) {
-        url.searchParams.delete(key);
-      }
-    } else {
-      url.searchParams.set(key, params[key]);
-    }
-  });
-
-  window.history.replaceState(null, "", url.toString());
-};
-
-$.navigate = function (params = {}) {
-  const url = new URL(window.location);
-
-  Object.keys(params).forEach((key) => {
-    url.searchParams.set(key, params[key]);
-  });
-
-  window.location.assign(url.toString());
-};
-
-$.onStateChange = function (callback) {
-  const cb = (e) => callback(e.detail.searchParams);
-  $(window).on("pushstate replaceState", cb);
-  return () => {
-    $(window).off("pushstate replaceState", cb);
-  };
-};
-
-$.fn.click = function (callback) {
-  this.on("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    callback($(e.currentTarget));
-  });
-};
-
-$.fn.render = function (template, context, mode) {
-  const { templates, partials } = Handlebars;
-  const tpl = templates[template] || partials[template];
-
-  if (tpl) {
-    if (mode === "append") {
-      return this.append(tpl(context));
-    }
-
-    if (mode === "prepend") {
-      return this.prepend(tpl(context));
-    }
-
-    this.html(tpl(context));
-  }
-};
-
-$.fn.modal = function (name, context) {
-  this.render("_confirm-modal", context, "append");
-};
-
-$.fn.confirm = function (name, context, callback) {
-  this.render(name, context, "append");
-
-  const modal = $(`#${context.id}`);
-
-  $("[data-modal-confirm]", modal).click(() => {
-    callback(modal);
-  });
-  $("[data-modal-cancel]", modal).click(() => {
-    modal.remove();
-  });
-};
-
-$.fn.openClose = function (callback) {
-  const target = this.data("toggle");
-
-  this.click((elem) => {
-    if (this.data("active") === true) {
-      $(`#${target}`).hide();
-      this.data("active", false);
-    } else {
-      $(`#${target}`).show();
-      this.data("active", true);
-    }
-
-    callback(this.data("active"), elem);
-  });
-};
-
-$.fn.list = function (template, emptyTemplate) {
+function listManager(template, emptyTemplate) {
   const { partials } = Handlebars;
   let count = 0;
 
@@ -249,4 +103,149 @@ $.fn.list = function (template, emptyTemplate) {
   }
 
   return this;
+}
+
+function mutationObserver(attributes, callback) {
+  const targetValues = {};
+
+  const config = {
+    attributes: true,
+    childList: true,
+    attributeOldValue: true,
+    attributeFilter: attributes.map((attr) => {
+      if (attr && typeof attr === "object") {
+        const key = Object.keys(attr)[0];
+        targetValues[key] = attr[key].split(/\s/g);
+        return key;
+      }
+      return attr;
+    }),
+  };
+
+  const observer = new MutationObserver((mutationList, observer) => {
+    const { target, attributeName } = mutationList[0] || {};
+
+    if (config.attributeFilter.indexOf(attributeName) > -1) {
+      const value = $(target).attr(attributeName);
+
+      if (attributeName in targetValues) {
+        const mutated = targetValues[attributeName].filter((attr) =>
+          value.includes(attr)
+        );
+
+        if (mutated && mutated.length) {
+          return callback(attributeName, mutated, value);
+        }
+        return;
+      }
+
+      callback(
+        attributeName,
+        attributes.reduce(
+          (values, attribute) => ({
+            ...values,
+            [attribute]: $(target).attr(attribute),
+          }),
+          {}
+        ),
+        value
+      );
+    }
+  });
+
+  this.each((i, el) => {
+    observer.observe(el, config);
+  });
+}
+
+function pushState(params = {}) {
+  const url = new URL(window.location);
+
+  Object.keys(params).forEach((key) => {
+    if ([null, undefined].indexOf(params[key]) > 0) {
+      if (url.searchParams.has(key)) {
+        url.searchParams.delete(key);
+      }
+    } else {
+      url.searchParams.set(key, params[key]);
+    }
+  });
+
+  window.history.replaceState(null, "", url.toString());
+}
+
+function stateChange(callback) {
+  const cb = (e) => callback(e.detail.searchParams);
+  $(window).on("pushstate replaceState", cb);
+  return () => {
+    $(window).off("pushstate replaceState", cb);
+  };
+}
+
+function navigate(params = {}) {
+  const url = new URL(window.location);
+
+  Object.keys(params).forEach((key) => {
+    url.searchParams.set(key, params[key]);
+  });
+
+  window.location.assign(url.toString());
+}
+
+function render(template, context, mode) {
+  const { templates, partials } = Handlebars;
+  const tpl = templates[template] || partials[template];
+
+  if (tpl) {
+    if (mode === "append") {
+      return this.append(tpl(context));
+    }
+
+    if (mode === "prepend") {
+      return this.prepend(tpl(context));
+    }
+
+    this.html(tpl(context));
+  }
+}
+
+const modals = {
+  confirm: function (name, context, callback) {
+    this.render(name, context, "append");
+
+    const modal = $(`#${context.id}`);
+
+    $("[data-modal-confirm]", modal).click(() => {
+      callback(modal);
+    });
+    $("[data-modal-cancel]", modal).click(() => {
+      modal.remove();
+    });
+  },
 };
+
+(function ($) {
+  $.extend({
+    url: function () {
+      return new URL(window.location.href);
+    },
+    query: function (key) {
+      const q = new URL(window.location.href).searchParams;
+      if (key) return q.get(key);
+      return q;
+    },
+    pushState,
+    navigate,
+    stateChange,
+  });
+
+  $.fn.extend({
+    list: listManager,
+    modal: function (name, context) {
+      this.render(name, context, "append");
+    },
+    confirm: modals.confirm,
+    render,
+    mutate: mutationObserver,
+  });
+})(jQuery);

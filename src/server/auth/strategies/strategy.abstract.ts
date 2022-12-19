@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Strategy } from "passport";
 import { Response } from "express";
-import { Server } from "../../core";
-import { User } from "../../types";
-import { Mailer } from "../../services";
-import { logger } from "../../../services";
+import { Config, Server } from "../../core";
+import { ActionResponse, AuthDoneCallback, User } from "../../types";
+import { AuthException } from "../../exceptions/auth.exception";
 
 export abstract class StrategyAbstract {
   name;
 
-  failureRedirect = "/sign-in";
+  failureRedirect: string;
 
-  successRedirect = "/";
+  successRedirect?: string;
 
   protected INVALID_CREDENTIALS = "invalid_credentials";
   protected AUTH_ERROR = "auth_error";
@@ -27,39 +26,23 @@ export abstract class StrategyAbstract {
 
     this.name = name;
 
-    if (successRedirect) this.successRedirect = successRedirect;
+    this.successRedirect = successRedirect || `/`;
 
-    if (failureRedirect) this.failureRedirect = failureRedirect;
+    this.failureRedirect =
+      failureRedirect || `/${Config.get("auth.views.signIn")}`;
   }
 
   abstract createStrategy(): Strategy;
 
   abstract configure(): { [key: string]: any };
 
-  abstract authenticate(...args: any[]): Promise<void>;
+  abstract authenticate(...args: any[]): Promise<any>;
+
+  abstract getUser(username: string): Promise<User>;
 
   abstract createUser(...args: any[]): Promise<User>;
 
-  abstract confirmEmail(...args: any[]): Promise<User>;
-
-  async sendEmailConfirmation(user: User, provider: string) {
-    const url = new URL("/sign-up/confirm", Server.url);
-    url.searchParams.append("username", user.username);
-    url.searchParams.append("provider", provider);
-
-    logger.debug(`Sending email to %s`, user.email);
-
-    await Mailer.sendTemplate(user.email, "sign-up-confirmation", {
-      username: user.username,
-      callbackUrl: url.href,
-    });
-  }
-
-  handleResponse(res: Response, error?: boolean, user?: any): void {
-    if (error) return res.redirect(this.getFailureUrl(true));
-    if (!user) return res.redirect(this.getFailureUrl());
-    return res.redirect(this.successRedirect);
-  }
+  abstract updateUser(...args: any[]): Promise<User>;
 
   getFailureUrl(error?: boolean) {
     return `${Server.url}${this.failureRedirect}?error=${
@@ -68,6 +51,8 @@ export abstract class StrategyAbstract {
   }
 
   getCallbackUrl(): string {
-    return `${Server.url}/auth/${this.name}/callback`;
+    return `${Server.url}/${Config.get("auth.views.signIn")}/${
+      this.name
+    }/callback`;
   }
 }

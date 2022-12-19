@@ -20,6 +20,7 @@ import {
 } from "../types";
 import { initLogger } from "../../services";
 import { ConfigManager } from "../services/config-manager";
+import * as process from "process";
 
 const moduleName = "hotbars";
 
@@ -114,11 +115,25 @@ export class Config extends ConfigManager<Options> implements Options {
     securePath: "secure",
     usersTable: "users",
     usernameColumn: "username",
+    emailColumn: "email",
     passwordColumn: "password",
+    confirmEmail: true,
+    reCaptcha: "v2",
+    rememberMe: 604800000,
+    terms: undefined,
+    views: {
+      signIn: "_sign-in",
+      signUp: "_sign-up",
+      signUpPending: "_sign-up-pending",
+      signOut: "_sign-out",
+      passwordRecovery: "_password-recovery",
+      passwordRecovered: "_password-recovered",
+      passwordReset: "_password-reset",
+    },
     session: {
       secret: "keyboard cat",
-      saveUninitialized: true,
-      resave: true,
+      saveUninitialized: false,
+      resave: false,
       cookie: {
         secure: false,
         maxAge: 60 * 60 * 1000,
@@ -153,11 +168,6 @@ export class Config extends ConfigManager<Options> implements Options {
     };
 
     _.merge(this, options, { cors });
-
-    /* if (this.env === Env.Dev && !this.browser) {
-      this.browser =
-        Os.platform() === "darwin" ? Browser.Safari : Browser.Chrome;
-    } */
 
     if (this.auth.https && !this.auth.session.cookie?.secure) {
       _.set(this.auth, "session.cookie.secure", true);
@@ -197,6 +207,7 @@ export class Config extends ConfigManager<Options> implements Options {
         this.relGlobPath("shared"),
         this.relGlobPath("views"),
         this.relGlobPath("controllers"),
+        this.relPath("mailer.source"),
         this.relGlobPath("styles"),
         this.relGlobPath("public", this.scripts, ".js"),
         this.relGlobPath("public", this.styles, ".css"),

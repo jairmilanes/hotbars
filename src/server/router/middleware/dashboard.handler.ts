@@ -1,7 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import { Config, Server, DashboardConfig } from "../../core";
 import { logger } from "../../../services";
-import { joinPath } from "../../utils";
 
 export const dashboardHandler = () => {
   const dashboardRouter = express.Router();
@@ -30,6 +29,7 @@ export const dashboardHandler = () => {
       ...req.query,
       ...req.params,
       routes: Server.routes,
+      dev: Config.get("dev"),
       config: Config.get(),
       dashboard: DashboardConfig.get(),
     });
