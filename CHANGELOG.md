@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.1...hotbars-v1.8.2) (2022-12-20)
+
+
+### Bug Fixes
+
+* changed remember-me package link failing in ci install ([9941633](https://github.com/jairmilanes/hotbars/commit/9941633eeb2c624f68264dc459034ef986f8ed1d))
+
 ## [1.8.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.0...hotbars-v1.8.1) (2022-12-20)
 
 
