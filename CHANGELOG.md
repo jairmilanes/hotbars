@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.5](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.4...hotbars-v1.8.5) (2022-12-20)
+
+
+### Bug Fixes
+
+* missing module typo ([42a238a](https://github.com/jairmilanes/hotbars/commit/42a238a45cb3ceaf78876d92e72a9f17e8a70767))
+
 ## [1.8.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.3...hotbars-v1.8.4) (2022-12-20)
 
 
