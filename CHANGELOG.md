@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.2...hotbars-v1.8.3) (2022-12-20)
+
+
+### Bug Fixes
+
+* fixed remember-me package resolving to ssh url in lock causing npm ti fail in ci deploy ([ac4377e](https://github.com/jairmilanes/hotbars/commit/ac4377e48f609af235dcd6b1df8f9943f21e03a1))
+
 ## [1.8.2](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.1...hotbars-v1.8.2) (2022-12-20)
 
 
