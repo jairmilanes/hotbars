@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.4](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.3...hotbars-v1.8.4) (2022-12-20)
+
+
+### Bug Fixes
+
+* changed remember me to pull from npm ([fc28def](https://github.com/jairmilanes/hotbars/commit/fc28defa0814980dd671386bbdb5cecb14909299))
+
 ## [1.8.3](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.2...hotbars-v1.8.3) (2022-12-20)
 
 
