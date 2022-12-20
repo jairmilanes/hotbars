@@ -1,5 +1,5 @@
-const requireFresh = require("../_lib/require-fresh")(require);
-const components = requireFresh("../_lib/tailwind");
+// const requireFresh = require("../_lib/require-fresh")(require);
+const components = require("../_lib/tailwind");
 
 const tailwind = module.exports;
 
@@ -22,6 +22,8 @@ tailwind._position = function (position) {
 };
 
 tailwind._button = function (options) {
+  options.hash = options.hash || {};
+
   if (options.hash.color && !options.hash.bg) {
     options.hash.bg = options.hash.color;
   }
@@ -45,7 +47,17 @@ tailwind._input = function (options) {
   return components._input(props);
 };
 
+tailwind._card = function (options) {
+  return components._card(options.hash)
+}
+
+tailwind._cardBody = function (options) {
+  return components._card.body(options.hash);
+}
+
 tailwind._alert = function (options) {
+  options.hash = options.hash || {}
+
   if (options.hash.color && !options.bg) {
     options.hash.bg = options.hash.color;
   }

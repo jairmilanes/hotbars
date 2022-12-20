@@ -1,8 +1,8 @@
 {{#extend "_default" title="Dashboard"}}
   {{#content "main"}}
     <section class="container mx-auto grid grid-cols-2 gap-4">
-      {{> "_pages"}}
-      {{> "_watch-patterns"}}
+      {{{embed "_pages"}}}
+      {{{embed "_watch-patterns"}}}
     </section>
   {{/content}}
 {{/extend}}

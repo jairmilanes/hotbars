@@ -10,8 +10,10 @@ const regex = require(`handlebars-helpers/lib/regex`);
 const string = require(`handlebars-helpers/lib/string`);
 const url = require(`handlebars-helpers/lib/url`);
 const i18n = require("../../_helpers/i18n");
+const layouts = require("handlebars-layouts")(Handlebars);
 
-const helpers = [
+module.exports = {
+  layouts,
   array,
   collection,
   comparison,
@@ -24,14 +26,4 @@ const helpers = [
   regex,
   string,
   url,
-];
-
-const layouts = require("handlebars-layouts");
-
-Handlebars.registerHelper(layouts(Handlebars));
-
-helpers.forEach((helper) => {
-  Object.keys(helper).forEach((name) => {
-    Handlebars.registerHelper(name, helper[name]);
-  });
-});
+};

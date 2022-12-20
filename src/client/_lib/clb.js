@@ -1,4 +1,5 @@
 const clsx = require("clsx");
+const isObject = (value) => value !== null && typeof value === "object";
 const isBoolean = (maybeBoolean) => typeof maybeBoolean === "boolean";
 const toStringIfBoolean = (value) => (isBoolean(value) ? String(value) : value);
 const isSimpleSubset = (a, b) =>
@@ -7,24 +8,82 @@ const isSimpleSubset = (a, b) =>
 /**
  * Removes undefined values recursively.
  */
-const normalize = (obj, values) => {
-  return JSON.parse(
-    JSON.stringify(obj, function (key, value) {
-      if (!/^_/.test(key) && value === undefined) {
-        return null;
+const normalize = (obj, cb = (k, v) => v) => {
+  return Object.keys(obj)
+    .reduce((result, key) => {
+      if (!/^_/.test(key) && obj[key] === undefined) {
+        return result;
       }
 
-      if (values && typeof value === "string") {
-        const props = Object.keys(values);
-        value = props.reduce((val, prop) => {
-          return val.replace(new RegExp(`%${prop}`, "g"), values[prop]);
-        }, value);
+      if (obj[key] !== null && typeof obj[key] === "object") {
+        const value = cb(key, obj[key]);
+
+        if (value !== undefined) {
+          result[key] = normalize(obj[key], cb);
+        }
+
+        return result;
       }
 
-      return /^_/.test(key) && !value ? void 0 : value;
-    }).replace(/null/g, '"undefined"')
+      if (/^_/.test(key) && !obj[key]) {
+        return result;
+      }
+
+      result[key] = toStringIfBoolean(obj[key]);
+
+      return result;
+    }, {});
+}
+
+const transpile = (classes, values) => {
+  if (typeof classes === "string") {
+    const props = Object.keys(values);
+    classes = props.reduce((val, prop) => {
+      return val.replace(new RegExp(`%${prop}`, "g"), values[prop]);
+    }, classes);
+  }
+  return classes;
+}
+
+const partialPrefixed = (key, val, options) => {
+  if (options.partial) {
+    if (key in options) {
+      return `${options.partial}:${val}`;
+    }
+
+    return undefined;
+  }
+
+  return val;
+}
+
+const themeOption = (themeKey, option, variants) => {
+  const { style } = variants;
+  const themes = ['dark', 'light'];
+
+  // Select theme from style variant if configured
+  if (isObject(variants[themeKey][style])) {
+    return themes.map(
+      theme => variants[themeKey][style][theme]
+    );
+  }
+
+  // Select theme from option
+  if (variants[themeKey][option]) {
+    if (isObject(variants[themeKey][option])) {
+      return themes.map(
+        theme => variants[themeKey][option][theme]
+      );
+    }
+
+    return variants[themeKey][option];
+  }
+
+  // Default behavior, return both themes
+  return themes.map(
+    theme => variants[themeKey][theme]
   );
-};
+}
 
 const clb =
   (schema = {}) =>
@@ -38,58 +97,77 @@ const clb =
     } = schema;
 
     const currentOptions = normalize({
-      ...defaults,
       ...defaultVariants,
+      ...defaults,
       ...options,
     });
 
-    const normalized = normalize(variants, currentOptions);
+    const normalized = normalize(variants,  (key, value) => {
+      if (!options.partial) {
+        return value;
+      }
 
-    const keys = Object.keys(normalized);
+      if (key in options) {
+        return value;
+      }
 
-    return clsx([
-      base,
-      keys.map((variantName) => {
-        const choice = toStringIfBoolean(currentOptions[variantName]);
+      return undefined;
+    });
 
-        if (variantName === "theme") {
-          const { style } = currentOptions;
+    const variantNames = Object.keys(normalized);
 
-          if (
-            normalized["theme"][style] &&
-            typeof normalized["theme"][style] !== "string"
-          ) {
-            return [
-              normalized["theme"][style]["dark"],
-              normalized["theme"][style]["light"],
-            ];
-          }
+    const sets = [];
 
-          if (normalized["theme"][choice]) {
-            if (typeof normalized["theme"][choice] !== "string") {
-              return [
-                normalized["theme"][choice]["dark"],
-                normalized["theme"][choice]["light"],
-              ];
-            }
-            return normalized["theme"][choice];
-          }
+    if (!options.partial) {
+      sets.push(base);
+    }
 
-          return [normalized["theme"]["dark"], normalized["theme"]["light"]];
+    variantNames.forEach((variantName) => {
+      const option = currentOptions[variantName];
+      const variant = normalized[variantName];
+
+      if (variantName === "theme") {
+        sets.push(themeOption(variantName, option, normalized));
+      } else {
+        sets.push(partialPrefixed(
+          variantName,
+          variant[option],
+          options
+        ));
+      }
+    });
+
+    const compounds = compoundVariants.reduce(
+      (list, { classes, ...compoundVariantOptions }) => {
+        if (isSimpleSubset(compoundVariantOptions, currentOptions)) {
+          list.push(classes);
         }
+        return list;
+      },
+      []
+    );
 
-        return normalized[variantName][choice];
-      }),
-      compoundVariants.reduce(
-        (list, { classes, ...compoundVariantOptions }) => {
-          if (isSimpleSubset(compoundVariantOptions, currentOptions)) {
-            list.push(classes);
-          }
-          return list;
-        },
-        []
-      ),
-    ]);
+    if (compounds.length) {
+      sets.push(compounds);
+    }
+
+    return clsx(sets.reduce((results, line) => {
+      if (!line) {
+        return results;
+      }
+
+      if (Array.isArray(line)) {
+        line
+          .filter(ln => !!ln && typeof ln === "string")
+          .forEach(ln => results.push(transpile(ln, currentOptions)));
+
+        return results;
+      }
+
+      results.push(transpile(line, currentOptions));
+
+      return results;
+    }, []));
   };
 
 module.exports = clb;

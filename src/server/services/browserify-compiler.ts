@@ -16,10 +16,10 @@ export class BrowserifyCompiler {
       ServerEvent.USER_RUNTIME_CHANGED,
       this.compileUserRuntime
     );
-    /* EventManager.i.on(
+    EventManager.i.on(
       ServerEvent.DASHBOARD_RUNTIME_CHANGED,
       this.compileDashboardRuntime
-    ); */
+    );
   }
 
   static compileDashboardRuntime(data?: WatcherChange): Promise<void> {
