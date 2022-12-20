@@ -1,4 +1,4 @@
-import { Strategy as RememberMeStrategy } from "passport-remember-me";
+import { Strategy as RememberMeStrategy } from "@jmilanes/passport-remember-me";
 import { decodeBase64, encodeBase64 } from "bcryptjs";
 import { DataManager } from "../../data";
 import { LocalAuthStrategy } from "./local.strategy";
