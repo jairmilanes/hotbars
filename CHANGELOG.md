@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.8.1](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.0...hotbars-v1.8.1) (2022-12-20)
+
+
+### Bug Fixes
+
+* dashboard runtime imports to improve compilation time ([4412032](https://github.com/jairmilanes/hotbars/commit/44120328383210672198c4cd8a1eaa170de9bd4b))
+* improvements to tailwind dashboard helpers to generate styles ([4412032](https://github.com/jairmilanes/hotbars/commit/44120328383210672198c4cd8a1eaa170de9bd4b))
+* sign up throwing error when a secret (salt) was provided but invalid ([4412032](https://github.com/jairmilanes/hotbars/commit/44120328383210672198c4cd8a1eaa170de9bd4b))
+
 ## [1.8.0](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.7.8...hotbars-v1.8.0) (2022-12-19)
 
 
