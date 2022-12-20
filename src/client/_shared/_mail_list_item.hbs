@@ -3,14 +3,14 @@
     href="/_mail/{{id}}"
     data-name="email"
     data-id="{{id}}"
-    class="block py-4 px-4 border-b border-gray-200"
+    class="block py-4 px-4 text-slate-600 dark:text-slate-100 bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700"
   >
-    <h4 class="text-slate-600 font-medium">{{default
+    <h4 class="font-medium">{{default
         subject
         "(no subject)"
       }}</h4>
-    <div class="flex">
-      <small class="font-medium text-slate-600 grow">to:
+    <div class="flex text-gray-400 dark:text-slate-400">
+      <small class="font-medium grow">to:
         {{get "to.text" this}}</small>
       <small class="font-medium">{{date}}</small>
     </div>

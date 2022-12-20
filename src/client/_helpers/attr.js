@@ -9,3 +9,4 @@ module.exports = function (options) {
     return str;
   }, "");
 };
+

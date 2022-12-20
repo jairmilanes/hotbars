@@ -61,7 +61,10 @@ export class LocalAuthStrategy extends StrategyAbstract {
     return record as User;
   }
 
-  async createUser(data: Record<string, any>) {
+  /**
+   * @throws {AuthException}
+   */
+  async createUser(data: Record<string, any>): Promise<User|never> {
     const profile = {
       username: _.get(data, Config.get("auth.usernameColumn")),
       email: _.get(data, Config.get("auth.emailColumn")),
@@ -70,6 +73,13 @@ export class LocalAuthStrategy extends StrategyAbstract {
 
     // Hash password
     profile.password = await this.hashPassowrd(profile.password);
+
+    if (profile.password instanceof AuthException) {
+      throw new AuthException(
+        "Faild to generate secure password.",
+        AUTH_ERROR_CODE.UNEXPECTED_ERROR
+      );
+    }
 
     const user = (await this.db.insert({
       confirmed: false,
@@ -251,8 +261,15 @@ export class LocalAuthStrategy extends StrategyAbstract {
       return result;
     }
 
+    const password = await this.hashPassowrd(newPassword);
+
+    if (password instanceof AuthException) {
+      result.error = password;
+      return result;
+    }
+
     result.data = await this.updateUser(user.id, {
-      password: await this.hashPassowrd(newPassword),
+      password,
     });
 
     return result;
@@ -310,8 +327,16 @@ export class LocalAuthStrategy extends StrategyAbstract {
     }
   }
 
-  async hashPassowrd(password: string): Promise<string> {
+  async hashPassowrd(password: string): Promise<string|AuthException> {
     // Hash password
-    return hash(password, process.env.HOTBARS_AUTH_SECRET || 15);
+    return hash(password, process.env.HOTBARS_AUTH_SECRET || 15)
+      .catch(e => {
+        logger.warn('Your provided auth secret string (from env var "HOTBARS_AUTH_SECRET") is probably invalid, head to your dashboard to generate a valid secret string and try again.')
+        return new AuthException(
+          "Error while attempting to salt password",
+          AUTH_ERROR_CODE.UNEXPECTED_ERROR,
+          e
+        );
+      });
   }
 }

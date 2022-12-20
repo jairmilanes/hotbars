@@ -2,8 +2,7 @@
 import { Strategy } from "passport";
 import { Response } from "express";
 import { Config, Server } from "../../core";
-import { ActionResponse, AuthDoneCallback, User } from "../../types";
-import { AuthException } from "../../exceptions/auth.exception";
+import { User } from "../../types";
 
 export abstract class StrategyAbstract {
   name;
@@ -40,7 +39,10 @@ export abstract class StrategyAbstract {
 
   abstract getUser(username: string): Promise<User>;
 
-  abstract createUser(...args: any[]): Promise<User>;
+  /**
+   * @throws {Error}
+   */
+  abstract createUser(...args: any[]): Promise<User|never>;
 
   abstract updateUser(...args: any[]): Promise<User>;
 
