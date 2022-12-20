@@ -1,7 +1,7 @@
 {
   "name": "@jmilanes/hotbars",
   "description": "A modern hot reloading server highly configurable using express and handlebars for simple and fast website and applications development.",
-  "version": "1.7.7",
+  "version": "1.8.1",
   "main": "dist/index.js",
   "bin": {
     "hotbars": "dist/cli.js"
@@ -70,7 +70,7 @@
     "open": "^8.4.0",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "passport-remember-me": "github:jairmilanes/passport-remember-me",
+    "passport-remember-me": "git+https://github.com/jairmilanes/passport-remember-me.git",
     "prettier": "^2.7.1",
     "sass": "^1.56.1",
     "sass-graph": "^4.0.1",
