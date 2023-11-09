@@ -3,9 +3,9 @@ import { Config, Server } from "../../core";
 
 export const fallbackHandler = () => {
   Server.app.use("*", (req, res) => {
-    logger.warn(`404 Error: "${req.url}"`);
-    res.status(404);
-    return res.render("notFound", {
+    logger.warn(`Fallback Hanlder: 404 Error: "${req.url}"`);
+
+    return res.status(404).render("notFound", {
       user: req.url,
       ...req.query,
       ...req.params,

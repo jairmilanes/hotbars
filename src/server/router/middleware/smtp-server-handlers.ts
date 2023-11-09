@@ -45,8 +45,8 @@ export const smtpMailHandlers = () => {
   // Render a single email
   Server.app.get("/_mail/render/:id", renderMail);
   // Rewrite to mails to reduce repetitiveness
-  Server.app.use(urlrewrite("/_mail/*", "/_mail/mails/$1"));
   Server.app.use(urlrewrite("/_mail*", "/_mail/mails$1"));
+  // Server.app.use(urlrewrite("/_mail/*", "/_mail/mails/$1"));
 
   Server.app.use("/_mail", persistParams, FakeSMPTServer.router);
 };

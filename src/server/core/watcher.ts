@@ -16,11 +16,11 @@ export class Watcher {
 
   private listeners: WatcherListeners = {};
 
-  private config: ConfigManager<BaseOptions>;
+  private config: ConfigManager;
 
   private isDashboard = false;
 
-  constructor(config: ConfigManager<BaseOptions>) {
+  constructor(config: ConfigManager) {
     this.config = config;
   }
 

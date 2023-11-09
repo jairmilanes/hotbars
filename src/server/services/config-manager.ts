@@ -1,16 +1,16 @@
 import * as _ from "lodash";
-import { OptionalFeature, SafeAny, SafeObject } from "../types";
+import { OptionalFeature, SafeAny } from "../types";
 import { joinPath, resolvePath } from "../utils";
 import { Config } from "../core";
 
-export abstract class ConfigManager<T> {
+export abstract class ConfigManager {
   root = "";
   source = "";
   extname = "hbs";
 
   protected customProps: Record<string, any> = {};
 
-  protected static instance: Readonly<ConfigManager<any>>;
+  protected static instance: Readonly<ConfigManager>;
 
   static get<P>(key?: string) {
     return this.instance.get<P>(key);
@@ -57,9 +57,9 @@ export abstract class ConfigManager<T> {
     _.set(this.customProps, key, value);
   }
 
-  get(): Readonly<ConfigManager<T>>;
+  get(): Readonly<ConfigManager>;
   get<P>(key?: string): P;
-  get<P = SafeAny>(key?: string): P | Readonly<ConfigManager<T>> | undefined {
+  get<P = SafeAny>(key?: string): P | Readonly<ConfigManager> | undefined {
     if (!key) return this;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

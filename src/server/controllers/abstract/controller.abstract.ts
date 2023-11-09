@@ -4,6 +4,7 @@ import * as _ from "lodash";
 import { Config, Server } from "../../core";
 import { SafeAny } from "../../types";
 import { joinPath } from "../../utils";
+import { ConfigManager } from "../../services/config-manager";
 
 interface FetchResponse<T> {
   data?: T;
@@ -15,11 +16,11 @@ interface RequestConfig extends RequestInit {
 }
 
 export abstract class ControllerAbstract {
-  private config: Config;
+  private config: ConfigManager;
 
   protected baseUrl?: string;
 
-  protected constructor(config: Config) {
+  protected constructor(config: ConfigManager) {
     this.config = config;
   }
 

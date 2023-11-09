@@ -2,7 +2,7 @@ import glob from "glob";
 import { Request, Response } from "express";
 import importFresh from "import-fresh";
 import { logger } from "../../services";
-import { Config, EventManager, Server, ServerEvent } from "../core";
+import { ContextConfig, Config, EventManager, Server, ServerEvent, DashboardConfig } from "../core";
 import {
   ControllerFunction,
   UserControllers,
@@ -17,23 +17,28 @@ export class Controllers {
 
   static create() {
     logger.info(`%p%P Controllers`, 1, 1);
-    logger.info(`%p%P from %s`, 3, 0, Config.relGlobPath("controllers"));
     EventManager.i.on(ServerEvent.CONTROLLERS_CHANGED, this.load.bind(this));
   }
 
+  /**
+   * Loads all available controllers, from user app and dashboard.
+   *
+   * @param data
+   */
   static async load(data?: WatcherChange): Promise<void> {
-    logger.info(`%p%P Controllers`, 1, 1);
-    const controllers = glob.sync(Config.fullGlobPath("controllers"));
+    const controllers = [
+      ...glob.sync(Config.fullGlobPath("controllers")),
+      ...glob.sync(DashboardConfig.fullGlobPath("controllers")),
+    ];
+
+    logger.info(`%p%P Loading controllers:`, 1, 1);
 
     for (let i = 0; i < (controllers || []).length; i++) {
       try {
+        const isDashboard = controllers[i].match(DashboardConfig.relPath("controllers")) !== null;
         const module = importFresh(controllers[i]);
         const name = this.normalizePath(controllers[i]);
-        const fullName = `${name}.${controllers[i].split(".").pop()}`;
-
-        logger.debug(`%p%P %s`, 3, 1, Config.relPath("controllers", fullName));
-
-        this.instantiate(module, name, this.getModuleKey(module));
+        this.instantiate(module, name, isDashboard);
       } catch (e) {
         logger.warn(
           `%p%P Error: %s was not loaded: %O`,
@@ -50,14 +55,17 @@ export class Controllers {
     }
   }
 
+
   static async call(
     path: string,
     req: Request,
     res: Response,
     context: Record<string, any>
   ): Promise<SafeObject> {
+    logger.debug(`Controller lookup: %s`, 2, 1, path);
+
     if (path in this.controllers) {
-      logger.debug(`%P Invoking controller at ${path}`, 2);
+      logger.debug(`%P Found ${path}`, 2, 1);
 
       try {
         if (this.controllers[path] instanceof ControllerAbstract) {
@@ -72,12 +80,14 @@ export class Controllers {
         logger.error(
           "%p%P Error while executing controller %s call",
           3,
-          0,
+          1,
           path
         );
         logger.error("%O", e);
       }
     }
+
+    logger.debug(`%P Not found: ${path}`, 2, Object.keys(this.controllers));
 
     return {};
   }
@@ -88,10 +98,11 @@ export class Controllers {
     req: Request,
     res: Response
   ): Promise<SafeObject> {
+    ContextConfig.init(req);
     const authenticated = req.isAuthenticated && req.isAuthenticated();
 
     const context: Record<string, any> = {
-      env: Config.get("env"),
+      env: ContextConfig.get("env"),
       url: req.url,
       page: route,
       query: { ...req.query },
@@ -106,13 +117,13 @@ export class Controllers {
       user: req.user,
       xhr: req.xhr,
       auth: {
-        terms: Config.get("auth.terms"),
-        reCaptcha: Config.get("auth.reCaptcha"),
+        terms: ContextConfig.get("auth.terms"),
+        reCaptcha: ContextConfig.get("auth.reCaptcha"),
       },
     };
 
     // Add auth page routes to context
-    _.forEach(Config.get<Record<string, string>>("auth.views"), (view, key) => {
+    _.forEach(ContextConfig.get<Record<string, string>>("auth.views"), (view, key) => {
       _.set(context, `auth.${key}`, `/${view}`);
     });
 
@@ -134,7 +145,7 @@ export class Controllers {
     if (
       authenticated &&
       !_.get(req.user, "confirmed") &&
-      Config.get("auth.confirmEmail")
+      ContextConfig.get("auth.confirmEmail")
     ) {
       const url = new URL("/sign-up/confirm/re-send", Server.url);
       url.searchParams.append("username", _.get(req.user, "username", ""));
@@ -168,32 +179,40 @@ export class Controllers {
     return;
   }
 
-  private static instantiate(module: any, name: string, key?: string): void {
+  private static instantiate(module: any, name: string, isDash: boolean): void {
+    const key = this.getModuleKey(module)
+
     if (!key) return;
-    const config = Config.get<Config>();
+
+    const config = ContextConfig.init(isDash);
 
     if (this.isClass(module[key])) {
-      logger.debug(`%P Initializing controller class: %s - %s`, 2, key, name);
+      logger.debug(`%p%P Class: %s`, 3, 0, name);
       this.controllers[name] = new module[key](config);
     } else {
       logger.debug(
-        `%P Initializing controller function: %s - %s`,
-        2,
-        key,
+        `%p%P Function: %s`,
+        3, 0,
         name
       );
       this.controllers[name] = (
-        (config: Readonly<Config>) => (req: Request, res: Response) =>
+        config => (req: Request, res: Response) =>
           module[key](config, req, res)
       )(config);
     }
   }
 
   private static normalizePath(controllerPath: string) {
+    const config = ContextConfig.init(
+      controllerPath.match(DashboardConfig.relPath("controllers")) !== null
+    );
+
     return controllerPath
-      .replace(Config.fullPath("controllers"), "")
-      .replace(".js", "")
-      .substring(1);
+      .replace(
+        config.fullPath("controllers"),
+        config.fullPath("views")
+      )
+      .replace(".js", "");
   }
 
   private static isClass(func: any) {

@@ -7,13 +7,14 @@ module.exports = clb({
     border: "gray",
     accent: "primary",
   },
-  base: "font-serif block w-full",
+  base: "block w-full",
   defaultVariants: {
     type: "input",
     style: "default",
     size: "md",
     spacing: "md",
     rounded: true,
+    theme: "dark"
   },
   variants: {
     type: {
@@ -23,6 +24,8 @@ module.exports = clb({
       checkbox: "",
       radio: "",
       toggle: "",
+      email: "",
+      password: ""
     },
     style: {
       default: "border-2 focus:ring-2 focus:ring-offset-2",
@@ -33,7 +36,7 @@ module.exports = clb({
     },
     theme: {
       default: {
-        dark: "dark:text-%color-200 dark:bg-%bg-700 dark:border-%border-600 dark:placeholder-%bg-500 dark:focus:border-%border-900 dark:focus:ring-offset-%border-900 dark:focus:ring-%accent-600",
+        dark: "dark:text-%color-200 focus:text-%color-200 dark:bg-%bg-700 dark:border-%border-600 dark:placeholder-%bg-500 dark:focus:border-%border-900 dark:focus:ring-offset-%border-900 dark:focus:ring-%accent-600",
         light:
           "text-%color-900 bg-%bg-50 border-%border-300 placeholder-%bg-400 focus:border-%border-300 focus:ring-offset-%border-300 focus:ring-%accent-600",
       },
@@ -62,9 +65,9 @@ module.exports = clb({
       true: "rounded-lg",
     },
     size: {
-      sm: "text-sm font-medium",
-      md: "text-md font-medium",
-      lg: "text-lg font-medium",
+      sm: "text-sm",
+      md: "text-md",
+      lg: "text-lg",
     },
     spacing: {
       sm: "p-2",

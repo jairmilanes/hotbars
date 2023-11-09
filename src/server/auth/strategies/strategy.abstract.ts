@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Strategy } from "passport";
-import { Response } from "express";
+import { Request } from "express";
 import { Config, Server } from "../../core";
 import { User } from "../../types";
 
@@ -33,7 +33,7 @@ export abstract class StrategyAbstract {
 
   abstract createStrategy(): Strategy;
 
-  abstract configure(): { [key: string]: any };
+  abstract configure(req: Request): { [key: string]: any };
 
   abstract authenticate(...args: any[]): Promise<any>;
 

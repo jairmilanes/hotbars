@@ -15,44 +15,45 @@
           />
           Hotbars
         </a>
-        {{#embed "_card" title=(i "auth.signIn") size="full"}}
+
+        {{#embed "_card" title="" titleSize="h3" size="sm" padding="md" bodyLayout="column"}}
           {{#content "body"}}
+            {{#eq (get "action" query) "confirmed"}}
+              {{#embed "_alert-message" message="Your account has been confirmed!" level="info"}}{{/embed}}
+            {{/eq}}
+
             <form
-              class="space-y-4 md:space-y-6"
+              class="w-full space-y-4 md:space-y-4"
               method="post"
               action="{{append auth.signIn '/local'}}"
             >
               {{#each messages}}
                 {{#embed "_alert-message" message=this level="error"}}{{/embed}}
               {{/each}}
-              {{{embed
-                "_input"
-                label=(i "auth.yourEmailOrUsername")
-                name="username"
-                required=true
-                minLength=3
-                maxLength=30
-              }}}
-              {{{embed
-                "_input"
-                type="password"
-                name="password"
-                label=(i "auth.yourPassword")
-                placeholder="••••••••"
-                required=true
-              }}}
-              <div class="flex items-center justify-between">
+              <div class="space-y-3">
+                {{{embed
+                  "_input"
+                  label=(i "auth.yourEmailOrUsername")
+                  name="username"
+                  required=true
+                  minLength=3
+                  maxLength=30
+                }}}
+                {{{embed
+                  "_input"
+                  type="password"
+                  name="password"
+                  label=(i "auth.yourPassword")
+                  required=true
+                }}}
+              </div>
+              <div class="flex-col items-center justify-between">
                 {{{embed
                   "_input"
                   type="checkbox"
                   value="remember"
                   label=(i "auth.rememberMe")
                   name="remember"
-                }}}
-                {{{embed
-                  "_link"
-                  url=auth.passwordRecovery
-                  text=(i "auth.forgotPassword")
                 }}}
               </div>
               {{{embed
@@ -63,17 +64,26 @@
                 size="lg"
                 disabled=true
               }}}
-              <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+
+              <div class="text-center">
                 {{{embed
                   "_link"
-                  prefix=(i "auth.dontHaveAnAccount")
-                  url=auth.signUp
-                  text=(i "auth.signUp")
+                  url=auth.passwordRecovery
+                  text=(i "auth.forgotPassword")
                 }}}
-              </p>
+              </div>
             </form>
           {{/content}}
         {{/embed}}
+
+        <p class="text-sm mt-8 font-light text-gray-500 dark:text-gray-400">
+          {{{embed
+            "_link"
+            prefix=(i "auth.dontHaveAnAccount")
+            url=auth.signUp
+            text=(i "auth.signUp")
+          }}}
+        </p>
       </div>
     </section>
   {{/content}}

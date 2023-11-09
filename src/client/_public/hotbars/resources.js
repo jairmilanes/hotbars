@@ -24,17 +24,161 @@ Object.keys(editorSession).forEach((mode) => {
 editor.setSession(editorSession.json);
 
 $(function () {
+  const context = {};
+
+  this.aceEditorEl = $("#ace-editor");
+  this.mulripartEditorEl = $("#multipart-editor");
+  this.binaryEditorEl = $("#binary-editor");
+  this.resourceListItemEl = $(".hbs-resource");
+  this.bodyDropdownTrigger = $("[data-dropdown-trigger]");
+  this.multipartAddEl = $("#hbs-multipart-add");
+  this.resourceEl = $("#hbs-request-resource");
+  this.resourceTabsEl = $("#hbs-resource-tabs");
+  this.sendRequestEl = $("#hbs-send-request");
+  this.responseContentEl = $("#hbs-response-content");
+  this.previewContentEl = $("#hbs-preview-content");
+  this.headersContentEl = $("#hbs-headers-content");
+  this.tabs = {
+    body: $("#hbs-body-content-tab"),
+    response: $("#hbs-response-content-tab"),
+    preview: $("#hbs-preview-content-tab")
+  }
+  this.emptyContentEl = $("#hbs-empty-content");
+  this.activeResource = null;
+  this.status = {
+    el: $("#hbs-status"),
+    label: $("#hbs-status-label"),
+    code: $("#hbs-status-code"),
+    text: $("#hbs-status-text")
+  }
+
   const editors = {
-    json: $("#ace-editor"),
-    plain: $("#ace-editor"),
-    multipart: $("#multipart-editor"),
-    binary: $("#binary-editor"),
+    json: this.aceEditorEl,
+    plain: this.aceEditorEl,
+    multipart: this.mulripartEditorEl,
+    binary: this.binaryEditorEl,
   };
 
+  this.multipartList = $("#hbs-multipart-form-data").list(
+    "hbs-mtl-item",
+    "_key-value-form-item"
+  );
+
+  this.changeRequestMethod = (method) => {
+    $("#hbs-request-method-none").remove();
+    $(".hbs-request-method").addClass("hidden");
+    $(`#hbs-request-method-${method}`).removeClass("hidden");
+  }
+
   /***************************************
-   * Resource Tab Controls
+   * Autogrow resource text input
    **************************************/
-  $("[data-dropdown-trigger]").on("click", (e) => {
+  this.attachResizeEvent = () => {
+    this.resourceEl
+      .find("input[type=text]")
+      .each((i, input) => {
+        const el = $(input)
+        el.prop("size", 3);
+
+        el.on("keyup", () => {
+          const len = el.val().length;
+          if (len <= 3) {
+            el.prop("size", 3);
+          } else {
+            el.prop("size", len + 0.5);
+          }
+        });
+      });
+  }
+
+  this.toggleBodyTab = () => {
+    const bodyTab = $("li:first-child", this.resourceTabsEl).first();
+
+    if (["get", "delete"].indexOf(context.method) < 0) {
+      bodyTab.removeClass("hidden");
+      $("a", bodyTab).first().trigger("click");
+
+      editor.session.setValue(["// Enter your json payload"].join("\n"));
+    } else {
+      $("#hbs-resource-tabs li a:first-child").eq(1).trigger("click");
+      bodyTab.addClass("hidden");
+    }
+  }
+
+  this.loading = (is) => {
+    const sendBtn = $("#send-btn");
+    const sendingBtn = $("#sending-btn");
+    const loading = $("#loading");
+
+    if (typeof is === "boolean") {
+      if (is) {
+        loading.removeClass("hidden")
+        sendBtn.addClass("hidden")
+        sendingBtn.removeClass("hidden")
+      } else {
+        loading.addClass("hidden")
+        sendingBtn.addClass("hidden")
+        sendBtn.removeClass("hidden")
+      }
+    } else {
+      if (loading.hasClass("hidden")) {
+        loading.removeClass("hidden")
+        sendingBtn.removeClass("hidden")
+        sendBtn.addClass("hidden")
+      } else {
+        loading.addClass("hidden")
+        sendingBtn.addClass("hidden")
+        sendBtn.removeClass("hidden")
+      }
+    }
+  }
+
+  this.clearContent = () => {
+    $("code", this.responseContentEl).html("");
+    $("code", this.previewContentEl).html("");
+    $("code", this.headersContentEl).html("");
+    console.log(editor)
+  }
+
+  this.inRange = (number, start, end) => {
+    return number >= start && number <= end;
+  }
+
+  this.updateStatus = (code, text) => {
+    this.status.label.html(code ? "Status " : "");
+    this.status.code.html(code)
+    this.status.text.html(text)
+    const colors = ["blue", "green", "yellow", "red", "gray"]
+
+    colors.forEach(color =>
+      this.status.code.removeClass(`text-${color}-600`)
+    );
+
+    if (this.inRange(code, 100, 199)) {
+      this.status.code.addClass(`text-gray-600`)
+    }
+
+    if (this.inRange(code, 200, 299)) {
+      this.status.code.addClass(`text-green-600`)
+    }
+
+    if (this.inRange(code, 300, 399)) {
+      this.status.code.addClass(`text-yellow-600`)
+    }
+
+    if (this.inRange(code, 400, 499)) {
+      this.status.code.addClass(`text-yellow-600`)
+    }
+
+    if (this.inRange(code, 500, 599)) {
+      this.status.code.addClass(`text-red-600`)
+    }
+  }
+
+  /***************************************
+   * Change body editor event
+   **************************************/
+  this.bodyDropdownTrigger.on("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -52,65 +196,104 @@ $(function () {
   /***************************************
    * Multipart Params list
    **************************************/
-  const list = $("#hbs-multipart-form-data").list(
-    "hbs-mtl-item",
-    "_key-value-form-item"
-  );
-
-  $("#hbs-multipart-add").on("click", (e) => {
-    list.append();
+  this.multipartAddEl.on("click", () => {
+    this.multipartList.append();
   });
+
+  $("button", this.resourceTabsEl).on("click", () => {
+    this.emptyContentEl.addClass("hidden")
+  })
 
   /***************************************
    * Resource Click event
    **************************************/
-  $(".hbs-resource").on("click", (e) => {
-    const params = $(".hbs-params", $(e.delegateTarget));
-    const method = $(e.delegateTarget).data("method");
+  this.resourceListItemEl.on("click", (e) => {
+    this.activeResource = $(e.delegateTarget)
+    const params = $(".hbs-params", this.activeResource);
+    this.clearContent();
 
-    $("#hbs-request-method-none").remove();
-    $(".hbs-request-method").addClass("hidden");
-    $(`#hbs-request-method-${method}`).removeClass("hidden");
+    context.method = this.activeResource.data("method");
+    context.url = this.activeResource.data("path");
 
-    if (params.length) {
-      $("#hbs-request-resource").html(params.html());
+    this.changeRequestMethod(context.method);
+
+    const urlPathHtml = `<span class="font-bold text-slate-600">${context.url}</bold>`;
+
+    this.resourceEl.html(
+      params.length ? params.html() : urlPathHtml
+    );
+
+    this.attachResizeEvent();
+    this.toggleBodyTab();
+    this.updateStatus("", "");
+
+    if (["post", "put", "patch"].indexOf(context.method) > -1) {
+      this.tabs.body.trigger("click");
     } else {
-      $("#hbs-request-resource").html(
-        `<span class="font-bold text-slate-600">${$(e.delegateTarget).data(
-          "path"
-        )}</bold>`
-      );
+      this.tabs.response.trigger("click")
     }
 
-    $("#hbs-request-resource")
-      .find("input[type=text]")
-      .each((i, input) => {
-        $(input).prop("size", 3);
-
-        $(input).on("keyup", () => {
-          const len = $(input).val().length;
-          if (len <= 3) {
-            $(input).prop("size", 3);
-          } else {
-            $(input).prop("size", len + 0.5);
-          }
-        });
-      });
-
-    const bodyTab = $("#hbs-resource-tabs li:first-child").first();
-
-    if (["get", "delete"].indexOf(method) < 0) {
-      bodyTab.removeClass("hidden");
-      $("a", bodyTab).first().trigger("click");
-
-      editor.session.setValue(["// Enter your json payload"].join("\n"));
-    } else {
-      $("#hbs-resource-tabs li a:first-child").eq(1).trigger("click");
-      bodyTab.addClass("hidden");
-    }
+    setTimeout(() => {
+      Prism.highlightAll()
+    }, 2000)
   });
 
-  /***************************************
-   * Autogrow resource text input
-   **************************************/
+  this.sendRequestEl.on("click", () => {
+    this.loading(true);
+
+    if (context.url) {
+      let url = context.url;
+
+      this.resourceEl.find("input")
+        .each((i, input) => {
+          const { name } = input;
+          url = url.replace(`:${name}`, input.value);
+        })
+
+      if (["post", "patch", "put"].indexOf(context.method) > -1) {
+        console.log(JSON.parse(editor.getValue()))
+      }
+
+      fetch(url, {
+        method: context.method,
+        body: ["post", "patch", "put"].indexOf(context.method) > -1 ?
+          editor.getValue() : null,
+        headers: {
+          "Content-Type": "application/json",
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      })
+        .then((response) => {
+          context.status = response.status;
+
+          this.updateStatus(response.status, response.statusText);
+
+          const headers = [];
+
+          for (const pair of response.headers.entries()) {
+            headers.push({
+              name: pair[0],
+              value: pair[1]
+            });
+          }
+
+          this.headersContentEl.render("_resource-headers", { headers });
+
+          return response.json();
+        })
+        .then((data) => {
+          $("code", this.responseContentEl).html(
+            JSON.stringify(data)
+          );
+
+          $("code", this.previewContentEl).html(
+            JSON.stringify(data, null, 4).trim()
+          )
+
+          this.loading(false);
+
+          $("#hbs-response-content-tab").trigger("click")
+        });
+    }
+  });
 });

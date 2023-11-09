@@ -1,12 +1,14 @@
-{{> "_heading" size="h3" text="Custom Endpoints" }}
-<div class="overflow-y-scroll grow max-h-96">
+<div class="px-6">
+  {{> "_heading" size="h4" text="Custom Endpoints" }}
+</div>
+<div class="grow px-3">
   <ul>
     {{#filter routes "user" property="source"}}
       {{#each (get "routes" this)}}
         {{#if (not (eq "middleware" type))}}
           {{#each this.methods}}
-            <li class="py-2 px-2 border-b border-slate-100 hover:bg-slate-100">
-              {{> "_http-methods" this}} <span class="font-bold text-slate-400">{{../path}}</span>
+            <li class="text-slate-800 dark:text-slate-300 py-2 px-2 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-900">
+              {{> "_http-methods" this}} <span class="font-bold ">{{../path}}</span>
             </li>
           {{/each}}
         {{/if}}

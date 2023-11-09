@@ -67,6 +67,17 @@ export default class JsonDbAdaptor extends QueryBuilder {
   protected query(
     collection: CollectionChain<object>
   ): CollectionChain<object> {
+    const equality = _.filter(this.queue, op =>
+      _.includes(['eq', 'neq', 'filter'], op.type)
+    );
+
+    const nonEquality = _.filter(this.queue, op =>
+      !_.includes(['eq', 'neq'], op.type)
+    );
+
+    _.groupBy(equality, 'type')
+
+
     this.queue.forEach((op) => {
       if (op.type === "eq" && op.args.length === 2) {
         collection = collection.filter(

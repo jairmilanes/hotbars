@@ -28647,7 +28647,7 @@ tailwind._cardBody = function (options) {
 tailwind._alert = function (options) {
   options.hash = options.hash || {}
 
-  if (options.hash.color && !options.bg) {
+  if (options.hash.color && !options.hash.bg) {
     options.hash.bg = options.hash.color;
   }
 
@@ -28655,11 +28655,12 @@ tailwind._alert = function (options) {
     info: "blue",
     error: "red",
     warning: "yellow",
-    success: "grren",
+    success: "green",
   };
 
   if (colors[options.hash.color]) {
     options.hash.color = colors[options.hash.color];
+    options.hash.bg = colors[options.hash.bg];
   }
 
   if (!options.hash.color) {
@@ -28667,7 +28668,7 @@ tailwind._alert = function (options) {
     options.hash.theme = "opaque";
   }
 
-  return components._alert._body(options.hash || {});
+  return components._alert._body(options.hash);
 };
 
 tailwind._alertText = function (options) {
@@ -28752,31 +28753,30 @@ const partialPrefixed = (key, val, options) => {
   return val;
 }
 
-const themeOption = (themeKey, option, variants) => {
-  const { style } = variants;
+const themeOption = (option, style, variants) => {
   const themes = ['dark', 'light'];
 
   // Select theme from style variant if configured
-  if (isObject(variants[themeKey][style])) {
+  if (isObject(variants["theme"][style])) {
     return themes.map(
-      theme => variants[themeKey][style][theme]
+      theme => variants["theme"][style][theme]
     );
   }
 
   // Select theme from option
-  if (variants[themeKey][option]) {
-    if (isObject(variants[themeKey][option])) {
+  if (variants["theme"][option]) {
+    if (isObject(variants["theme"][option])) {
       return themes.map(
-        theme => variants[themeKey][option][theme]
+        theme => variants["theme"][option][theme]
       );
     }
 
-    return variants[themeKey][option];
+    return variants["theme"][option];
   }
 
   // Default behavior, return both themes
   return themes.map(
-    theme => variants[themeKey][theme]
+    theme => variants["theme"][theme]
   );
 }
 
@@ -28822,7 +28822,8 @@ const clb =
       const variant = normalized[variantName];
 
       if (variantName === "theme") {
-        sets.push(themeOption(variantName, option, normalized));
+
+        sets.push(themeOption(option, currentOptions["style"], normalized));
       } else {
         sets.push(partialPrefixed(
           variantName,
@@ -29043,8 +29044,8 @@ module.exports = clb({
       light: "text-%color-700 bg-%bg-100 border-%border-200"
     },
     layout: {
-      flexRow: "flex",
-      flexcolumn: "flex flex-col",
+      row: "flex",
+      column: "flex flex-col",
       grid: "grid grid-cols-12"
     },
     hover: {
@@ -29067,9 +29068,9 @@ module.exports = clb({
       lg: "shadow-lg",
     },
     size: {
-      sm: 'max-w-sm',
-      md: 'max-w-md',
-      lg: 'max-w-lg',
+      sm: 'w-[24rem]',
+      md: 'w-[36rem]',
+      lg: 'w-[48rem]',
       full: "w-full",
     },
     padding: {
@@ -29100,7 +29101,7 @@ module.exports.body = clb({
     bg: "gray",
     border: "gray"
   },
-  base: "flex p-4",
+  base: "flex w-full",
   defaultVariants: {
     padding: "md",
     spacing: "md"
@@ -29121,6 +29122,7 @@ module.exports.body = clb({
       lg: 'p-8 sm:p-10',
     },
     spacing: {
+      0: "space-y-0",
       sm: "space-y-2 md:space-y-4",
       md: "space-y-4 md:space-y-6",
       lg: "space-y-6 md:space-y-8",
@@ -29148,13 +29150,14 @@ module.exports = clb({
     border: "gray",
     accent: "primary",
   },
-  base: "font-serif block w-full",
+  base: "block w-full",
   defaultVariants: {
     type: "input",
     style: "default",
     size: "md",
     spacing: "md",
     rounded: true,
+    theme: "dark"
   },
   variants: {
     type: {
@@ -29164,6 +29167,8 @@ module.exports = clb({
       checkbox: "",
       radio: "",
       toggle: "",
+      email: "",
+      password: ""
     },
     style: {
       default: "border-2 focus:ring-2 focus:ring-offset-2",
@@ -29174,7 +29179,7 @@ module.exports = clb({
     },
     theme: {
       default: {
-        dark: "dark:text-%color-200 dark:bg-%bg-700 dark:border-%border-600 dark:placeholder-%bg-500 dark:focus:border-%border-900 dark:focus:ring-offset-%border-900 dark:focus:ring-%accent-600",
+        dark: "dark:text-%color-200 focus:text-%color-200 dark:bg-%bg-700 dark:border-%border-600 dark:placeholder-%bg-500 dark:focus:border-%border-900 dark:focus:ring-offset-%border-900 dark:focus:ring-%accent-600",
         light:
           "text-%color-900 bg-%bg-50 border-%border-300 placeholder-%bg-400 focus:border-%border-300 focus:ring-offset-%border-300 focus:ring-%accent-600",
       },
@@ -29203,9 +29208,9 @@ module.exports = clb({
       true: "rounded-lg",
     },
     size: {
-      sm: "text-sm font-medium",
-      md: "text-md font-medium",
-      lg: "text-lg font-medium",
+      sm: "text-sm",
+      md: "text-md",
+      lg: "text-lg",
     },
     spacing: {
       sm: "p-2",

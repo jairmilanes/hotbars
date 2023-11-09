@@ -1,14 +1,13 @@
-import { tmpdir } from "os";
-import { createWriteStream, readFileSync, writeFileSync } from "fs";
+import { createReadStream, createWriteStream, readFileSync, writeFileSync } from "fs";
 import compiler from "browserify";
 import uglify from "uglify-js";
 import { logger } from "../../services";
 import { Config, DashboardConfig, EventManager, ServerEvent } from "../core";
 import { Env, WatcherChange } from "../types";
 import { joinPath } from "../utils";
+import { getServerFilePath } from "../utils/get-server-data-dir";
 
 export class BrowserifyCompiler {
-  static userDir = tmpdir();
 
   static create(): void {
     logger.debug(`%p%P Runtime compiler`, 1, 1);
@@ -68,19 +67,19 @@ export class BrowserifyCompiler {
       "bundles",
       "user.runtime"
     );
-    const userRuntimeTemplate = readFileSync(runtime);
 
-    const userRuntime = userRuntimeTemplate
-      .toString()
-      .replace("{{USER_HELPERS}}", userHelpersPath)
-      .replace("{{DEFAULT_HELPERS}}", defaults);
+    const userRuntime =
+      readFileSync(runtime)
+        .toString()
+        .replace("{{USER_HELPERS}}", userHelpersPath)
+        .replace("{{DEFAULT_HELPERS}}", defaults);
 
-    const runtimeDestPath = joinPath(this.userDir, "user.runtime.js");
+    const runtimeDestPath = getServerFilePath("public", "user.runtime.js");
 
     writeFileSync(runtimeDestPath, userRuntime);
 
     const writeStream = createWriteStream(
-      joinPath(this.userDir, "user.bundle.js")
+      getServerFilePath("public", "user.bundle.js")
     );
 
     return new Promise((resolve) => {
@@ -96,11 +95,13 @@ export class BrowserifyCompiler {
           if (Config.is("env", Env.Prod)) {
             logger.debug(`%p%P minifying output...`, 3, 0);
 
+            const minFilename = runtimeDestPath.replace(".js", "min.js")
+
             writeFileSync(
-              joinPath(this.userDir, "user.bundle.min.js"),
+              minFilename,
               uglify.minify(
                 {
-                  "user.runtime.js": readFileSync(runtimeDestPath, "utf-8"),
+                  [minFilename]: readFileSync(runtimeDestPath, "utf-8"),
                 },
                 {
                   sourceMap: true,

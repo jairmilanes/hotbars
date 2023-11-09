@@ -1,7 +1,9 @@
-{{> "_heading" size="h3" text="Json Api" }}
-<div class="overflow-y-scroll grow max-h-96">
+<div class="px-6">
+  {{> "_heading" size="h4" text="Json Api" }}
+</div>
+<div class="px-3">
   <ul>
-    {{#filter routes "json-db" property="source"}}
+    {{#filter routes "jsonDb" property="source"}}
       {{#each (get "routes" this)}}
         {{#if (not (eq "middleware" type))}}
           {{#each (get "routes" this)}}
@@ -9,9 +11,9 @@
               {{#each this.methods}}
                 <li data-method="{{this}}"
                     data-path="{{../prefix}}{{../path}}"
-                    class="hbs-resource py-2 px-2 border-b border-slate-100 hover:bg-slate-100">
+                    class="hbs-resource text-slate-800 dark:text-slate-300 py-2 px-2 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-900">
                   {{> "_http-methods" this}}
-                  <span class="font-bold text-slate-400">
+                  <span class="font-bold">
                       {{../prefix}}{{#if (not (eq "/" ../path))}}{{../path}}{{/if}}
                   </span>
                   {{> "_request-params" params=../params path=(append ../prefix ../path)}}

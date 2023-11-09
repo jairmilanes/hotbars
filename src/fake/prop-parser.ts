@@ -16,7 +16,7 @@ const coerce = (arg: string): any => {
       return parseFloat(trimmed);
     }
 
-    return parseInt(trimmed, 10);
+    return _.parseInt(trimmed);
   }
 
   if (trimmed === "true" || arg === "false") {

@@ -1,4 +1,4 @@
-import { cosmiconfigSync } from "cosmiconfig";
+import { cosmiconfigSync, defaultLoaders } from "cosmiconfig";
 import { logger } from "../../services";
 
 const resolveTargets = (
@@ -29,6 +29,13 @@ export const loadFile = <T = any>(
     const explorer = cosmiconfigSync(configName, {
       searchPlaces: resolveTargets(configName, extensions, dotFiles),
       stopDir: root,
+      loaders: {
+        '.dev': defaultLoaders['.json'],
+        '.development': defaultLoaders['.json'],
+        '.prod': defaultLoaders['.json'],
+        '.production': defaultLoaders['.json'],
+        noExt: defaultLoaders['.json']
+      }
     });
 
     const result = explorer.search(root);
@@ -37,6 +44,6 @@ export const loadFile = <T = any>(
       return result.config;
     }
   } catch (error) {
-    logger.error(error);
+    (logger.error || console.error)(error);
   }
 };

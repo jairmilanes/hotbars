@@ -3,12 +3,13 @@ import { compare, hash } from "bcryptjs";
 import { IVerifyOptions, Strategy as LocalStrategy } from "passport-local";
 import { logger } from "../../../services";
 import { ActionResponse, AuthDoneCallback, User } from "../../types";
-import { Config, Server } from "../../core";
+import { Config, ContextConfig, Server } from "../../core";
 import { StrategyAbstract } from "./strategy.abstract";
 import { Mailer } from "../../services";
 import { DataManager } from "../../data";
 import process from "process";
 import { AuthException } from "../../exceptions/auth.exception";
+import { Request } from "express";
 
 export const AUTH_ERROR_CODE = {
   INVALID_EMAIL_ADDRESS: "invalid-email-address",
@@ -38,9 +39,10 @@ export class LocalAuthStrategy extends StrategyAbstract {
     return strat;
   }
 
-  configure(): Record<string, any> {
+  configure(req: Request): Record<string, any> {
+    ContextConfig.init(req)
     return {
-      successRedirect: this.successRedirect,
+      successRedirect: !ContextConfig.get("auth.rememberMe") ? this.successRedirect : undefined,
       failureRedirect: this.failureRedirect,
       failureMessage: true,
     };
@@ -55,7 +57,7 @@ export class LocalAuthStrategy extends StrategyAbstract {
     logger.info("Auth column", column, emailOrUsername);
 
     const record = await this.db
-      .eq(Config.get<string>(column), emailOrUsername)
+      .eq(ContextConfig.get<string>(column), emailOrUsername)
       .single();
 
     return record as User;
@@ -66,9 +68,9 @@ export class LocalAuthStrategy extends StrategyAbstract {
    */
   async createUser(data: Record<string, any>): Promise<User|never> {
     const profile = {
-      username: _.get(data, Config.get("auth.usernameColumn")),
-      email: _.get(data, Config.get("auth.emailColumn")),
-      password: _.get(data, Config.get("auth.passwordColumn")),
+      username: _.get(data, ContextConfig.get("auth.usernameColumn")),
+      email: _.get(data, ContextConfig.get("auth.emailColumn")),
+      password: _.get(data, ContextConfig.get("auth.passwordColumn")),
     };
 
     // Hash password
@@ -124,7 +126,7 @@ export class LocalAuthStrategy extends StrategyAbstract {
     try {
       const valid = await compare(
         password,
-        _.get(user, Config.get<string>("auth.passwordColumn"))
+        _.get(user, ContextConfig.get<string>("auth.passwordColumn"))
       );
 
       if (valid) {
@@ -157,7 +159,7 @@ export class LocalAuthStrategy extends StrategyAbstract {
 
   async sendEmailConfirmation(user: User, provider: string) {
     const url = new URL(
-      `/${Config.get("auth.views.signUp")}/confirm`,
+      `/${ContextConfig.get("auth.views.signUp")}/confirm`,
       Server.url
     );
     url.searchParams.append("username", user.username);
@@ -297,7 +299,7 @@ export class LocalAuthStrategy extends StrategyAbstract {
 
     const base = new Buffer(JSON.stringify(record)).toString("base64");
 
-    return `${Server.url}/${Config.get(
+    return `${Server.url}/${ContextConfig.get(
       "auth.views.passwordReset"
     )}?code=${base}&provider=${this.name}`;
   }
