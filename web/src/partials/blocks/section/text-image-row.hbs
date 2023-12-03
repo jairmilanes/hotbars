@@ -1,0 +1,27 @@
+{{#block "text-image-row"}}
+  <!-- start text-image-row -->
+  <section class="relative bg-{{default bg "stone"}}{{#neither (eq bg "white") (eq bg "black")}}-100{{/neither}} py-16 lg:py-24">
+    <div class="flex flex-col {{#eq direction "left"}} md:flex-row-reverse{{else}} md:flex-row{{/eq}} md:max-w-7xl m-auto">
+      <div class="w-full lg:w-1/2 px-5 lg:px-8">
+        {{{embed "blocks/heading/section-heading" title=title align="left"}}}
+
+        {{#isTruthy description}}
+          <p class="mt-6 leading-relaxed">
+            {{description}}
+          </p>
+        {{/isTruthy}}
+
+        {{#block "body"}}
+
+        {{/block}}
+      </div>
+
+      <div class="w-full lg:w-1/2 md:max-w-full lg:px-16 mt-16 px-5 md:px-0">
+        <div class="bg-cover bg-center bg-stone-400 h-96 rounded-lg relative overflow-hidden"
+              style="background-image: url({{image}})">
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- end text-image-row -->
+{{/block}}

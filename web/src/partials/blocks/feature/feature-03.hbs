@@ -1,0 +1,28 @@
+{{#block "feature-03"}}
+  <div class="w-full grid gap-4 md:grid-cols-4 mt-24 text-center m-auto">
+    {{#each features}}
+      <div class="">
+        <div class="rounded-lg border border-{{default color "stone"}}-300 p-8">
+          {{#isTruthy iconUrl}}
+            <img src="{{iconUrl}}" alt="" class="h-20 mx-auto">
+          {{/isTruthy}}
+          {{#isTruthy title}}
+            <h4 class="text-xl font-bold mt-4">
+              {{title}}
+            </h4>
+          {{/isTruthy}}
+          {{#isTruthy description}}
+            <p class="mt-1">
+              {{description}}
+            </p>
+          {{/isTruthy}}
+          {{#isTruthy readMoreUrl}}
+            <a href="{{readMoreUrl}}" class="block mt-4">
+              {{default readMoreLabel "Read More"}}
+            </a>
+          {{/isTruthy}}
+        </div>
+      </div>
+    {{/each}}
+  </div>
+{{/block}}

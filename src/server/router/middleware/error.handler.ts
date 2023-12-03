@@ -19,12 +19,17 @@ export const errorHandler = () => {
         return res.render("notFound");
       }
 
-      logger.error(`Server Error: ${req.statusCode} - "${req.url}"`);
+      const errorMessage = `Error: ${req.statusCode} - "${req.url}"`
+
+      logger.error(errorMessage);
       logger.error(`%O`, err);
 
       res.status(500);
 
-      return res.render("error");
+      return res.render("error", {
+        errorMessage,
+        error: err
+      });
     }
   );
 

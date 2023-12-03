@@ -1,0 +1,63 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  />
+  <title>{{site.title}}</title>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/public/templates/dental-office/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/public/templates/dental-office/images/favicon-16x16.png">
+
+  {{> hotbarsHead}}
+
+  <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="{{googleFontsUrl}}" rel="stylesheet">
+  {{#block "links"}}
+
+  {{/block}}
+
+  <link rel="stylesheet" href="/public/styles/style.css" />
+
+  {{#block "styles"}}
+
+  {{/block}}
+</head>
+<body class="{{bodyClass}}">
+{{#block "main"}}
+
+{{/block}}
+
+{{{embed "blocks/usability/back-to-top" color=backToTopColor}}}
+
+{{> hotbarsFooter}}
+
+{{scripts "https://cdn.tailwindcss.com?plugins=forms,
+               https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
+               https://cdn.jsdelivr.net/npm/dayjs@1/dayjs[.min].js,
+               https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js"}}
+
+{{#and (isTruthy auth.reCaptcha) (isTruthy vars.googleCaptchaKey)}}
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{{/and}}
+
+{{#block "scripts"}}
+
+{{/block}}
+
+<script>
+  (() => {
+    $.stickyHeader()
+    $(".hb-carousel").carousel()
+    $(`section[hb-bg-zoom="true"]`).bgZoom()
+    $(`header`).mobileMenu()
+    $.scrollTop()
+  })()
+</script>
+</body>
+</html>

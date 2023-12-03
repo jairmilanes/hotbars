@@ -1,0 +1,46 @@
+{{#block "feature-01"}}
+  {{#if section}}
+    <section class="body-font">
+      <div class="container md:max-w-7xl m-auto px-5 py-24 mx-auto">
+      {{#or (isTruthy title) (isTruthy description)}}
+          <div class="flex flex-col text-center w-full mb-20">
+            {{{embed "blocks/heading/section-heading" title=title}}}
+            {{#isTruthy description}}
+              <p class="lg:w-2/3 text-xl mx-auto mt-2 leading-relaxed">
+                {{description}}
+              </p>
+            {{/isTruthy}}
+          </div>
+      {{/or}}
+    {{/if}}
+
+      <div class="flex-none text-{{default color "stone"}}-100 {{#isTruthy bg}}bg-{{bg}}-400{{/isTruthy}} body-font container md:max-w-7xl py-16 mt-24 mx-auto">
+        <div class="flex flex-col md:flex-row sm:-m-4 -mx-4 -mb-10 -mt-4 px-5 md:px-0 md:space-y-0 space-y-6 gap-4 md:gap-6">
+          {{#each features}}
+            <div class="mx-5 md:mx-0 p-4 flex bg-white/10">
+              <div class="flex-grow pl-6">
+                <h2 class="text-{{default textColor "white"}} text-lg title-font font-medium mb-2">
+                  {{title}}
+                </h2>
+                <p class="leading-relaxed">
+                  {{description}}
+                </p>
+                {{#if (isTruthy actionHref)}}
+                  <a href="{{actionHref}}" class="mt-3 text-{{default linkColor "amber"}}-500 inline-flex items-center">
+                    {{actionLabel}}
+                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                      <path d="M5 12h14M12 5l7 7-7 7"></path>
+                    </svg>
+                  </a>
+                {{/if}}
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+
+  {{#if section}}
+      </div>
+    </section>
+  {{/if}}
+{{/block}}

@@ -7,10 +7,10 @@
     />
     <title>Hotbars: {{default title "User Api"}}</title>
     {{> hotbarsHead}}
-    <script type="text/javascript" src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
     <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
-    {{#embed "_tailwind-config" }}{{/embed}}
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
     {{#block "styles"}}{{/block}}
   </head>
   <body class="text-slate-800 dark:text-slate-50 bg-gray-100 dark:bg-gray-900 flex flex-col overflow-hidden h-full">
@@ -31,12 +31,15 @@
 
     {{> hotbarsFooter}}
 
-    {{scripts "https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
+    {{scripts "https://cdn.tailwindcss.com?plugins=forms,
+               https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
                https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js,
                https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js,
                /public/hotbars/common.js,
                /public/hotbars.js"}}
 
-    {{#block "scripts"}}{{/block}}
+    {{#block "scripts"}}
+      {{#embed "_tailwind-config" }}{{/embed}}
+    {{/block}}
   </body>
 </html>

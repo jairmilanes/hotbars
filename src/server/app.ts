@@ -64,7 +64,7 @@ export class App {
   async start(): Promise<void> {
     logger.info(`Botstraping:`);
 
-    await BootstrapData.load();
+    await BootstrapData.run();
     await Controllers.load();
     await AuthManager.load();
 

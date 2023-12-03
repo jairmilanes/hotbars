@@ -123,6 +123,8 @@ $(() => {
       "input[type=radio][required]:unchecked, input[type=checkbox][required]:unchecked"
     ).length;
 
+    console.log("numberOfInvalids", errors)
+
     if (!errors && !blanks && !uncheckeds) {
       if (captchaName) {
         const captchaElem = $(`#${captchaName}`);

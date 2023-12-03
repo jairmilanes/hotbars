@@ -12,15 +12,6 @@
       data-size="invisible"
     >
     </div>
-    {{#embed
-      "_button"
-      type="submit"
-      size="lg"
-      width="full"
-      classNames="g-recaptcha"
-      disabled=true
-      text=text
-    }}{{/embed}}
   {{else}}
     <div
       id="{{id}}"
@@ -30,15 +21,6 @@
         'onSubmitWithCaptcha'
       }}"
     ></div>
-    {{#embed
-      "_button"
-      type="submit"
-      size="lg"
-      style="dark"
-      width="full"
-      disabled=true
-      text=text
-    }}{{/embed}}
   {{/eq}}
 {{/eq}}
 {{#eq version "v3"}}

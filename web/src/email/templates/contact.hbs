@@ -1,0 +1,61 @@
+{{#extend "default"}}
+  {{#content "main"}}
+    {{log this}}
+    <table
+      role="presentation"
+      class="main"
+      style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; background: #ffffff; border-radius: 3px; width: 100%;"
+      width="100%"
+    >
+      <!-- START MAIN CONTENT AREA -->
+      <tr>
+        <td
+          class="wrapper"
+          style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;"
+          valign="top"
+        >
+          <table
+            role="presentation"
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;"
+            width="100%"
+          >
+            <tr>
+              <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
+                <h3 style="font-family: sans-serif; font-size: 16x; font-weight: bold; margin: 0; margin-bottom: 10px;">
+                  {{i "contact.title"}}
+                </h3>
+                {{#each (i "contact.content")}}
+                  <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">
+                    {{this}}
+                  </p>
+                {{/each}}
+              </td>
+            </tr>
+            <tr>
+              <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
+                <div>
+                  <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">
+                    From: {{name}}
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td
+          class="wrapper"
+          style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px; background: #f6f6f6;"
+          valign="top"
+        >
+          {{message}}
+        </td>
+      </tr>
+      <!-- END MAIN CONTENT AREA -->
+    </table>
+  {{/content}}
+{{/extend}}

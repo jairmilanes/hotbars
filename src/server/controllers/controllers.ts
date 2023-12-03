@@ -188,7 +188,7 @@ export class Controllers {
 
     if (this.isClass(module[key])) {
       logger.debug(`%p%P Class: %s`, 3, 0, name);
-      this.controllers[name] = new module[key](config);
+      this.controllers[name.endsWith("_main") ? "_main" : name] = new module[key](config);
     } else {
       logger.debug(
         `%p%P Function: %s`,

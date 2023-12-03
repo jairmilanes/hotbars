@@ -1,0 +1,40 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  />
+  <title>{{site.title}}</title>
+
+  {{> hotbarsHead}}
+
+  <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+
+  <link rel="stylesheet" href="/public/styles/style.css" />
+
+  {{#block "styles"}}
+
+  {{/block}}
+</head>
+<body>
+{{#block "main"}}
+
+{{/block}}
+
+{{scripts "https://cdn.tailwindcss.com?plugins=forms,
+               https://cdnjs.cloudflare.com/ajax/libs/cash/8.1.1/cash[.min].js,
+               https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
+               https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js,
+               https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js,
+               /public/scripts/tailwind.config.js"}}
+
+{{#block "scripts"}}
+
+{{/block}}
+
+{{> hotbarsFooter}}
+</body>
+</html>

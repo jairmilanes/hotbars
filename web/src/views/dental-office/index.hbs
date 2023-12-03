@@ -1,0 +1,158 @@
+{{#extend "site"
+          bodyClass="antialiased text-slate-700 bg-white font-sans text-rose-700"
+          googleFontsUrl="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap"
+          backToTopColor="sky-600"
+}}
+  {{#content "main"}}
+    <!-- start header -->
+    {{{embed "blocks/headers/header-01"
+             title="DentalPro"
+             address="1985 Kerry Way, Whittier, CA, USA"
+             phone="+1 562-789-1935"
+             socialLinks=socialLinks
+             menu=menu
+             appointment=appointment
+             bg="transparent"
+             stickyBg="sky-700"
+             color="white"
+             hoverColor="sky-800"
+             stickyText="white"
+    }}}
+    <!-- end header -->
+
+    <main class="w-full">
+      <!-- start hero -->
+      {{{embed "blocks/hero/hero-01"
+               bgImage="/public/templates/dental-office/images/cover-bg.jpg"
+               title="A better life starts with a beautiful smile."
+               description="Welcome to the Dentist Office of Dr. Thomas Dooley, where trust and comfort are priorities."
+               buttonColor="indigo"
+               actionHref="#"
+               actionLabel="Book Appointment"
+               overlay="sky"
+               zoom=true
+      }}}
+      <!-- end hero -->
+
+      {{#embed "blocks/section/split-section"
+               title="Welcome to the Dentist Office of Dr. Thomas Dooley"
+      }}
+        {{#content "left"}}
+          <div class="md:flex">
+            <div>
+              <div class="w-16 h-16 bg-sky-500 rounded-full"></div>
+            </div>
+            <div class="md:ml-8 mt-4 md:mt-0">
+              <h4 class="text-xl font-bold leading-tight">Excellence in Dentistry</h4>
+              <p class="mt-2 leading-relaxed">Donec convallis sollicitudin facilisis. Integer nisl ligula, accumsan non
+                tincidunt ac, imperdiet in enim.
+                Donec efficitur ullamcorper metus, eu venenatis nunc. Nam eget neque tempus, mollis sem a, faucibus mi.</p>
+            </div>
+          </div>
+
+          <div class="md:flex mt-8">
+            <div>
+              <div class="w-16 h-16 bg-sky-500 rounded-full"></div>
+            </div>
+            <div class="md:ml-8 mt-4 md:mt-0">
+              <h4 class="text-xl font-bold leading-tight">Everything You Need Under One Roof</h4>
+              <p class="mt-2 leading-relaxed">Our comprehensive services allow you to receive all needed dental care
+                right here in our state-of-art
+                office – from dental cleanings and fillings to dental implants and extractions.</p>
+            </div>
+          </div>
+
+          <div class="md:flex mt-8">
+            <div>
+              <div class="w-16 h-16 bg-sky-500 rounded-full"></div>
+            </div>
+            <div class="md:ml-8 mt-4 md:mt-0">
+              <h4 class="text-xl font-bold leading-tight">Our Patient-Focused Approach</h4>
+              <p class="mt-2 leading-relaxed">Your treatment plan will perfectly match your needs, lifestyle, and goals.
+                Even if it’s been years
+                since you last visited the dentist, we can help. Our comfortable office, compassionate team, and
+                minimally-invasive treatments will help you feel completely at ease.</p>
+            </div>
+          </div>
+        {{/content}}
+        {{#content "right"}}
+          <div class="flex flex-col h-96 md:h-full pr-0 lg:pr-12">
+            <div class="bg-cover bg-center bg-stone-400 w-full h-full grow rounded-lg relative overflow-hidden"
+                 style="background-image: url('/public/templates/dental-office/images/dentist-02.jpg')">
+            </div>
+          </div>
+
+        {{/content}}
+        {{#content "after"}}
+
+        {{/content}}
+      {{/embed}}
+
+      {{{embed "blocks/section/text-image-row-02"
+               direction="left"
+               title="Get The Smile Of Your Dreams"
+               description="Aenean ut tellus tellus. Suspendisse potenti. Nullam tincidunt lacus tellus,
+       sed aliquam est vehicula a. Pellentesque consectetur condimentum nulla, eleifend condimentum purus vehicula
+       in. Donec convallis sollicitudin facilisis. Integer nisl ligula, accumsan non tincidunt ac, imperdiet in
+       enim. Donec efficitur ullamcorper metus, eu venenatis nunc. Nam eget neque tempus, mollis sem a, faucibus
+       mi."
+               image="/public/templates/dental-office/images/dentist-office-01.jpg"
+               bg="sky"
+      }}}
+
+      {{{embed "blocks/feature/feature-02"
+               features=services
+               cols=4
+               color="sky"
+      }}}
+
+      {{{embed "blocks/section/text-image-row-02"
+               title="Family Oriented And Afordable"
+               description="Aenean ut tellus tellus. Suspendisse potenti. Nullam tincidunt lacus tellus,
+       sed aliquam est vehicula a. Pellentesque consectetur condimentum nulla, eleifend condimentum purus vehicula
+       in. Donec convallis sollicitudin facilisis. Integer nisl ligula, accumsan non tincidunt ac, imperdiet in
+       enim. Donec efficitur ullamcorper metus, eu venenatis nunc. Nam eget neque tempus, mollis sem a, faucibus
+       mi."
+               image="/public/templates/dental-office/images/dentist-office-01.jpg"
+               bg="sky"
+      }}}
+
+      {{{embed "blocks/testimonial/testimonial-01"
+               title="What our clients say?"
+               testimonials=testimonials
+      }}}
+
+      {{{embed "blocks/cta/cta-01"
+               title="Call Today 1-888-222-9999"
+               description="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy."
+               color="sky"
+               actionLabel="Book an Appointment"
+               actionUrl="#"
+               actionColor="indigo"
+      }}}
+    </main>
+
+    {{{embed "blocks/footer/footer-01"
+             title="LawPro"
+             description="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy."
+             address="1985 Kerry Way, Whittier, CA, USA"
+             workingHours="Mon - Fri: 9:00 - 19:00<br />Closed on Weekends"
+             phoneNumber="+1 562-789-1935"
+             email="lawpro@example.com"
+             menuTitle="Services"
+             color="sky"
+             menu=true
+             menuItems=footer.menu
+             social=true
+             socialLinks=footer.socialLinks
+             contact=true
+    }}}
+  {{/content}}
+  {{#content "scripts"}}
+    {{{embed "tailwind-config"}}}
+
+    <script>
+      $.stickyHeader()
+    </script>
+  {{/content}}
+{{/extend}}

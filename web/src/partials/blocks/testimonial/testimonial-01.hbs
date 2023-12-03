@@ -1,0 +1,32 @@
+{{#block "testimonials"}}
+  <section class="body-font bg-{{default bg "white"}}{{#neither (eq bg "white") (eq bg "black")}}-100{{/neither}}">
+    <div class="container py-24 px-5 md:px-0 md:max-w-{{default width "7xl"}} m-auto">
+      {{#if (isTruthy title)}}
+        <div class="flex flex-col text-center w-full">
+          {{{embed "blocks/heading/section-heading"
+               title=(default title "What our clients say?")}}}
+        </div>
+      {{/if}}
+      <div class="hb-carousel transition-all duration-800 relative w-full mt-12 mx-auto text-center">
+          {{#each testimonials}}
+            <div class="absolute top-0 {{#gt @index 0}}left-[42%]{{else}}left-[50%]{{/gt}} -translate-x-1/2 transition-all duration-600 w-full xl:w-1/2 lg:w-3/4 {{#gt @index 0}}opacity-0{{else}}opacity-100{{/gt}}">
+              <p class="leading-relaxed">
+                "{{body}}"
+              </p>
+              <span class="inline-block h-1 w-10 rounded bg-{{default color "amber"}}-500 mt-8 mb-6"></span>
+              <h2 class="font-medium title-font tracking-wider text-sm">
+                {{name}}
+              </h2>
+              <p>
+                {{position}}
+              </p>
+            </div>
+          {{/each}}
+          {{{block "body"}}}
+      </div>
+      <div class="hb-carousel-controls mt-16">
+        <ul class="flex justify-center"></ul>
+      </div>
+    </div>
+  </section>
+{{/block}}

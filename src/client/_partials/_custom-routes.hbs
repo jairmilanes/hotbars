@@ -7,7 +7,9 @@
       {{#each (get "routes" this)}}
         {{#if (not (eq "middleware" type))}}
           {{#each this.methods}}
-            <li class="text-slate-800 dark:text-slate-300 py-2 px-2 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-900">
+            <li data-method="{{this}}"
+                data-path="{{../path}}"
+                class="hbs-resource text-slate-800 dark:text-slate-300 py-2 px-2 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-900">
               {{> "_http-methods" this}} <span class="font-bold ">{{../path}}</span>
             </li>
           {{/each}}

@@ -29,15 +29,19 @@ const renderTemplateHandler = async (
 ): Promise<void> => {
   const { template, ...context } = req.body;
   try {
+    logger.warn("RENDERING!")
     const html = await Mailer.template(template, context);
     res.send(html);
   } catch (e) {
+    logger.error("ERROR RENDERING!")
     logger.warn("Error while generating the %s template. %O", e);
 
-    res.status(400).json({
-      message: `Error generating template "${template}"`,
-    });
+    res.status(400)
+      .json({
+        message: `Error generating template "${template}"`,
+      });
   }
+  logger.error("WTF!")
 };
 
 const sendEmailHandler = async (req: Request, res: Response) => {

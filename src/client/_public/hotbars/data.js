@@ -59,7 +59,11 @@ function DataPage() {
     e.preventDefault();
     e.stopPropagation();
 
-    const collection =  $(e.target).closest("a").data("id");
+    const collection =  $(e.target)
+      .closest("a")
+      .data("id");
+
+    $(e.target).addClass("active")
 
     this.fetch(collection, 1).then(() => {
       this.itemsList.reset()

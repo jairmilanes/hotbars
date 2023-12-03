@@ -4,6 +4,9 @@
   "source": "src",
   "styles": "styles",
   "styleMode": "scss",
+  "language": {
+    "enabled": true
+  },
   "mailer": {
     "enabled": true
   },

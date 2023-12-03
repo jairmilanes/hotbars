@@ -12,8 +12,13 @@ module.exports.var = function (key, value, options) {
     value = undefined;
   }
 
+  if (!options.data.local) {
+    options.data.local = {};
+  }
+
   if (!value) {
     return options.data.local[key];
   }
+
   options.data.local[key] = value;
 };

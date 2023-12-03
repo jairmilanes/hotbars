@@ -1,0 +1,81 @@
+{{#embed "blocks/section/split-section" title=null description=null}}
+  {{#content "left"}}
+    {{#if image}}
+      <div class="md:block overflow-hidden w-full order-1 absolute lg:w-1/2 lg:h-auto top-0 bottom-[60%] lg:bottom-0 right-0 lg:right-[50%] left-0 z-0">
+        <div class="bg-cover bg-center bg-stone-400 w-full h-full opacity-50"
+             style="background-image: url({{image}}); background-blend-mode: lighten;">
+        </div>
+      </div>
+    {{/if}}
+    <div class="relative text-xl z-[10]">
+      {{{embed "blocks/heading/section-heading" size=3 align="left" title="Points of contact"}}}
+
+
+      {{#or (isTruthy address) (isTruthy workingHours) (isTruthy phoneNumber) (isTruthy email)}}
+        <ul class="mt-16">
+          {{#isTruthy address}}
+            <li>
+              <a href="#" title="" class="block flex items-center opacity-75 hover:opacity-100">
+                <span class="text-{{default color "stone-600"}}">
+                  {{{embed "icons/map-marker.icon" size=7}}}
+                </span>
+                <span class="ml-3">
+                  {{{address}}}
+                </span>
+              </a>
+            </li>
+          {{/isTruthy}}
+          {{#isTruthy phoneNumber}}
+            <li class="mt-4">
+              <a href="#" title="" class="block flex items-center opacity-75 hover:opacity-100">
+                  <span class="text-{{default color "stone-600"}}">
+                    {{{embed "icons/phone.icon" size=7}}}
+                  </span>
+                <span class="ml-3">
+                  {{lowercase phoneNumber}}
+                </span>
+              </a>
+            </li>
+          {{/isTruthy}}
+          {{#isTruthy email}}
+            <li class="mt-4">
+              <a href="#" title="" class="block flex items-center opacity-75 hover:opacity-100">
+                <span class="text-{{default color "stone-600"}}">
+                  {{{embed "icons/mail.icon" size=7}}}
+                </span>
+                <span class="ml-3">
+                  {{email}}
+                </span>
+              </a>
+            </li>
+          {{/isTruthy}}
+          {{#isTruthy workingHours}}
+            <li class="mt-4">
+              <a href="#" title="" class="block flex items-start opacity-75 hover:opacity-100">
+              <span class="text-{{default color "stone-600"}}">
+                {{{embed "icons/clock.icon" size=7}}}
+              </span>
+                <span class="ml-3">
+                  {{{workingHours}}}
+                </span>
+              </a>
+            </li>
+          {{/isTruthy}}
+        </ul>
+      {{/or}}
+    </div>
+  {{/content}}
+  {{#content "right"}}
+      <div class="relative z-[10]">
+        {{{embed "blocks/heading/section-heading" marginBottom=6 align="left" title=../title}}}
+
+        {{#isTruthy ../description}}
+          <p class="mb-8 leading-relaxed">
+            {{../description}}
+          </p>
+        {{/isTruthy}}
+
+        {{{embed "blocks/form/contact-form" formId=formId color=color}}}
+      </div>
+  {{/content}}
+{{/embed}}

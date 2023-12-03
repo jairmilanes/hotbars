@@ -8,9 +8,12 @@ const editor = ace.edit("ace-editor");
 editor.setTheme("ace/theme/one_dark");
 
 const editorSession = {
-  json: ace.createEditSession("// Enter your json payload", "ace/mode/json"),
+  json: ace.createEditSession(
+    ["{", "    ", "}"].join("\n"),
+    "ace/mode/json"
+  ),
   plain: ace.createEditSession(
-    "// Enter your plain text payload",
+    "",
     "ace/mode/text"
   ),
 };
@@ -98,11 +101,17 @@ $(function () {
       bodyTab.removeClass("hidden");
       $("a", bodyTab).first().trigger("click");
 
-      editor.session.setValue(["// Enter your json payload"].join("\n"));
+      editor.session.setValue(["{", "    ", "}"].join("\n"));
+      editor.moveCursorTo(1, 5);
+      setTimeout(() => {
+        editor.focus();
+      }, 100)
     } else {
       $("#hbs-resource-tabs li a:first-child").eq(1).trigger("click");
       bodyTab.addClass("hidden");
     }
+
+    console.log(editor);
   }
 
   this.loading = (is) => {
@@ -137,7 +146,6 @@ $(function () {
     $("code", this.responseContentEl).html("");
     $("code", this.previewContentEl).html("");
     $("code", this.headersContentEl).html("");
-    console.log(editor)
   }
 
   this.inRange = (number, start, end) => {
@@ -145,33 +153,41 @@ $(function () {
   }
 
   this.updateStatus = (code, text) => {
-    this.status.label.html(code ? "Status " : "");
+    if (!code || !text) {
+      this.status.code.html("")
+      this.status.text.html("")
+      this.status.el.addClass("hidden");
+      return;
+    }
+
+    this.status.el.removeClass("hidden");
     this.status.code.html(code)
     this.status.text.html(text)
-    const colors = ["blue", "green", "yellow", "red", "gray"]
+
+    const colors = ["blue", "green", "orange", "red", "gray"];
 
     colors.forEach(color =>
-      this.status.code.removeClass(`text-${color}-600`)
+      this.status.el.removeClass(`bg-${color}-600`)
     );
 
     if (this.inRange(code, 100, 199)) {
-      this.status.code.addClass(`text-gray-600`)
+      this.status.el.addClass(`bg-gray-600`)
     }
 
     if (this.inRange(code, 200, 299)) {
-      this.status.code.addClass(`text-green-600`)
+      this.status.el.addClass(`bg-green-600`)
     }
 
     if (this.inRange(code, 300, 399)) {
-      this.status.code.addClass(`text-yellow-600`)
+      this.status.el.addClass(`bg-orange-600`)
     }
 
     if (this.inRange(code, 400, 499)) {
-      this.status.code.addClass(`text-yellow-600`)
+      this.status.el.addClass(`bg-orange-600`)
     }
 
     if (this.inRange(code, 500, 599)) {
-      this.status.code.addClass(`text-red-600`)
+      this.status.el.addClass(`bg-red-600`)
     }
   }
 
@@ -191,6 +207,18 @@ $(function () {
     if (mode in editorSession) {
       editor.setSession(editorSession[mode]);
     }
+
+    $("[data-dropdown-trigger=json]").text()
+    $("[data-dropdown-toggle=hbs-dropdown-body]").trigger("click")
+
+    if (mode === "json") {
+      editor.session.setValue(["{", "    ", "}"].join("\n"));
+      editor.moveCursorTo(1, 5);
+    }
+
+    setTimeout(() => {
+      editor.focus();
+    }, 100)
   });
 
   /***************************************
@@ -233,6 +261,11 @@ $(function () {
       this.tabs.response.trigger("click")
     }
 
+    // Enable the send button if request does not require a payload
+    if (["post", "patch", "put"].indexOf(context.method) < 0) {
+      this.sendRequestEl.attr("disabled", false);
+    }
+
     setTimeout(() => {
       Prism.highlightAll()
     }, 2000)
@@ -249,10 +282,6 @@ $(function () {
           const { name } = input;
           url = url.replace(`:${name}`, input.value);
         })
-
-      if (["post", "patch", "put"].indexOf(context.method) > -1) {
-        console.log(JSON.parse(editor.getValue()))
-      }
 
       fetch(url, {
         method: context.method,
@@ -293,6 +322,9 @@ $(function () {
           this.loading(false);
 
           $("#hbs-response-content-tab").trigger("click")
+        })
+        .catch(e => {
+          this.loading(false);
         });
     }
   });

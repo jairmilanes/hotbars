@@ -1,0 +1,62 @@
+{{#block "header-02"}}
+  <!-- start header -->
+  <header class="should-stick absolute text-{{default color "white"}}  top-0 left-0 w-full z-50"
+          hb-bg="{{default bg "transparent"}}"
+          hb-text="{{default color "white"}}"
+          hb-sticky-bg="{{default stickyBg "white"}}"
+          hb-sticky-text="{{default stickyText "gray-700"}}">
+    <div class="sticky-bg absolute top-0 left-0 right-0 bottom-0 bg-transparent transition-all duration-600 z-0"></div>
+    <div class="relative flex items-center justify-between md:max-w-{{default width "7xl"}} m-auto py-6 px-5 md:px-0 z-10">
+
+      <div class="w-1/2 md:w-auto {{#eq display "center"}}absolute left-1/2 -translate-x-1/2 text-center{{else}}{{/eq}}">
+        <a href="index.html" class="font-bold text-2xl text{{default logoColor "gray"}}-700">
+          {{title}}
+        </a>
+      </div>
+
+      <label for="menu-toggle" class="pointer-cursor md:hidden block">
+        {{{embed "icons/menu"}}}
+      </label>
+
+      <input class="hidden" type="checkbox" id="menu-toggle" hb-toggle="mobile-menu">
+
+      {{#or (isTruthy menu) (isTruthy appoitment)}}
+        <div class="hidden md:block w-full md:w-auto order--{{#eq direction "center"}}1{{else}}2{{/eq}}" id="menu">
+          <nav
+            class="w-full md:bg-transparent rounded shadow-lg px-6 py-4 mt-4 text-center md:p-0 md:mt-0 md:shadow-none">
+            <ul class="md:flex items-center">
+              {{#each menu}}
+                <li>
+                  <a href="{{href}}" class="hover:text-{{default ../hoverColor "amber-600"}} py-2 md:px-2 inline-block md:hidden lg:block font-semibold">
+                    {{label}}
+                  </a>
+                </li>
+              {{/each}}
+              {{#if actions}}
+                {{#each actions}}
+                  <li class="md:hidden">
+                    <a class="hover:text-{{default ../hoverColor "amber-600"}} inline-block ml-2 font-semibold px-4 py-2 bg-blue-600 md:bg-transparent border border-{{default color "white"}}  hover:border-{{default hoverColor "amber-600"}} rounded"
+                       href="{{url}}">
+                      {{label}}
+                    </a>
+                  </li>
+                {{/each}}
+              {{/if}}
+              {{#if action}}
+                <li class="md:hidden">
+                  <a class="hover:text-{{default hoverColor "amber-600"}} inline-block ml-2 font-semibold px-4 bg-blue-600 md:bg-transparent border border-{{default color "white"}}  hover:border-{{default hoverColor "amber-600"}} rounded"
+                     href="{{actionUrl}}">
+                    {{actionLabel}}
+                  </a>
+                </li>
+              {{/if}}
+            </ul>
+          </nav>
+        </div>
+      {{/or}}
+    </div>
+  </header>
+
+  {{{embed "blocks/menu/floating-mobile-menu"}}}
+  <!-- end header -->
+{{/block}}

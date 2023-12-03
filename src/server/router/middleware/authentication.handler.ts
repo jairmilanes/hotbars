@@ -100,13 +100,15 @@ const resendConfirmationHandler = async (req: Request, res: Response) => {
  * @param next
  */
 const oAuthHandler = (req: Request, res: Response, next: NextFunction) => {
+  logger.warn("Providers", AuthManager.names())
+
   if (AuthManager.has(req.params.provider)) {
     req.session.messages = [];
 
     const instance = AuthManager.get(req.params.provider);
     const provider = passport.authenticate(instance.name, instance.configure(req));
 
-    provider(req, res, () => {
+    return provider(req, res, () => {
       return res.redirect(
         `/${ContextConfig.get("auth.views.signInRedirect")}` || "/"
       )

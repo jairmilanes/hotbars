@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import * as Handlebars from "handlebars";
 import handlebarsWax from "handlebars-wax";
 import handlebarsLayouts from "handlebars-layouts";
@@ -26,7 +27,10 @@ export const configureHandlebars = (
 
   try {
     const instance = handlebarsWax(handlebars)
-      .data(loadData("data"))
+      .data(_.merge(
+        loadData("data"),
+        loadDashboardData("data")
+      ))
       .data(BootstrapData.get())
       .helpers(handlebarsLayouts)
       .helpers(customHelpers)
@@ -35,7 +39,6 @@ export const configureHandlebars = (
       .partials(Config.fullGlobPath("partials"), partialsOptions)
       .partials(Config.fullGlobPath("shared"), partialsOptions)
       // Server spacific files
-      .data(loadDashboardData("data"))
       .helpers(DashboardConfig.fullGlobPath("helpers"))
       .partials(DashboardConfig.fullGlobPath("layouts"))
       .partials(DashboardConfig.fullGlobPath("partials"))

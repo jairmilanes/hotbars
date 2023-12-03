@@ -18,93 +18,6 @@ function toCamelCase(str) {
   });
 }
 
-function listManager(template, emptyTemplate) {
-  const { partials } = Handlebars;
-  let count = 0;
-
-  const withId = (context) => ({ id: context.id || count + 1, ...context });
-
-  const removable = (item) =>
-    $(".remove", item).click(() => this.removeItem(item));
-
-  this.newItem = (context) => $(partials[template](withId(context)).trim());
-
-  this.reset = () => {
-    count = 0;
-    this.html("");
-  };
-
-  this.getItem = (id) => $(`*[data-id="${id}"]`, this);
-
-  this.removeItem = (id) => {
-    if (typeof id === "number" || typeof id === "string") {
-      this.getItem(id).remove();
-    } else {
-      $(id).remove();
-    }
-
-    --count;
-
-    if (count === 0 && emptyTemplate) {
-      this.html(partials[emptyTemplate]({}));
-    }
-
-    return this;
-  };
-
-  this.prependItem = (context = {}) => {
-    const item = this.newItem(context);
-
-    if (count === 0) {
-      this.html(item.get(0).outerHTML);
-    } else {
-      this.prepend(item);
-    }
-
-    removable(item);
-
-    ++count;
-
-    return this;
-  };
-
-  this.appendItem = (context = {}) => {
-    const item = this.newItem(context);
-
-    if (count === 0) {
-      this.html(item.get(0).outerHTML);
-    } else {
-      this.append(item);
-    }
-
-    removable(item);
-
-    ++count;
-
-    return this;
-  };
-
-  this.replaceItem = (id, context) => {
-    const item = this.newItem(context);
-
-    this.getItem(id).replaceWith(item);
-
-    removable(item);
-
-    return this;
-  };
-
-  this.click = (index) => {
-    this.children().eq(index).trigger("click");
-  };
-
-  if (count === 0 && emptyTemplate) {
-    this.html(partials[emptyTemplate]({}));
-  }
-
-  return this;
-}
-
 function mutationObserver(attributes, callback) {
   const targetValues = {};
 
@@ -192,9 +105,23 @@ function navigate(params = {}) {
   window.location.assign(url.toString());
 }
 
+function formToObject() {
+  const fields = this.get(0).elements
+  const data = {};
+
+  for (let i = 0; i < fields.length; i++) {
+    const field = $(fields.item(i));
+    data[field.attr("name")] = field.val()
+  }
+
+  return data;
+}
+
 function render(template, context, mode) {
   const { templates, partials } = Handlebars;
   const tpl = templates[template] || partials[template];
+
+  console.log("TEMPLATE", template, tpl, templates, partials)
 
   if (tpl) {
     if (mode === "append") {
@@ -207,6 +134,38 @@ function render(template, context, mode) {
 
     this.html(tpl(context));
   }
+
+  return this;
+}
+
+function swapClass(classOne, classTwo) {
+  this.removeClass(classOne)
+  this.addClass(classTwo)
+  return this;
+}
+
+function toggleBeetweenClasses(classOne, classTwo) {
+  console.log("SWAPING", classOne, classTwo)
+  if (this.hasClass(classOne)) {
+    this.swapClass(classOne, classTwo)
+  } else {
+    this.swapClass(classTwo, classOne)
+  }
+  return this;
+}
+
+function toggleElements() {
+  $(`[hb-toggle]`).on("click", (e) => {
+    const el = $(e.currentTarget);
+    const target = el.attr("hb-toggle")
+    const targetEl = $(`#${target}`);
+
+    if (targetEl) {
+      if (targetEl.hasClass("hidden")) {
+
+      }
+    }
+  })
 }
 
 const modals = {
@@ -224,7 +183,73 @@ const modals = {
   },
 };
 
-(function ($) {
+const stickyHeader = (selector) => {
+  const el = $(selector || "header.should-stick");
+  const main = $("main")
+  const bg = $('.sticky-bg', el)
+
+  const bgColor = `bg-${el.attr("hb-bg") || 'transparent'}`
+  const textColor = `text-${el.attr("hb-text") || 'white'}`
+  const bgStickyColor = `bg-${el.attr("hb-sticky-bg") || 'white'}`
+  const textStickyColor = `text-${el.attr("hb-sticky-text") || 'gray-700'}`
+
+  if (el) {
+    addEventListener("scroll",  (e) => {
+      if (window.scrollY > el.outerHeight()) {
+        main.swapClass('-mt-0', `-mt-[${el.outerHeight()}px]`)
+        el.swapClass('absolute', 'sticky')
+        bg.swapClass(bgColor, bgStickyColor)
+        el.swapClass(textColor, textStickyColor)
+      } else {
+        main.swapClass(`-mt-[${el.outerHeight()}px]`, '-mt-0')
+        el.swapClass('sticky', 'absolute')
+        bg.swapClass(bgStickyColor, bgColor)
+        el.swapClass(textStickyColor, textColor)
+      }
+    })
+  }
+}
+
+const scrollTop = () => {
+  const el = $("[hb-back-to-top=\"true\"]");
+
+  addEventListener("scroll",  (e) => {
+    if (window.scrollY > 200) {
+      el.swapClass("bottom-[-100px]", "bottom-[30px]")
+      el.swapClass("opacity-0", "opacity-1")
+    } else {
+      el.swapClass("bottom-[30px]", "bottom-[-100px]")
+      el.swapClass("opacity-1", "opacity-0")
+    }
+  })
+
+  el.on("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+}
+
+const dismiss = (elementId) => {
+  const close = (el) => {
+    el.swapClass("opacity-100", "opacity-0")
+
+    setTimeout(() => {
+      el.remove();
+    }, 600)
+  }
+
+  if (!elementId) {
+    $(`button[hb-dismiss]`).on("click", (e) => {
+      e.preventDefault();
+      close($($(e.target).attr("hb-dismiss")))
+    })
+  } else {
+    close($(elementId))
+  }
+}
+
+(function () {
   $.extend({
     url: function () {
       return new URL(window.location.href);
@@ -237,10 +262,16 @@ const modals = {
     pushState,
     navigate,
     stateChange,
+    stickyHeader,
+    scrollTop,
+    dismiss,
   });
 
   $.fn.extend({
-    list: listManager,
+    formToObject: formToObject,
+    swapClass: swapClass,
+    scrollTop: scrollTop,
+    toggleBeetweenClasses: toggleBeetweenClasses,
     modal: function (name, context) {
       this.render(name, context, "append");
     },
@@ -248,4 +279,7 @@ const modals = {
     render,
     mutate: mutationObserver,
   });
-})(jQuery);
+
+  dismiss()
+  console.log($)
+})();

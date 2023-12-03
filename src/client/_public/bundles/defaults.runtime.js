@@ -11,6 +11,7 @@ const string = require(`handlebars-helpers/lib/string`);
 const url = require(`handlebars-helpers/lib/url`);
 const i18n = require("../../_helpers/i18n");
 const layouts = require("handlebars-layouts")(Handlebars);
+const helpers = require("../../_helpers");
 
 module.exports = {
   layouts,
@@ -26,4 +27,5 @@ module.exports = {
   regex,
   string,
   url,
+  ...helpers
 };

@@ -1,0 +1,35 @@
+<div id="mobile-menu" class="fixed top-0 bottom-0 right-0 w-full left-1/4 opacity-0 p-6 block md:hidden transition-all duration-800 bg-black text-white flex justify-center w-full md:w-auto order-3">
+  <button hb-toggle="mobile-menu" class="absolute top-8 left-8">
+    {{{embed "icons/close" size=10}}}
+  </button>
+  <nav
+    class="w-full md:bg-transparent rounded shadow-lg px-6 py-4 mt-4 text-center md:p-0 md:mt-0 md:shadow-none">
+    <ul class="md:flex items-center mt-16">
+      {{#each menu}}
+        <li>
+          <a href="{{href}}" class="hover:text-{{default ../hoverColor "amber-600"}} text-2xl py-3 md:px-2 inline-block md:hidden lg:block font-semibold">
+            {{label}}
+          </a>
+        </li>
+      {{/each}}
+      {{#if actions}}
+        {{#each actions}}
+          <li class="md:hidden">
+            <a class="hover:text-{{default ../hoverColor "amber-600"}} inline-block ml-2 font-semibold px-4 py-2 bg-blue-600 md:bg-transparent border border-{{default color "white"}}  hover:border-{{default hoverColor "amber-600"}} rounded"
+               href="{{url}}">
+              {{label}}
+            </a>
+          </li>
+        {{/each}}
+      {{/if}}
+      {{#if action}}
+        <li class="md:hidden">
+          <a class="hover:text-{{default hoverColor "amber-600"}} inline-block ml-2 font-semibold px-4 bg-blue-600 md:bg-transparent border border-{{default color "white"}}  hover:border-{{default hoverColor "amber-600"}} rounded"
+             href="{{actionUrl}}">
+            {{actionLabel}}
+          </a>
+        </li>
+      {{/if}}
+    </ul>
+  </nav>
+</div>

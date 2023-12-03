@@ -55,6 +55,7 @@ export class Config extends ConfigManager implements Options {
   precompile = "precompile";
   shared = "shared";
   views = "views";
+  lib = "lib";
   controllers = "controllers";
   styleMode = "css" as StylesType;
   styles = "styles";
@@ -257,5 +258,11 @@ export class Config extends ConfigManager implements Options {
     initLogger(this.instance.logLevel, this.instance.logToFile);
 
     return Object.freeze(this.instance);
+  }
+
+  static addToWatch(path: string) {
+    this.instance.watch.push(
+      joinPath(...[this.instance.source, path])
+    )
   }
 }

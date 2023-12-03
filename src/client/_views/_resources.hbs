@@ -35,21 +35,20 @@
                       </span>
                   </span>
               </div>
-              <button id="hbs-send-request" class="rounded-r-full bg-rose-600 hover:bg-rose-500 text-white font-bold px-5">
+              <div id="{{prefix "status"}}" class="hidden text-gray-100 px-3 py-2">
+                <strong id="{{prefix "status-code"}}"></strong> <span id="{{prefix "status-text"}}"></span>
+              </div>
+              <button id="hbs-send-request" disabled class="rounded-r-full bg-rose-600 hover:bg-rose-500 text-white font-bold px-5">
                 <span id="send-btn">Send</span>
                 {{#embed "_spinner" id="sending-btn" class="hidden" size="4"}}{{/embed}}
               </button>
             </div>
             <div class="flex items-center">
-              <div id="{{prefix "status"}}" class="text-gray-400">
-                <span id="{{prefix "status-label"}}"></span>
-                <strong id="{{prefix "status-code"}}" class="text-green-600"></strong> <span id="{{prefix "status-text"}}"></span>
-              </div>
-              <div class="grow"></div>
               {{> "_tabs" (i "_hbs.tabs")}}
+              <div class="grow"></div>
             </div>
           </div>
-          <div id="{{prefix "resource-content"}}" class="relative bg-gray-100 dark:bg-gray-900 border-l border-t border-slate-200 dark:border-slate-700 h-full grow flex flex-col overflow-hidden">
+          <div id="{{prefix "resource-content"}}" class="relative text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-l border-t border-slate-200 dark:border-slate-700 h-full grow flex flex-col overflow-hidden">
             <div id="{{prefix "body-content"}}" class="hidden relative grow shrink-0" role="tabpanel">
               <div id="ace-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 text-base"></div>
               <div id="multipart-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 p-6">

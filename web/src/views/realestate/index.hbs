@@ -1,0 +1,103 @@
+{{#extend "site"
+  bodyClass="antialiased text-slate-700 bg-white font-sans text-rose-700"
+  googleFontsUrl="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap"
+  backToTopColor="rose-600"
+}}
+  {{#content "main"}}
+    <!-- start header -->
+    {{{embed "blocks/headers/header-02"
+             title="RealEstatePro"
+             socialLinks=socialLinks
+             menu=menu
+             appointment=appointment
+             actionUrl="#"
+             actionLabel="Book Appointment"
+             bg="transparent"
+             stickyBg="rose-700"
+             color="white"
+             hoverColor="black"
+             stickyText="white"
+    }}}
+    <!-- end header -->
+
+    <main class="w-full">
+      <!-- start hero -->
+      {{#embed "blocks/hero/hero-01"
+               bgImage="/public/templates/realestate/images/cover-bg.jpg"
+               title="Real Estate Agency with a Personal Touch"
+               color="rose"
+               hoverColor="rose"
+               overlay="rose"
+               actionHref="#"
+               actionLabel="Find Properties"
+               buttonColor="sky"
+               zoom=true
+      }}
+        {{#content "body"}}
+          {{{embed "blocks/feature/feature-01" color="rose" features=features}}}
+        {{/content}}
+      {{/embed}}
+      <!-- end hero -->
+
+      {{{embed "blocks/listings/listing-01"
+               title="Looking for a property?"
+               description="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy."
+               color="rose"
+               viewAllUrl="#"
+               viewAllLabel="View all"
+      }}}
+
+      {{{embed "blocks/section/text-image-row"
+               title="Every client deserves the best advice"
+               description="Aenean ut tellus tellus. Suspendisse potenti. Nullam tincidunt lacus tellus,
+ sed aliquam est vehicula a. Pellentesque consectetur condimentum nulla, eleifend condimentum purus vehicula
+ in. Donec convallis sollicitudin facilisis. Integer nisl ligula, accumsan non tincidunt ac, imperdiet in
+ enim. Donec efficitur ullamcorper metus, eu venenatis nunc. Nam eget neque tempus, mollis sem a, faucibus
+ mi."
+               image="/public/templates/real-estate/images/the-best.jpg"
+      }}}
+
+      {{{embed "blocks/testimonial/testimonial-01"
+               title="What our clients say?"
+               testimonials=testimonials
+      }}}
+
+      {{{embed "blocks/cta/cta-01"
+               title="Call Today 1-888-222-9999"
+               description="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy."
+               color="rose"
+               actionLabel="Book an Appointment"
+               actionUrl="#"
+               actionColor="sky"
+      }}}
+    </main>
+
+    {{{embed "blocks/footer/footer-01"
+             title="RealestatePro"
+             description="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy."
+             address="1985 Kerry Way, Whittier, CA, USA"
+             workingHours="Mon - Fri: 9:00 - 19:00<br />Closed on Weekends"
+             phoneNumber="+1 562-789-1935"
+             email="lawpro@example.com"
+             menuTitle="Services"
+             color="rose"
+             menu=true
+             menuItems=footer.menu
+             social=true
+             socialLinks=footer.socialLinks
+             contact=true
+    }}}
+  {{/content}}
+
+  {{#content "scripts"}}
+    {{{embed "tailwind-config"
+             headingFontName="Mulish"
+             heading1FontWeight=1000
+             heading2FontWeight=800
+    }}}
+
+    <script>
+      $.stickyHeader()
+    </script>
+  {{/content}}
+{{/extend}}

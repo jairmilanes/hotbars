@@ -32,7 +32,8 @@
       <option value="{{value}}" {{#eq value (d "value")}}selected{{/eq}}>{{label}}</option>
       {{/each}}
     </select>
-    {{{embed "_input-hint" id=(default id name) label=label invalid=invalid}}}
+    {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+    {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
   </div>
 {{else if (eq type "radio")}}
   <div class="flex items-start py-3 relative">
@@ -62,6 +63,8 @@
         <label for="{{default id name}}" class="{{_label}}">{{{block "label"}}}</label>
       </div>
     {{/each}}
+    {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+    {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
   </div>
 {{else if (eq type "checkboxGroup")}}
   <div class="mb-6 relative">
@@ -73,14 +76,16 @@
         <label for="{{default id name}}" class="{{_label}}">{{{block "label"}}}</label>
       </div>
     {{/each}}
+    {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+    {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
   </div>
 {{else if (eq type "textarea")}}
   <div class="relative">
     <label for="{{default id name}}" class="{{_label spacing="bottomLeft" block=true}}">{{label}}</label>
-    <textarea id="{{default id name}}" name="{{name}}" cols="{{cols}}" rows="{{rows}}" class="{{_input invalid=invalid}}" placeholder="{{default placeholder label}}" {{#if required}}required{{/if}} {{#if disabled}}disabled{{/if}}>
-      {{value}}
-    </textarea>
-    {{{embed "_input-hint" id=(default id name) label=label invalid=invalid}}}
+    <textarea id="{{default id name}}" name="{{name}}" cols="{{cols}}" rows="{{rows}}" class="{{_input invalid=invalid}}" placeholder="{{default placeholder ""}}" {{#if required}}required{{/if}} {{#if disabled}}disabled{{/if}}
+    >{{value}}</textarea>
+    {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+    {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
   </div>
 {{else}}
   <div class="relative">
@@ -98,6 +103,7 @@
                    disabled=disabled}}}
            placeholder="{{placeholder}}"
            class="{{_input invalid=invalid}}">
-    {{{embed "_input-hint" id=(default id name) label=label invalid=invalid}}}
+    {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+    {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
   </div>
 {{/if}}
