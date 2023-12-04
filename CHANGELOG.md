@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.8.6](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.5...hotbars-v1.8.6) (2023-12-04)
+
+
+### Bug Fixes
+
+* bugs in the dashboard for resources, data and emails ([331ea7a](https://github.com/jairmilanes/hotbars/commit/331ea7ae1d32f85514e286201353d5a71b97f227))
+* bugs with default authentication pages ([331ea7a](https://github.com/jairmilanes/hotbars/commit/331ea7ae1d32f85514e286201353d5a71b97f227))
+* dashboard authentication logic ([331ea7a](https://github.com/jairmilanes/hotbars/commit/331ea7ae1d32f85514e286201353d5a71b97f227))
+* page css and general styles ([331ea7a](https://github.com/jairmilanes/hotbars/commit/331ea7ae1d32f85514e286201353d5a71b97f227))
+* platform wide bug fixes ([f032501](https://github.com/jairmilanes/hotbars/commit/f03250153d444cecd40c5ed00a867d79616466ae))
+
 ## [1.8.5](https://github.com/jairmilanes/hotbars/compare/hotbars-v1.8.4...hotbars-v1.8.5) (2022-12-20)
 
 
