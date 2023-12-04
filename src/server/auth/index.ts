@@ -157,6 +157,7 @@ export class AuthManager {
   }
 
   static has(name: string): boolean {
+    logger.warn("Checking strategy", name, this.strategies[name])
     return this.strategies[name] !== undefined;
   }
 

@@ -1,10 +1,10 @@
-{{#embed "_card" title="Watching" overflow="y-scroll"}}
+{{#embed "_card" title="Watching" overflow="y-scroll" padding="md"}}
   {{#content "body"}}
-    <ul>
+    <ul class="w-full">
       {{#each config.watch}}
         {{#not (startsWith config.serverRoot this)}}
           <li
-            class="border-b border-slate-100 hover:bg-slate-100 dark:border-neutral-800 dark:hover:bg-neutral-800 py-1 px-2"
+            class="border-b border-slate-100 hover:bg-slate-100 dark:border-neutral-800 dark:hover:bg-slate-800 py-1 px-2"
           >
             <span
               class="block font-semibold text-slate-400 dark:text-neutral-300"

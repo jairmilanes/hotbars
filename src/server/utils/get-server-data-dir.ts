@@ -2,15 +2,21 @@ import { existsSync, mkdirSync, writeFileSync, readFileSync } from "fs";
 import { joinPath } from "./path-helpers";
 import { Config } from "../core";
 
-export const getServerDataDir = (): string => {
-  const path = joinPath(process.cwd(), ".hotbars");
+export const getServerDataDir = (...parts: string[]): string => {
+  const path = joinPath(process.cwd(), ".hotbars", ...(parts || []));
 
   if (!existsSync(path)) {
-    mkdirSync(path);
+    mkdirSync(path, { recursive: true });
   }
 
   return path;
 };
+
+export const getServerFilePath = (...parts: string[]): string => {
+  const filename = parts.pop()
+  const serverDir = getServerDataDir(...parts);
+  return joinPath(serverDir, filename as string);
+}
 
 export const saveServerFile = (
   filename: string,

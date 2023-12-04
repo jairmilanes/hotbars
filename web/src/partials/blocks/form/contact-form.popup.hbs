@@ -1,0 +1,19 @@
+<div
+  id="w3f__widget--content"
+  x-show="open"
+  x-transition:enter-start="opacity-0 translate-y-5"
+  x-transition:enter="transition duration-200 transform ease"
+  x-transition:leave="transition duration-200 transform ease"
+  x-transition:leave-end="opacity-0 translate-y-5"
+  @click.away="open = false"
+  class="flex flex-col z-50 h-auto h-[calc(100%-95px)] w-full sm:w-[350px] overflow-auto min-h-[250px] sm:h-[600px] border border-gray-300 bg-white shadow-2xl rounded-md"
+>
+  <div class="flex p-5 flex-col justify-center items-center h-32 bg-indigo-600">
+    <h3 class="text-lg text-white">How can we help?</h3>
+    <p class="text-white opacity-50">We usually respond in a few hours</p>
+  </div>
+
+  <div class="bg-gray-50 flex-grow p-6">
+    {{{embed "blocks/form/contact-form.naked"}}}
+  </div>
+</div>

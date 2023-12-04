@@ -1,3 +1,37 @@
 {{#extend "_default" title="Data"}}
-  {{#content "main"}}{{/content}}
+  {{#content "main"}}
+    <section
+      class="container mx-auto grow flex flex-col relative overflow-hidden"
+    >
+      {{#embed "_card" layout="grid" title="" classNames="overflow-hidden grow"}}
+        {{#content "content"}}
+          <div class="flex flex-col flex-1 col-span-4 py-0 overflow-hidden bg-gray-200 dark:bg-gray-800">
+            <div id="hbs-data-collections" class="grow overflow-auto"></div>
+            <div id="hbs-data-pages" class="border-t text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700"></div>
+          </div>
+          <div class="flex flex-col col-span-4 border-l border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div id="hbs-data-items" class="bg-white dark:bg-gray-900 overflow-auto"></div>
+          </div>
+          <div class="flex flex-col col-span-4 border-l border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div id="hbs-data-item" class="bg-white h-full overflow-hidden dark:bg-gray-900">
+
+            </div>
+          </div>
+          <div
+            id="hbs-data-loading"
+            class="flex justify-center items-center absolute top-0 bottom-0 left-0 right-0"
+          >
+            {{#embed "_spinner" size="14"}}{{/embed}}
+          </div>
+        {{/content}}
+      {{/embed}}
+    </section>
+  {{/content}}
+  {{#content "styles"}}
+    {{styles "/public/libs/prism.css"}}
+  {{/content}}
+  {{#content "scripts"}}
+    {{scripts "/public/libs/prism.js,
+               /public/hotbars/data.js"}}
+  {{/content}}
 {{/extend}}

@@ -6,7 +6,7 @@ module.exports._body = clb({
     color: "gray",
     bg: "gray",
   },
-  base: "flex p-4",
+  base: "flex p-4 transition-opacity duration-[6 00ms] opacity-100",
   defaultVariants: {
     style: "default",
     spacing: "md",

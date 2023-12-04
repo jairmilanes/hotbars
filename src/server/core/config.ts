@@ -21,10 +21,13 @@ import {
 import { initLogger } from "../../services";
 import { ConfigManager } from "../services/config-manager";
 import * as process from "process";
+import { existsSync } from "fs";
+import { ConfigFileException } from "../exceptions/config-file.exception";
+import { DashboardConfig } from "./dashboard-config";
 
 const moduleName = "hotbars";
 
-export class Config extends ConfigManager<Options> implements Options {
+export class Config extends ConfigManager implements Options {
   dev = false;
   root = slash(process.cwd());
   env = Env.Dev;
@@ -34,7 +37,7 @@ export class Config extends ConfigManager<Options> implements Options {
   logLevel = 1;
   verbose = false;
   activeData = false;
-  logFilePath = "./logs/log.txt";
+  logToFile = true;
   configName = `${moduleName}rc`;
   bootstrapName = `${moduleName}.bootstrap`;
   routesConfigName = `${moduleName}.routes`;
@@ -52,6 +55,7 @@ export class Config extends ConfigManager<Options> implements Options {
   precompile = "precompile";
   shared = "shared";
   views = "views";
+  lib = "lib";
   controllers = "controllers";
   styleMode = "css" as StylesType;
   styles = "styles";
@@ -122,6 +126,8 @@ export class Config extends ConfigManager<Options> implements Options {
     rememberMe: 604800000,
     terms: undefined,
     views: {
+      signInRedirect: "/",
+      signUpRedirect: "/",
       signIn: "_sign-in",
       signUp: "_sign-up",
       signUpPending: "_sign-up-pending",
@@ -147,17 +153,34 @@ export class Config extends ConfigManager<Options> implements Options {
   watch: string[] = [];
 
   static instance: Readonly<Config>;
+  static dashboard: Readonly<DashboardConfig>;
 
   private constructor(argv: CliOptions) {
     super();
+
+    const configFile = argv.configName || this.configName;
+
+    if (!existsSync(joinPath(process.cwd(), configFile))) {
+      throw new ConfigFileException(configFile);
+    }
+
     const userConfig = loadFile<Partial<Options>>(
-      argv.configName || this.configName,
+      configFile,
       true,
       undefined,
-      argv.root
+      process.cwd()
     );
 
     const options = _.assign({}, userConfig, argv);
+
+    // Normalize environment naming
+    if (options.env === "dev") {
+      options.env = Env.Dev;
+    }
+
+    if (options.env === "prod") {
+      options.env = Env.Prod;
+    }
 
     const production = options.env === Env.Prod;
 
@@ -232,8 +255,14 @@ export class Config extends ConfigManager<Options> implements Options {
   static create(argv?: CliOptions): Readonly<Config> {
     this.instance = new this(argv || {});
 
-    initLogger(this.instance.logLevel, this.instance.logFilePath);
+    initLogger(this.instance.logLevel, this.instance.logToFile);
 
     return Object.freeze(this.instance);
+  }
+
+  static addToWatch(path: string) {
+    this.instance.watch.push(
+      joinPath(...[this.instance.source, path])
+    )
   }
 }

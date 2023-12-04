@@ -1,7 +1,7 @@
-$(() => {
-  /***************************************
-   * DARKMODE CONTROLS
-   **************************************/
+/***************************************
+ * DARKMODE CONTROLS
+ **************************************/
+function toggleTheme() {
   let theme =
     localStorage.getItem("color-theme") ||
     (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -24,7 +24,9 @@ $(() => {
   const lightIcon = document.getElementById("theme-toggle-light-icon");
 
   if (darkIcon && lightIcon) {
-    // Change the icons inside the button based on previous settings
+    // Change the icons inside the button based on prev
+    //
+    // ious settings
     if (theme) {
       lightIcon.classList.remove("hidden");
     } else {
@@ -62,4 +64,9 @@ $(() => {
       }
     });
   }
+}
+
+$(() => {
+  toggleTheme();
 });
+

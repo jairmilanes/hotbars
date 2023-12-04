@@ -1,13 +1,13 @@
 <div id="{{id}}" class="{{_card size=size shadow=shadow layout=layout padding=padding spacing=spacing}} {{classNames}}">
 
   {{#if title}}
-    {{{embed "_heading" size=(default size "h3") text=title }}}
+    {{{embed "_heading" size=(default titleSize "h3") text=title }}}
   {{/if}}
 
   {{{block "content"}}}
 
   {{#if (content "body")}}
-    <div class="{{_cardBody}} {{bodyClass}}">
+    <div class="{{_cardBody padding=0 spacing=0 layout=bodyLayout}} {{bodyClass}}">
       {{{block "body"}}}
     </div>
   {{/if}}

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/ban-ts-comment */
 import * as _ from "lodash";
-import { resolve, dirname } from "path";
 import createLogger, { Debugger } from "debug";
-import { existsSync, mkdirSync } from "fs";
 import fileLogger from "day-log-savings";
+import util from "util";
 import { split } from "../utils";
+import { getServerDataDir } from "../server/utils/get-server-data-dir";
 
 interface Logger {
   log: Debugger;
@@ -87,39 +87,103 @@ export const logger: Logger = {
   },
 };
 
-export const initLogger = (level: number, filePath: string) => {
+const iniFileLogger = () => {
+  fileLogger.defaults('write', {
+    prefix: 'DEBUG',
+    length: 2000,
+    format: {
+      message: '{"prefix": "%prefix", "date": "%date", "time": "%time", "message": "%message"}',
+      date: '%day-%month-%year',
+      time: '%hour:%minute'
+    }
+  });
+  // @ts-ignore
+  // fileLogger.defaults('read', { array: true, blanks: false });
+  fileLogger.defaults("root", { path: getServerDataDir("logs") });
+}
+
+const format = (...args: any[]) => {
+  args[0] = createLogger.coerce(args[0]);
+
+  if (typeof args[0] !== 'string') {
+    // Anything else let's inspect with %O
+    args.unshift('%O');
+  }
+
+  // Apply any `formatters` transformations
+  let index = 0;
+  args[0] = args[0].replace(/%([a-zA-Z%])/g, (match: any, format: any) => {
+    // If we encounter an escaped % then don't increase the array index
+    if (match === '%%') {
+      return '%';
+    }
+    index++;
+    const formatter = createLogger.formatters[format];
+    if (typeof formatter === 'function') {
+      const val = args[index];
+      const thiss = { inspectOpts: {}}
+      match = formatter.call(thiss, val);
+
+      // Now we need to remove `args[index]` since it's inlined in the `format`
+      args.splice(index, 1);
+      index--;
+    }
+    return match;
+  });
+
+  return util.format(...args);
+}
+
+const wrap = (logFn: any, parts: string[], toFile: boolean) => {
+  return (...args: any[]) => {
+    logFn(...args)
+
+    if (toFile) {
+      const options = { console: false, prefix: 'LOG' };
+
+      if (parts[0] !== "method") {
+        options.prefix = _.toUpper(parts[0]);
+      }
+
+      if (parts[0] === "method") {
+        options.prefix = _.toUpper("request".concat(":", parts[1]));
+      }
+
+      // @ts-ignore
+      fileLogger.write(format(...args), options);
+    }
+  }
+}
+
+export const initLogger = (level: number, toFile = true) => {
   _.set(createLogger, "_startLevel", level);
+
+  iniFileLogger();
 
   for (const level in levelNames) {
     const parts: string[] = split(levelNames[level], ":");
+    console.log(parts)
     const color = parts.pop();
 
     if (parseInt(level, 10) > 0) {
+      let logFn;
+
       if (_.first(parts) === "method") {
-        _.set(logger, parts, log.extend(_.toUpper(_.last(parts) as string)));
+        logFn = log.extend(_.toUpper(_.last(parts) as string))
+        // _.set(logger, parts, wrap(log.extend(_.toUpper(_.last(parts) as string)), parts, toFile));
       } else {
-        _.set(logger, parts, log.extend(_.last(parts) as string));
+        logFn = log.extend(_.last(parts) as string)
+        // _.set(logger, parts, wrap(log.extend(_.last(parts) as string), parts, toFile));
       }
+
+      _.assign(logFn, {
+        color,
+        namespace: _.padStart(_.get(logFn, "namespace"), 15, "-"),
+      });
+
+      _.set(logger, parts, wrap(logFn, parts, toFile));
     }
-
-    const logFn = _.get(logger, parts);
-
-    _.assign(logFn, {
-      color,
-      namespace: _.padStart(_.get(logFn, "namespace"), 15, "-"),
-    });
   }
-
-  // Create log directory if does not exist
-  const directoryPath = dirname(resolve(process.cwd(), filePath));
-
-  if (!existsSync(directoryPath)) {
-    mkdirSync(directoryPath);
-  }
-
-  fileLogger.defaults("root", { path: directoryPath });
-
-  logger.file = fileLogger.write;
 
   logger.update(level);
 };

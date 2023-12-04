@@ -57,31 +57,30 @@ const partialPrefixed = (key, val, options) => {
   return val;
 }
 
-const themeOption = (themeKey, option, variants) => {
-  const { style } = variants;
+const themeOption = (option, style, variants) => {
   const themes = ['dark', 'light'];
 
   // Select theme from style variant if configured
-  if (isObject(variants[themeKey][style])) {
+  if (isObject(variants["theme"][style])) {
     return themes.map(
-      theme => variants[themeKey][style][theme]
+      theme => variants["theme"][style][theme]
     );
   }
 
   // Select theme from option
-  if (variants[themeKey][option]) {
-    if (isObject(variants[themeKey][option])) {
+  if (variants["theme"][option]) {
+    if (isObject(variants["theme"][option])) {
       return themes.map(
-        theme => variants[themeKey][option][theme]
+        theme => variants["theme"][option][theme]
       );
     }
 
-    return variants[themeKey][option];
+    return variants["theme"][option];
   }
 
   // Default behavior, return both themes
   return themes.map(
-    theme => variants[themeKey][theme]
+    theme => variants["theme"][theme]
   );
 }
 
@@ -127,7 +126,8 @@ const clb =
       const variant = normalized[variantName];
 
       if (variantName === "theme") {
-        sets.push(themeOption(variantName, option, normalized));
+
+        sets.push(themeOption(option, currentOptions["style"], normalized));
       } else {
         sets.push(partialPrefixed(
           variantName,

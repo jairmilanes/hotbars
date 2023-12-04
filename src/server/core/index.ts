@@ -5,3 +5,4 @@ export * from "./renderer";
 export * from "./pre-renderer";
 export * from "./watcher";
 export * from "./event-manager";
+export * from "./context-config";

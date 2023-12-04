@@ -11,7 +11,7 @@ function EmailPage() {
   this.header = $("#hbs-email-header");
 
   this.fetch = async (page = 1) => {
-    return fetch(`/_mail?_page=${page}`)
+    return fetch(`/_mail?_page=${page}&_sort=id&_order=desc`)
       .then((response) => response.json())
       .then((emails) => {
         this.emails = emails;
@@ -64,7 +64,8 @@ function EmailPage() {
     items.forEach((email) =>
       this.list.appendItem({
         ...email,
-        date: dayjs(items[0].date).fromNow(),
+        date: dayjs(email.date).fromNow(),
+        dateString: dayjs(email.date).format("DD/MM/YYYY HH:mm:ss")
       })
     );
   };

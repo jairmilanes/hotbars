@@ -1,13 +1,14 @@
 {
-  "logLevel": 1,
+  "env": "prod",
+  "logLevel": 2,
   "extname": "hbs",
   "source": "src",
   "styles": "styles",
   "styleMode": "scss",
-  "mailer": {
+  "language": {
     "enabled": true
   },
-  "smtpServer": {
+  "mailer": {
     "enabled": true
   },
   "jsonDb": "db/db.json",

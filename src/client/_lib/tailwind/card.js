@@ -22,8 +22,8 @@ module.exports = clb({
       light: "text-%color-700 bg-%bg-100 border-%border-200"
     },
     layout: {
-      flexRow: "flex",
-      flexcolumn: "flex flex-col",
+      row: "flex",
+      column: "flex flex-col",
       grid: "grid grid-cols-12"
     },
     hover: {
@@ -46,9 +46,9 @@ module.exports = clb({
       lg: "shadow-lg",
     },
     size: {
-      sm: 'max-w-sm',
-      md: 'max-w-md',
-      lg: 'max-w-lg',
+      sm: 'w-[24rem]',
+      md: 'w-[36rem]',
+      lg: 'w-[48rem]',
       full: "w-full",
     },
     padding: {
@@ -79,7 +79,7 @@ module.exports.body = clb({
     bg: "gray",
     border: "gray"
   },
-  base: "flex p-4",
+  base: "flex w-full",
   defaultVariants: {
     padding: "md",
     spacing: "md"
@@ -100,6 +100,7 @@ module.exports.body = clb({
       lg: 'p-8 sm:p-10',
     },
     spacing: {
+      0: "space-y-0",
       sm: "space-y-2 md:space-y-4",
       md: "space-y-4 md:space-y-6",
       lg: "space-y-6 md:space-y-8",

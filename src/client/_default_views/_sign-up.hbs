@@ -15,10 +15,10 @@
           />
           Flowbite
         </a>
-        {{#embed "_card" title=(i "auth.createAccount")}}
+        {{#embed "_card" title=(i "auth.createAccount") titleSize="h3" size="sm" padding="md" }}
           {{#content "body"}}
             <form
-              class="space-y-4 md:space-y-6"
+              class="w-full space-y-4 md:space-y-6"
               method="post"
               action="{{append auth.signUp '/local'}}"
               data-captcha="signup"
@@ -28,6 +28,7 @@
               {{/each}}
               {{{embed
                 "_input"
+                type="text"
                 label=(i "auth.yourUsername")
                 name="username"
                 required=true
@@ -71,17 +72,17 @@
                 version=auth.reCaptcha
                 text=(i "auth.createAccount")
               }}}
-              <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                {{{embed
-                  "_link"
-                  url=auth.signIn
-                  prefix=(i "auth.alreadHaveAnAccount")
-                  text=(i "auth.signInHere")
-                }}}
-              </p>
             </form>
           {{/content}}
         {{/embed}}
+        <p class="text-sm mt-8 font-light text-gray-500 dark:text-gray-400">
+          {{{embed
+            "_link"
+            url=auth.signIn
+            prefix=(i "auth.alreadHaveAnAccount")
+            text=(i "auth.signInHere")
+          }}}
+        </p>
       </div>
     </section>
   {{/content}}

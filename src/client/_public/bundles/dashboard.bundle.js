@@ -28583,10 +28583,12 @@ module.exports.i = module.exports.i18n;
 
 },{"handlebars-utils":106}],254:[function(require,module,exports){
 const tailwind = require("./tailwind");
+const vvar = require("./var");
+const toString = require("./toString");
 
-module.exports = { tailwind };
+module.exports = { tailwind, var: vvar, toStr: toString };
 
-},{"./tailwind":255}],255:[function(require,module,exports){
+},{"./tailwind":255,"./toString":256,"./var":257}],255:[function(require,module,exports){
 // const requireFresh = require("../_lib/require-fresh")(require);
 const components = require("../_lib/tailwind");
 
@@ -28647,7 +28649,7 @@ tailwind._cardBody = function (options) {
 tailwind._alert = function (options) {
   options.hash = options.hash || {}
 
-  if (options.hash.color && !options.bg) {
+  if (options.hash.color && !options.hash.bg) {
     options.hash.bg = options.hash.color;
   }
 
@@ -28655,11 +28657,12 @@ tailwind._alert = function (options) {
     info: "blue",
     error: "red",
     warning: "yellow",
-    success: "grren",
+    success: "green",
   };
 
   if (colors[options.hash.color]) {
     options.hash.color = colors[options.hash.color];
+    options.hash.bg = colors[options.hash.bg];
   }
 
   if (!options.hash.color) {
@@ -28667,7 +28670,7 @@ tailwind._alert = function (options) {
     options.hash.theme = "opaque";
   }
 
-  return components._alert._body(options.hash || {});
+  return components._alert._body(options.hash);
 };
 
 tailwind._alertText = function (options) {
@@ -28692,7 +28695,64 @@ tailwind._alertClose = function (options) {
   return components._alert._close(options.hash || {});
 };
 
-},{"../_lib/tailwind":260}],256:[function(require,module,exports){
+},{"../_lib/tailwind":262}],256:[function(require,module,exports){
+/**
+ * Comnvert a value to string
+ *
+ * @param {string} key
+ * @param {string} value
+ * @param {object} options
+ * @returns {(string|number|null|undefined)}
+ */
+module.exports.toStr = function (value, options) {
+  if (value === null || value === "undefined") return "";
+
+  if (Array.isArray(value)) {
+    return value.join(', ');
+  }
+
+  if (typeof value === "number") {
+    return ""+value;
+  }
+
+  if (typeof value === "boolean") {
+    return ""+value;
+  }
+
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
+
+  return value;
+};
+
+},{}],257:[function(require,module,exports){
+/**
+ * Create a variable in the context for later use
+ *
+ * @param {string} key
+ * @param {string} value
+ * @param {object} options
+ * @returns {(string|number|null|undefined)}
+ */
+module.exports.var = function (key, value, options) {
+  if (!options && value) {
+    options = value;
+    value = undefined;
+  }
+
+  if (!options.data.local) {
+    options.data.local = {};
+  }
+
+  if (!value) {
+    return options.data.local[key];
+  }
+
+  options.data.local[key] = value;
+};
+
+},{}],258:[function(require,module,exports){
 const clsx = require("clsx");
 const isObject = (value) => value !== null && typeof value === "object";
 const isBoolean = (maybeBoolean) => typeof maybeBoolean === "boolean";
@@ -28752,31 +28812,30 @@ const partialPrefixed = (key, val, options) => {
   return val;
 }
 
-const themeOption = (themeKey, option, variants) => {
-  const { style } = variants;
+const themeOption = (option, style, variants) => {
   const themes = ['dark', 'light'];
 
   // Select theme from style variant if configured
-  if (isObject(variants[themeKey][style])) {
+  if (isObject(variants["theme"][style])) {
     return themes.map(
-      theme => variants[themeKey][style][theme]
+      theme => variants["theme"][style][theme]
     );
   }
 
   // Select theme from option
-  if (variants[themeKey][option]) {
-    if (isObject(variants[themeKey][option])) {
+  if (variants["theme"][option]) {
+    if (isObject(variants["theme"][option])) {
       return themes.map(
-        theme => variants[themeKey][option][theme]
+        theme => variants["theme"][option][theme]
       );
     }
 
-    return variants[themeKey][option];
+    return variants["theme"][option];
   }
 
   // Default behavior, return both themes
   return themes.map(
-    theme => variants[themeKey][theme]
+    theme => variants["theme"][theme]
   );
 }
 
@@ -28822,7 +28881,8 @@ const clb =
       const variant = normalized[variantName];
 
       if (variantName === "theme") {
-        sets.push(themeOption(variantName, option, normalized));
+
+        sets.push(themeOption(option, currentOptions["style"], normalized));
       } else {
         sets.push(partialPrefixed(
           variantName,
@@ -28867,7 +28927,7 @@ const clb =
 
 module.exports = clb;
 
-},{"clsx":22}],257:[function(require,module,exports){
+},{"clsx":22}],259:[function(require,module,exports){
 const clb = require("../../_lib/clb");
 
 module.exports._body = clb({
@@ -28876,7 +28936,7 @@ module.exports._body = clb({
     color: "gray",
     bg: "gray",
   },
-  base: "flex p-4",
+  base: "flex p-4 transition-opacity duration-[6 00ms] opacity-100",
   defaultVariants: {
     style: "default",
     spacing: "md",
@@ -28963,7 +29023,7 @@ module.exports._icon = clb({
   },
 });
 
-},{"../../_lib/clb":256}],258:[function(require,module,exports){
+},{"../../_lib/clb":258}],260:[function(require,module,exports){
 const clb = require("../../_lib/clb");
 
 module.exports = clb({
@@ -28972,7 +29032,7 @@ module.exports = clb({
     border: "primary",
     bg: "primary",
   },
-  base: "focus:ring-4 focus:outline-none disabled:opacity-50",
+  base: "focus:ring-4 focus:outline-none disabled:opacity-50 focus:disabled:opacity-50",
   defaultVariants: {
     style: "solid",
     size: "md",
@@ -29018,7 +29078,7 @@ module.exports = clb({
   },
 });
 
-},{"../../_lib/clb":256}],259:[function(require,module,exports){
+},{"../../_lib/clb":258}],261:[function(require,module,exports){
 const clb = require("../../_lib/clb");
 
 module.exports = clb({
@@ -29043,8 +29103,8 @@ module.exports = clb({
       light: "text-%color-700 bg-%bg-100 border-%border-200"
     },
     layout: {
-      flexRow: "flex",
-      flexcolumn: "flex flex-col",
+      row: "flex",
+      column: "flex flex-col",
       grid: "grid grid-cols-12"
     },
     hover: {
@@ -29067,9 +29127,9 @@ module.exports = clb({
       lg: "shadow-lg",
     },
     size: {
-      sm: 'max-w-sm',
-      md: 'max-w-md',
-      lg: 'max-w-lg',
+      sm: 'w-[24rem]',
+      md: 'w-[36rem]',
+      lg: 'w-[48rem]',
       full: "w-full",
     },
     padding: {
@@ -29100,7 +29160,7 @@ module.exports.body = clb({
     bg: "gray",
     border: "gray"
   },
-  base: "flex p-4",
+  base: "flex w-full",
   defaultVariants: {
     padding: "md",
     spacing: "md"
@@ -29121,13 +29181,14 @@ module.exports.body = clb({
       lg: 'p-8 sm:p-10',
     },
     spacing: {
+      0: "space-y-0",
       sm: "space-y-2 md:space-y-4",
       md: "space-y-4 md:space-y-6",
       lg: "space-y-6 md:space-y-8",
     },
   },
 });
-},{"../../_lib/clb":256}],260:[function(require,module,exports){
+},{"../../_lib/clb":258}],262:[function(require,module,exports){
 // const requireFresh = require("../../_lib/require-fresh")(require);
 module.exports = {
   _layout: require("./layout"),
@@ -29138,7 +29199,7 @@ module.exports = {
   _card: require("./card"),
 };
 
-},{"./alert":257,"./button":258,"./card":259,"./input":261,"./label":262,"./layout":263}],261:[function(require,module,exports){
+},{"./alert":259,"./button":260,"./card":261,"./input":263,"./label":264,"./layout":265}],263:[function(require,module,exports){
 const clb = require("../../_lib/clb");
 
 module.exports = clb({
@@ -29148,13 +29209,14 @@ module.exports = clb({
     border: "gray",
     accent: "primary",
   },
-  base: "font-serif block w-full",
+  base: "block w-full",
   defaultVariants: {
     type: "input",
     style: "default",
     size: "md",
     spacing: "md",
     rounded: true,
+    theme: "light"
   },
   variants: {
     type: {
@@ -29164,6 +29226,8 @@ module.exports = clb({
       checkbox: "",
       radio: "",
       toggle: "",
+      email: "",
+      password: ""
     },
     style: {
       default: "border-2 focus:ring-2 focus:ring-offset-2",
@@ -29173,39 +29237,19 @@ module.exports = clb({
       radio: "w-4 h-4 border rounded-full focus:ring-2",
     },
     theme: {
-      default: {
-        dark: "dark:text-%color-200 dark:bg-%bg-700 dark:border-%border-600 dark:placeholder-%bg-500 dark:focus:border-%border-900 dark:focus:ring-offset-%border-900 dark:focus:ring-%accent-600",
-        light:
-          "text-%color-900 bg-%bg-50 border-%border-300 placeholder-%bg-400 focus:border-%border-300 focus:ring-offset-%border-300 focus:ring-%accent-600",
-      },
-      underline: {
-        dark: "dark:text-%color-200 dark:border-%border-700 dark:focus:border-%accent-600 dark:placeholder-%bg-500",
-        light:
-          "text-%color-700 border-%border-200 appearance-none focus:border-%accent-600 placeholder-%bg-400",
-      },
-      checkbox: {
-        dark: "dark:text-%accent-500 dark:bg-%bg-700 dark:border-%border-600 dark:ring-offset-%border-800 dark:focus:border-%border-900 dark:focus:ring-%accent-600",
-        light:
-          "text-%accent-600 bg-%bg-100 border-%border-300 focus:ring-%accent-500",
-      },
-      radio: {
-        dark: "dark:text-%accent-500 dark:bg-%bg-700 dark:border-%border-600 dark:ring-offset-%border-800 dark:focus:ring-%accent-600",
-        light:
-          "text-%accent-600 bg-%bg-100 border-%border-300 focus:ring-%border-500",
-      },
+      default: "text-%color-900 bg-%bg-50 border-%border-300 placeholder-%bg-400 focus:border-%border-300 focus:ring-offset-%border-300 focus:ring-%accent-600 dark:text-%color-200 focus:text-%color-200 dark:bg-%bg-700 dark:border-%border-600 dark:placeholder-%bg-500 dark:focus:border-%border-900 dark:focus:ring-offset-%border-900 dark:focus:ring-%accent-600",
+      underline: "text-%color-700 border-%border-200 appearance-none focus:border-%accent-600 placeholder-%bg-400 dark:text-%color-200 dark:border-%border-700 dark:focus:border-%accent-600 dark:placeholder-%bg-500",
+      checkbox: "text-%accent-600 bg-%bg-100 border-%border-300 focus:ring-%accent-500 dark:text-%accent-500 dark:bg-%bg-700 dark:border-%border-600 dark:ring-offset-%border-800 dark:focus:border-%border-900 dark:focus:ring-%accent-600",
+      radio: "text-%accent-600 bg-%bg-100 border-%border-300 focus:ring-%border-500 dark:text-%accent-500 dark:bg-%bg-700 dark:border-%border-600 dark:ring-offset-%border-800 dark:focus:ring-%accent-600",
     },
-    invalid: {
-      dark: "invalid:dark:bg-red-900 invalid:dark:border-red-500 focus:invalid:dark:border-red-500",
-      light:
-        "invalid:bg-red-100 invalid:border-red-500 focus:invalid:border-red-500 focus:invalid:ring-pink-500",
-    },
+    invalid: "invalid:bg-red-100 invalid:border-red-500 focus:invalid:border-red-500 focus:invalid:ring-pink-500 invalid:dark:bg-red-900 invalid:dark:border-red-500 focus:invalid:dark:border-red-500",
     rounded: {
       true: "rounded-lg",
     },
     size: {
-      sm: "text-sm font-medium",
-      md: "text-md font-medium",
-      lg: "text-lg font-medium",
+      sm: "text-sm",
+      md: "text-md",
+      lg: "text-lg",
     },
     spacing: {
       sm: "p-2",
@@ -29215,7 +29259,7 @@ module.exports = clb({
   },
 });
 
-},{"../../_lib/clb":256}],262:[function(require,module,exports){
+},{"../../_lib/clb":258}],264:[function(require,module,exports){
 const clb = require("../clb");
 
 module.exports = clb({
@@ -29240,7 +29284,7 @@ module.exports = clb({
   },
 });
 
-},{"../clb":256}],263:[function(require,module,exports){
+},{"../clb":258}],265:[function(require,module,exports){
 const clb = require("../../_lib/clb");
 
 module.exports = clb({
@@ -29302,11 +29346,9 @@ module.exports = clb({
     },
   },
 });
-},{"../../_lib/clb":256}],264:[function(require,module,exports){
-const defaults = require("./defaults.runtime");
-const helpers = require("../../_helpers");
+},{"../../_lib/clb":258}],266:[function(require,module,exports){
+const allHelpers = require("./defaults.runtime");
 
-const allHelpers = { ...defaults, ...helpers };
 Object.keys(allHelpers)
   .forEach((name) => {
     if (typeof allHelpers[name] === "function") {
@@ -29317,7 +29359,7 @@ Object.keys(allHelpers)
   });
 
 
-},{"../../_helpers":254,"./defaults.runtime":265}],265:[function(require,module,exports){
+},{"./defaults.runtime":267}],267:[function(require,module,exports){
 const array = require(`handlebars-helpers/lib/array`);
 const collection = require(`handlebars-helpers/lib/collection`);
 const comparison = require(`handlebars-helpers/lib/comparison`);
@@ -29331,6 +29373,7 @@ const string = require(`handlebars-helpers/lib/string`);
 const url = require(`handlebars-helpers/lib/url`);
 const i18n = require("../../_helpers/i18n");
 const layouts = require("handlebars-layouts")(Handlebars);
+const helpers = require("../../_helpers");
 
 module.exports = {
   layouts,
@@ -29346,6 +29389,7 @@ module.exports = {
   regex,
   string,
   url,
+  ...helpers
 };
 
-},{"../../_helpers/i18n":253,"handlebars-helpers/lib/array":72,"handlebars-helpers/lib/collection":73,"handlebars-helpers/lib/comparison":74,"handlebars-helpers/lib/html":75,"handlebars-helpers/lib/inflection":76,"handlebars-helpers/lib/math":77,"handlebars-helpers/lib/number":78,"handlebars-helpers/lib/object":79,"handlebars-helpers/lib/regex":80,"handlebars-helpers/lib/string":81,"handlebars-helpers/lib/url":82,"handlebars-layouts":105}]},{},[264]);
+},{"../../_helpers":254,"../../_helpers/i18n":253,"handlebars-helpers/lib/array":72,"handlebars-helpers/lib/collection":73,"handlebars-helpers/lib/comparison":74,"handlebars-helpers/lib/html":75,"handlebars-helpers/lib/inflection":76,"handlebars-helpers/lib/math":77,"handlebars-helpers/lib/number":78,"handlebars-helpers/lib/object":79,"handlebars-helpers/lib/regex":80,"handlebars-helpers/lib/string":81,"handlebars-helpers/lib/url":82,"handlebars-layouts":105}]},{},[266]);

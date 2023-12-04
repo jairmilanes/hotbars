@@ -1,10 +1,10 @@
-{{#embed "_card" title="Pages" overflow="y-scroll"}}
+{{#embed "_card" title="Pages" overflow="y-scroll" padding="md"}}
   {{#content "body"}}
-    <ul>
+    <ul class="w-full">
       {{#filter routes "pages" property="source"}}
         {{#each (get "routes" this)}}
           <li
-            class="border-b border-slate-100 hover:bg-slate-100 dark:border-neutral-800 dark:hover:bg-neutral-800 py-1 px-2"
+            class="border-b border-slate-100 hover:bg-slate-100 dark:border-slate-800 dark:hover:bg-slate-800 py-1 px-2"
           >
             <a
               href="{{this.path}}"

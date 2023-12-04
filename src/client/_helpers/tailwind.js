@@ -58,7 +58,7 @@ tailwind._cardBody = function (options) {
 tailwind._alert = function (options) {
   options.hash = options.hash || {}
 
-  if (options.hash.color && !options.bg) {
+  if (options.hash.color && !options.hash.bg) {
     options.hash.bg = options.hash.color;
   }
 
@@ -66,11 +66,12 @@ tailwind._alert = function (options) {
     info: "blue",
     error: "red",
     warning: "yellow",
-    success: "grren",
+    success: "green",
   };
 
   if (colors[options.hash.color]) {
     options.hash.color = colors[options.hash.color];
+    options.hash.bg = colors[options.hash.bg];
   }
 
   if (!options.hash.color) {
@@ -78,7 +79,7 @@ tailwind._alert = function (options) {
     options.hash.theme = "opaque";
   }
 
-  return components._alert._body(options.hash || {});
+  return components._alert._body(options.hash);
 };
 
 tailwind._alertText = function (options) {

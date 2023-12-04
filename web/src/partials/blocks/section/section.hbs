@@ -1,0 +1,17 @@
+{{#block "section"}}
+  <!-- start section -->
+  <section class="relative w-full lg:py-24">
+    <div class="flex flex-col md:max-w-7xl m-auto">
+      {{{embed "blocks/heading/section-heading" title=title align="left"}}}
+
+      {{#isTruthy body}}
+        <p class="mt-6 leading-relaxed">
+          {{body}}
+        </p>
+      {{/isTruthy}}
+
+      {{#block "body"}}{{/block}}
+    </div>
+  </section>
+  <!-- end section -->
+{{/block}}

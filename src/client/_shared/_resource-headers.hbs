@@ -1,0 +1,18 @@
+<div id="#hbs-resource-headers" class="h-full grow">
+  <table class="bg-white dark:bg-gray-800 border-collapse table-fixed w-full text-sm">
+    <thead>
+      <tr class="border-b border-gray-100 dark:border-gray-700">
+        <th class="text-left p-4 pl-8">Name</th>
+        <th class="text-left p-4 pr-8">Value</th>
+      </tr>
+    </thead>
+    <tbody class="">
+      {{#each headers}}
+        <tr>
+          <td class="border-b border-gray-100 dark:border-gray-700 p-4 pl-8 text-gray-500 dark:text-gray-400">{{name}}</td>
+          <td class="border-b border-gray-100 dark:border-gray-700 p-4 pr-8 text-gray-500 dark:text-gray-400">{{value}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>

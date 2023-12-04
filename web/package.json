@@ -4,7 +4,8 @@
   "description": "An example project running Cobra Handlebars Hot Server",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --watch ../src/**/*.ts --exec ts-node --project=../tsconfig.web.json ../src/cli.ts serve -D",
+    "start": "nodemon --watch ../src/**/*.ts --exec ts-node --project=../tsconfig.web.json ../src/cli.ts serve -D --configName .hotbarsrc.dev",
+    "serve": "nodemon --watch ../src/**/*.ts --exec ts-node --project=../tsconfig.web.json ../src/cli.ts serve",
     "fake": "hotbars fake",
     "bundle": "browserify ../dist/client/_public/tailwind.js -o ../dist/client/_public/tailwind.bundle.js --external=Handlebars --ignore=Handlebars",
     "uglify": "uglifyjs --compress --mangle --source-map --output ../dist/client/_public/tailwind.bundle.min.js ../dist/client/_public/tailwind.bundle.js",

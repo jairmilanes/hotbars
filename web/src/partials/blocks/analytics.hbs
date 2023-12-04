@@ -1,0 +1,14 @@
+<!-- Global site tag (gtag.js) - Google Analytics -->
+{{#if siteId}}
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-{{siteId}}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-{{siteId}}');
+  </script>
+{{/if}}

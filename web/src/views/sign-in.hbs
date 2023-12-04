@@ -1,19 +1,78 @@
-{{#extend "default"}}
+{{#extend "blank"}}
   {{#content "main" mode="append"}}
+    <section class="bg-gray-50 dark:bg-gray-900">
+      <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+          <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
+          Flowbite
+        </a>
 
-    <div class="mb-5 block">
-      <form action="/auth/local" method="post">
-        <h3>Login Passowrd</h3>
-        <input name="username" type="text" />
-        <input name="password" type="password" />
+        {{#embed "_card" title="" titleSize="h3" size="sm" padding="lg" bodyLayout="column"}}
+          {{#content "body"}}
+            <h1 class="text-xl text-center font-bold mb-8 leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+              Sign in to your account
+            </h1>
+            <form
+              class="w-full space-y-4 md:space-y-4"
+              method="post"
+              action="{{append auth.signIn '/local'}}"
+            >
+              {{#eq (get "action" query) "confirmed"}}
+                {{#embed "_alert-message" message="Your account has been confirmed!" level="info"}}{{/embed}}
+              {{/eq}}
+              {{#each messages}}
+                {{#embed "_alert-message" message=this level="error"}}{{/embed}}
+              {{/each}}
+              <div class="space-y-3">
+                {{{embed
+                  "_input"
+                  label=(i "auth.yourEmailOrUsername")
+                  name="username"
+                  required=true
+                  minLength=3
+                  maxLength=30
+                }}}
+                {{{embed
+                  "_input"
+                  type="password"
+                  name="password"
+                  label=(i "auth.yourPassword")
+                  required=true
+                }}}
+              </div>
+              <div class="flex-col items-center justify-between">
+                {{{embed
+                  "_input"
+                  type="checkbox"
+                  value="remember"
+                  label=(i "auth.rememberMe")
+                  name="remember"
+                }}}
+              </div>
+              {{{embed
+                "_button"
+                type="submit"
+                text=(i "auth.signIn")
+                width="full"
+                size="lg"
+                disabled=true
+              }}}
 
-        <button type="submit">Sign-In</button>
-      </form>
-    </div>
+              <div class="text-center">
+                {{{embed
+                  "_link"
+                  url=auth.passwordRecovery
+                  text=(i "auth.forgotPassword")
+                }}}
+              </div>
+            </form>
+          {{/content}}
+        {{/embed}}
 
-    <form action="/auth/github" method="post">
-      <h3>Login Github</h3>
-      <button type="submit">Sign-In with Github</button>
-    </form>
+        <p class="text-sm text-center font-light text-gray-500 dark:text-gray-400 mt-12">
+          Don’t have an account yet? <a href="/_sign-up" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
+        </p>
+      </div>
+    </section>
   {{/content}}
 {{/extend}}

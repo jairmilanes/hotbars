@@ -1,14 +1,22 @@
 import express from "express";
 import favicon from "serve-favicon";
+import { existsSync } from "fs";
 import { logger } from "../../../services";
 import { Config, DashboardConfig, Server } from "../../core";
 import { joinPath } from "../../utils";
-import { BrowserifyCompiler } from "../../services";
-import { existsSync } from "fs";
+import { getServerDataDir } from "../../utils/get-server-data-dir";
+import { Env } from "../../types";
 
 export const staticFilesHandler = () => {
   const { source, public: publicDir } = Config.get();
-  const cacheConfig = { cacheControl: true, maxAge: "3h" };
+
+  const usersOptions = {
+    maxAge: Config.get("env") !== Env.Dev ? "3h" : 0
+  };
+  const dashboardOptions = {
+    maxAge: DashboardConfig.get("env") !== Env.Dev ? "3h" : 0
+  };
+
   const usersPublic = joinPath(source, publicDir);
   const dashboardPublic = DashboardConfig.fullPath("public");
 
@@ -20,9 +28,9 @@ export const staticFilesHandler = () => {
   }
 
   // Static files server
-  Server.app.use("/public", express.static(usersPublic));
-  Server.app.use("/public", express.static(dashboardPublic, cacheConfig));
-  Server.app.use("/_runtime", express.static(BrowserifyCompiler.userDir));
+  Server.app.use("/public", express.static(usersPublic, usersOptions));
+  Server.app.use("/public", express.static(dashboardPublic, dashboardOptions));
+  Server.app.use("/_runtime", express.static(getServerDataDir("public")));
 
   logger.debug("%p%P Static file server at %s", 3, 0);
   logger.debug("%p%P [GET]%s", 5, 0, usersPublic);

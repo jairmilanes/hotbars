@@ -6,7 +6,7 @@ module.exports = clb({
     border: "primary",
     bg: "primary",
   },
-  base: "focus:ring-4 focus:outline-none disabled:opacity-50",
+  base: "focus:ring-4 focus:outline-none disabled:opacity-50 focus:disabled:opacity-50",
   defaultVariants: {
     style: "solid",
     size: "md",

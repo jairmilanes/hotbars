@@ -7,36 +7,43 @@
     />
     <title>{{site.title}}</title>
 
+    <link rel="icon" type="image/png" sizes="32x32" href="/public/templates/dental-office/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/public/templates/dental-office/images/favicon-16x16.png">
+
     {{> hotbarsHead}}
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            textColor: "text-slate-600",
-            container: {
-              center: true,
-            },
-            colors: {
-              clifford: '#da373d',
-            }
-          }
-        }
-      }
-    </script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+    {{#block "links"}}
+
+    {{/block}}
 
     <link rel="stylesheet" href="/public/styles/style.css" />
+
+    {{#block "styles"}}
+
+    {{/block}}
   </head>
-  <body>
+  <body class="{{bodyClass}}">
+    {{> "header"}}
+
     {{#block "main"}}
-      <h1>{{site.description}}</h1>
+
+    {{/block}}
+
+    {{> "footer"}}
+
+    {{scripts "https://cdn.tailwindcss.com?plugins=forms,
+               https://cdnjs.cloudflare.com/ajax/libs/cash/8.1.1/cash[.min].js,
+               https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
+               https://cdn.jsdelivr.net/npm/dayjs@1/dayjs[.min].js,
+               https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js,
+               /public/scripts/tailwind.config.js"}}
+    {{#block "scripts"}}
+
     {{/block}}
 
     {{> hotbarsFooter}}
-    <script src="https://unpkg.com/flowbite@1.5.3/dist/flowbite.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cash/8.1.1/cash.min.js"></script>
   </body>
 </html>

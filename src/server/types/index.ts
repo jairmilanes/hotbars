@@ -8,7 +8,8 @@ import { CorsOptions } from "cors";
 import { SessionOptions } from "express-session";
 import { ParamsDictionary } from "express-serve-static-core";
 import { ParsedQs } from "qs";
-import { IVerifyOptions } from "passport-local";
+import { ConfigManager } from "../services/config-manager";
+import { Config } from "../core";
 
 export enum Env {
   Prod = "production",
@@ -99,6 +100,8 @@ export interface AuthConfig extends OptionalFeature {
   rememberMe?: number;
   terms?: string;
   views: {
+    signInRedirect: string;
+    signUpRedirect: string;
     signIn: string;
     signUp: string;
     signUpPending: string;
@@ -208,7 +211,7 @@ export interface Options extends BaseOptions {
   configName: string;
   socketPort: number;
   logLevel: number;
-  logFilePath: string;
+  logToFile: boolean;
   verbose: boolean;
   browser?: Browser;
   encoding: BufferEncoding;
@@ -296,7 +299,7 @@ export enum Browser {
 export type UserRoutesCallback = (router: Router) => void;
 
 export type UserBootstrapCallback = (
-  config: Readonly<Options>
+  config: typeof Config
 ) => Promise<SafeObject>;
 
 export type ControllerFunction = (

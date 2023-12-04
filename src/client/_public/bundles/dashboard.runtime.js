@@ -1,7 +1,5 @@
-const defaults = require("./defaults.runtime");
-const helpers = require("../../_helpers");
+const allHelpers = require("./defaults.runtime");
 
-const allHelpers = { ...defaults, ...helpers };
 Object.keys(allHelpers)
   .forEach((name) => {
     if (typeof allHelpers[name] === "function") {

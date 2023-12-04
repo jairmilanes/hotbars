@@ -57,9 +57,6 @@
         ]
       },
       {
-        "spacer": true
-      },
-      {
         "id": "response",
         "hidden": false,
         "active": true,

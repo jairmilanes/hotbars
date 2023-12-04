@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import { existsSync, readFileSync } from "fs";
 import { Config, DashboardConfig } from "../core";
 import { joinPath, slash } from "./path-helpers";
+import { logger } from "../../services";
 
 const load = (path: string, languages: string[]) => {
   return languages.reduce((data, lang) => {
@@ -49,6 +50,8 @@ export const loadData = (name: string): Record<string, any> | string => {
   }
 
   const languages = Config.get<string[]>("language.languages");
+
+  logger.warn("Loading data from", Config.fullPath(name))
 
   return load(Config.fullPath(name), languages);
 };

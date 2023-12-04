@@ -1,0 +1,28 @@
+{
+  "logLevel": 1,
+  "extname": "hbs",
+  "source": "src",
+  "styles": "styles",
+  "styleMode": "scss",
+  "language": {
+    "enabled": true
+  },
+  "mailer": {
+    "enabled": true
+  },
+  "smtpServer": {
+    "enabled": true
+  },
+  "jsonDb": "db/db.json",
+  "jsonServer": {
+    "enabled": true
+  },
+  "auth": {
+    "enabled": true,
+    "reCaptcha": "v2"
+  },
+  "upload": {
+    "enabled": true,
+    "types": []
+  }
+}
