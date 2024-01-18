@@ -1,0 +1,12 @@
+{{#block "_data_list_item"}}
+  <h4 class="flex font-medium block text-slate-600 dark:text-slate-100 bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
+    <a
+      href="/{{__collection}}/{{id}}"
+      data-collection="{{__collection}}"
+      data-id="{{id}}"
+      class="grow py-4 px-4"
+    >
+      {{default id "(no id)"}}
+    </a>
+  </h4>
+{{/block}}
