@@ -7,7 +7,7 @@ import { logger } from "../../services";
 import { configureHandlebars } from "../services";
 import { HandlebarsException } from "../exceptions";
 import { loadTemplate } from "../utils";
-import { Config, DashboardConfig } from "../core";
+import { Config, ContextConfig, DashboardConfig } from "../core";
 import { EventManager, ServerEvent } from "./event-manager";
 
 interface TemplateDefintion {
@@ -27,6 +27,7 @@ export class PreRenderer {
 
         {PARTIALS}
         {TEMPLATES}
+        {DASH_PARTIALS}
     })();
   `;
 
@@ -52,6 +53,8 @@ export class PreRenderer {
     try {
       const partials = this.instance.resolvePartials(isSystem);
       const templates = this.instance.resolveTemplates(isSystem);
+      // Load dashboard shared folder into the users precompiled
+      const dashShared = !isSystem ? this.instance.resolvePartials(true) : null
 
       if (!partials.length) {
         this.instance.update(
@@ -71,24 +74,42 @@ export class PreRenderer {
         );
       }
 
-      if (!partials.length && !templates.length) {
+      if (!dashShared || !dashShared.length) {
+        this.instance.update(
+          "{DASH_PARTIALS}",
+          ``
+        );
+      }
+
+      if (!partials.length && !templates.length && (!dashShared || !!dashShared.length)) {
         return this.instance._template;
       }
 
       await this.instance.preCompile(partials, "partials");
       await this.instance.preCompile(templates, "templates");
 
-      if (!this.instance.prod) {
-        return this.instance.prettify();
+      if (dashShared) {
+        await this.instance.preCompile(dashShared, "dash_partials");
       }
 
-      return this.instance.uglyfy();
+      if (this.instance.prod) {
+        return this.instance.uglyfy();
+      }
+
+      return this.instance.prettify();
     } catch (err) {
-      return `console.error("${(err as Error).message}");`;
+      logger.error(err)
+      throw err
     }
   }
 
   private configure(data?: WatcherChange): void {
+    if (!data) {
+      logger.debug(`%p%P Configuring pre-renderer...`, 3, 0);
+    } else {
+      logger.debug(`%p%P Re-configuring pre-renderer...`, 1, 1);
+    }
+
     const { instance, error } = configureHandlebars();
 
     if ((error || !instance) && !this.hbs) {
@@ -114,7 +135,10 @@ export class PreRenderer {
           DashboardConfig.fullGlobPath("shared"),
           DashboardConfig.fullGlobPath("precompile"),
         ]
-      : [Config.fullGlobPath("precompile"), Config.fullGlobPath("shared")];
+      : [
+          Config.fullGlobPath("precompile"),
+          Config.fullGlobPath("shared")
+        ];
   }
 
   private resolve(path: string): string[] {
@@ -142,9 +166,8 @@ export class PreRenderer {
 
   private async preCompile(paths: string[], key: string): Promise<void> {
     try {
-      const templates = await this.loadAll(paths);
+      const templates = await this.loadAll(key, paths);
       const allCode = this.compileAll(templates, key);
-
       this.update(`{${key.toUpperCase()}}`, allCode.join("\r\n"));
     } catch (err) {
       this.update(
@@ -164,9 +187,9 @@ export class PreRenderer {
     });
   }
 
-  private loadAll(templates: string[]): Promise<TemplateDefintion[]> {
+  private loadAll(key: string, templates: string[]): Promise<TemplateDefintion[]> {
     return Promise.all(
-      templates.map((path) => loadTemplate(path, Config.get("encoding")))
+      templates.map((path) => loadTemplate(path, Config.get("encoding"), key))
     ).then(
       (templates) => _.filter(templates, _.isPlainObject) as TemplateDefintion[]
     );

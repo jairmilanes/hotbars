@@ -8,7 +8,7 @@
     {{#each (split path "/")}}
       {{#startsWith ":" this}}
         {{#filter ../params (replace this ":" "") property="name"}}
-          <span class="py-2"><span class="text-slate-600 font-bold">/</span><input name="{{name}}" size="20" type="text" placeholder=":{{name}}" class="py-0 pl-2 pr-0 border-0 w-fit" /></span>
+          <span class="py-2"><span class="text-slate-600 font-bold">/</span><input name="{{name}}" size="20" type="text" placeholder=":{{name}}" class="py-0 pl-2 pr-0 border-0 w-fit text-slate-600 bg-gray-200" /></span>
         {{/filter}}
       {{else}}
         {{#gt (length this) 0}}

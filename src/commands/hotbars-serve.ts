@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 "use strict";
-
+import path from "path"
+import { config } from 'dotenv'
 import { Command, Option } from "commander";
 import { callbackify } from "util";
 import { logger } from "../services";
@@ -52,6 +53,9 @@ program
     try {
       Config.create(argv);
       DashboardConfig.create(argv);
+
+      const envFile = path.join(process.cwd(), "envs", Config.get("dev") ? ".dev" : ".prod")
+      config({ path: envFile })
 
       if (Config.get("dev")) {
         process.env.HOTBARS_DEV = "true";

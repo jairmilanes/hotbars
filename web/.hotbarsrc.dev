@@ -7,6 +7,9 @@
   "language": {
     "enabled": true
   },
+  "deployment": {
+    "enabled": true
+  },
   "mailer": {
     "enabled": true
   },
@@ -16,6 +19,10 @@
   "jsonDb": "db/db.json",
   "jsonServer": {
     "enabled": true
+  },
+  "git": {
+    "name": "jairmilanes",
+    "repo": "hotbars-test"
   },
   "auth": {
     "enabled": true,

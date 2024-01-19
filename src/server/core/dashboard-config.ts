@@ -16,7 +16,9 @@ export class DashboardConfig
   implements BaseOptions
 {
   dev = false;
+  debug = false;
   env: Env = Env.Dev;
+  base = "/_hotbars";
   encoding = "utf-8" as BufferEncoding;
   extname = "hbs";
   root = "";
@@ -91,7 +93,7 @@ export class DashboardConfig
     super();
 
     this.root = resolvePath(__dirname, "..", "..", "client");
-    this.env = (argv.env as Env) || Env.Dev;
+    this.env = (argv.env as Env) || Env.Local;
     this.dev = argv.dev || false;
 
     if (this.language.default) {
@@ -106,20 +108,23 @@ export class DashboardConfig
       )
     );
 
-    if (this.env !== Env.Prod) {
-      this.watch.push(this.fullGlobPath("data"));
-      this.watch.push(this.fullGlobPath("helpers"));
-      this.watch.push(this.fullGlobPath("lib"));
-      this.watch.push(this.fullGlobPath("layouts"));
-      this.watch.push(this.fullGlobPath("partials"));
-      this.watch.push(this.fullGlobPath("shared"));
-      this.watch.push(this.fullGlobPath("views"));
-      this.watch.push(this.fullGlobPath("public"));
-      this.watch.push(this.fullGlobPath("default_views"));
-      this.watch.push(this.fullGlobPath("mailer.data"));
-      this.watch.push(this.fullGlobPath("mailer.partials"));
-      this.watch.push(this.fullGlobPath("mailer.layouts"));
-      this.watch.push(this.fullGlobPath("mailer.templates"));
+    if (this.env === Env.Local) {
+      this.watch = [
+        this.fullGlobPath("controllers"),
+        this.fullGlobPath("data"),
+        this.fullGlobPath("helpers"),
+        this.fullGlobPath("lib"),
+        this.fullGlobPath("layouts"),
+        this.fullGlobPath("partials"),
+        this.fullGlobPath("shared"),
+        this.fullGlobPath("views"),
+        this.fullGlobPath("public"),
+        this.fullGlobPath("default_views"),
+        this.fullGlobPath("mailer.data"),
+        this.fullGlobPath("mailer.partials"),
+        this.fullGlobPath("mailer.layouts"),
+        this.fullGlobPath("mailer.templates")
+      ]
     }
 
     this.ignore = [this.fullPath("public", "bundles")];

@@ -1,5 +1,6 @@
 {{#if (eq type "dropzone")}}
-  <div class="flex justify-center items-center w-full {{className}}">
+  <div data-dropzone="{{name}}" class="flex flex-col justify-center items-center w-full {{className}}">
+    <ul id="drozone-file-list" class="block m-0 p-0 w-full"></ul>
     <label for="dropzone-{{name}}"
            class="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
       <div class="flex flex-col justify-center items-center pt-5 pb-6">
@@ -9,21 +10,13 @@
         </p>
         <p class="text-xs text-gray-500 dark:text-gray-400">{{hint}}</p>
       </div>
-      <input id="dropzone-{{name}}" type="file" class="hidden" />
+      <input id="dropzone-{{name}}" name="{{name}}" type="file" class="hidden" accept="{{accept}}" multiple="{{multiple}}" data-max-size="{{default maxCount 1}}"/>
     </label>
+    {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+    {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
   </div>
-{{else if (eq type "dropzone")}}
-  <div class="flex justify-center items-center w-full {{className}}">
-    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-           for="file-{{name}}">
-      {{label}}
-    </label>
-    <input class="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-           aria-describedby="file_input_help"
-           id="file-{{name}}"
-           type="file">
-    {{#if (isTruthy hint)}}<p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">{{hint}}</p>{{/if}}
-  </div>
+{{else if (eq type "file-queue")}}
+
 {{else if (eq type "select")}}
   <div class="relative">
     <label for="{{default id name}}" class="{{_label spacing="bottomLeft" block=true}}">{{label}}</label>
@@ -40,7 +33,7 @@
     <div class="flex items-center h-5">
       <input id="{{default id name}}" type="radio" name="{{name}}" value="{{value}}" class="{{_input style="radio"}}" {{#if required}}required{{/if}} {{#if checked}}checked{{/if}}/>
     </div>
-    <label for="{{default id name}}" class="{{_label}}">
+    <label for="{{default id name}}" class="{{_label}} ml-2">
       {{label}}{{{block "label"}}}
     </label>
   </div>
@@ -88,22 +81,29 @@
     {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
   </div>
 {{else}}
-  <div class="relative">
-    <label for="{{default id name}}" class="{{_label spacing="bottomLeft" block=true}}">{{label}}</label>
+  <div class="relative {{class}}">
+    {{#not (eq type "hidden")}}
+      <label for="{{default id name}}" class="{{_label spacing="bottomLeft" block=true}}">{{label}}</label>
+    {{/not}}
     <input id="{{default id name}}"
            type="{{default type "text"}}"
            name="{{name}}"
            value="{{value}}"
            {{{attr maxLength=maxLength
-                   minLength=minLength
+                   minLength=null
                    max=max
                    min=min
                    pattern=pattern
                    required=required
                    disabled=disabled}}}
            placeholder="{{placeholder}}"
-           class="{{_input invalid=invalid}}">
-    {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
-    {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
+           class="{{_input invalid=invalid size=size}} {{inputClass}}"
+           {{#if autofocus}}autofocus{{/if}}
+           {{#if readonly}}readonly{{/if}}
+           {{{default attributes ""}}}>
+    {{#not (eq type "hidden")}}
+      {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+      {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
+    {{/not}}
   </div>
 {{/if}}

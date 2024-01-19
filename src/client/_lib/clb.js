@@ -39,7 +39,17 @@ const transpile = (classes, values) => {
   if (typeof classes === "string") {
     const props = Object.keys(values);
     classes = props.reduce((val, prop) => {
-      return val.replace(new RegExp(`%${prop}`, "g"), values[prop]);
+      const regex1 = new RegExp(`%${prop}`, "g")
+      const regex2 = new RegExp(`%${prop}-\\d{3}`, "g")
+
+      // deal with removing color intensity for colors that have
+      // no intensity values in Tailwind, like white and black
+      if (["color", "bg", "border"].indexOf(prop) > -1) {
+        if (["white", "black"].indexOf(values[prop]) > -1) {
+          return val.replace(regex2, values[prop]);
+        }
+      }
+      return val.replace(regex1, values[prop]);
     }, classes);
   }
   return classes;
@@ -98,7 +108,7 @@ const clb =
     const currentOptions = normalize({
       ...defaultVariants,
       ...defaults,
-      ...options,
+      ...normalize(options),
     });
 
     const normalized = normalize(variants,  (key, value) => {

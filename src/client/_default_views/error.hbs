@@ -5,33 +5,36 @@
         {{#not error}}
           <h1>Unknown Error {{errorMessage}}</h1>
         {{else}}
-          <h1 class="text-2xl font-bold">
-            <span class="inline-block px-4 py-2 bg-amber-600 text-white">
-            {{error.status}}</span>
-            <span class="ml-2">
-              {{#and (gte error.status 100) (lt error.status 200)}}
-                All Good
-              {{/and}}
-              {{#and (gte error.status 200) (lt error.status 300)}}
-                Success
-              {{/and}}
-              {{#and (gte error.status 300) (lt error.status 400)}}
-                Redirected
-              {{/and}}
-              {{#and (gte error.status 400) (lt error.status 500)}}
-                Client Error
-              {{/and}}
-              {{#gte error.status 500}}
-                Server Error
-              {{/gte}}
-            </span>
-          </h1>
-          <p class="text-xl mt-2">{{error.message}}</p>
+          {{#if status}}
+            <h1 class="text-2xl font-bold">
+              <span class="inline-block px-4 py-2 bg-amber-600 text-white">
+                {{error.status}}</span>
+              <span class="ml-2">
+                {{#and (gte error.status 100) (lt error.status 200)}}
+                  All Good
+                {{/and}}
+                  {{#and (gte error.status 200) (lt error.status 300)}}
+                    Success
+                  {{/and}}
+                  {{#and (gte error.status 300) (lt error.status 400)}}
+                    Redirected
+                  {{/and}}
+                  {{#and (gte error.status 400) (lt error.status 500)}}
+                    Client Error
+                  {{/and}}
+                  {{#gte error.status 500}}
+                    Server Error
+                  {{/gte}}
+              </span>
+            </h1>
+          {{/if}}
+          <p class="text-xl mt-2 text-amber-600">
+            {{{replace (replace error.message "}" "&#125;") "{" "&#123;"}}}
+          </p>
           <div class="mt-8 text-slate-200">
-            {{{error.stack}}}
+            {{{replace (replace error.stack "}" "&#125;") "{" "&#123;"}}}
           </div>
         {{/not}}
-        {{log this}}
       </div>
     </div>
   {{/content}}

@@ -1,0 +1,35 @@
+<div class="grid grid-cols-12">
+  <div class="grow col-span-2">
+    {{{embed "_text" text="Environment" size="h4" class="opacity-50"}}}
+    {{{embed "_heading" text=currentEnv.name margin=0 size="h3"}}}
+  </div>
+  <div class="grow col-span-3">
+    {{{embed "_text" text="Current branch" size="h4" class="opacity-50"}}}
+    {{#embed "_heading" text=branch.current size="h3" margin=0}}
+      {{#content "suffix"}}
+        {{#embed "_link" url=currentEnv.web_url text="" title="Visit application" target="_blank" class="text-sm"}}
+          {{#content "text"}}
+            {{{embed "_icon" name="link" size=5 class="-rotate-45"}}}
+          {{/content}}
+        {{/embed}}
+      {{/content}}
+    {{/embed}}
+  </div>
+  <div class="grow col-span-2">
+    {{{embed "_text" text="Version" size="h4" class="opacity-50"}}}
+    {{{embed "_heading" text=version margin=0 size="h3"}}}
+  </div>
+  <div class="grow col-span-3">
+    {{{embed "_text" text="Status" size="h4" class="opacity-50"}}}
+    {{{embed "_heading"
+             text=(iIf outOfSync "Out of sync" "In sync")
+             class=(iIf outOfSync "text-amber-500" "text-lime-500")
+             margin=0
+             size="h3"
+    }}}
+  </div>
+  <div class="grow col-span-2 text-center">
+    {{{embed "_button" text="Update" size="lg" width="full" class="mb-2" disabled=(eq (length status.modified) 0) loader=true attributes=(attr data-dispatch-env=currentEnv.name data-dispatch="hb-push-environment")}}}
+    {{{embed "_button" text="View changes" style="link" size="link" class="text-sm" attributes=(attr hb-toggle="hb-changed-files")}}}
+  </div>
+</div>

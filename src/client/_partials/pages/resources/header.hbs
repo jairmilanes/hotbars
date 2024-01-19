@@ -1,0 +1,32 @@
+<div id="hb-resource-header" class="pt-6 px-6 rounded-tr-xl">
+  <div class="flex py-2">
+    <div id="hbs-request-method-none"
+         class="form-input rounded-l-full border-r-0 border-gray-100 mr-0 text-center font-bold text-slate-600 min-w-[80px]">
+      <span class="text-gray-300">*</span>
+    </div>
+    {{#each (i "_hbs.methods")}}
+      <div id="hbs-request-method-{{lowercase name}}"
+           class="hbs-request-method hidden form-input rounded-l-full border-r-0 border-gray-100 mr-0 text-center font-bold min-w-[80px] {{color}} {{bg}}">
+        {{name}}
+      </div>
+    {{/each}}
+    <div class="form-input border-gray-100 grow ml-0">
+        <span id="hbs-request-resource">
+            <span class="text-gray-300">
+              {{_hbs.messages.noActiveResource}}
+            </span>
+        </span>
+    </div>
+    <div id="{{prefix "status"}}" class="hidden text-gray-100 px-3 py-2">
+      <strong id="{{prefix "status-code"}}"></strong> <span id="{{prefix "status-text"}}"></span>
+    </div>
+    <button id="hb-send-request" data-button="true" disabled class="rounded-r-full bg-rose-600 hover:bg-rose-500 text-white font-bold px-5">
+      <span class="button-text">Send</span>
+      {{{embed "_spinner" class="hidden" size="4"}}}
+    </button>
+  </div>
+  <div class="flex items-center">
+    {{> "_tabs" (i "_hbs.tabs")}}
+    <div class="grow"></div>
+  </div>
+</div>

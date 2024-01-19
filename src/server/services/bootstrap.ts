@@ -8,6 +8,20 @@ import { loadFile } from "./file-loader";
 export class BootstrapData {
   private static data: Readonly<Record<string, any>> = Object.freeze({});
 
+  static async run() {
+    logger.debug(`%p%P User data`, 1, 1);
+
+    const userBootstrapCallback = this.bootFile()
+
+    if (typeof userBootstrapCallback === "function") {
+      this.data = Object.freeze(await userBootstrapCallback(Config));
+    } else {
+      logger.debug(`%p%P Could not load user bootstrap file.`, 3, 0);
+    }
+
+    return this.data;
+  }
+
   static bootFile() {
     const config = Config.get<Options>();
     const extensions = [".js", ".cjs"];
@@ -24,20 +38,6 @@ export class BootstrapData {
     } else {
       logger.debug(`%p%P Could not load user bootstrap file.`, 3, 0);
     }
-  }
-
-  static async run() {
-    logger.info(`%p%P Bootstraping user data`, 1, 1);
-
-    const userBootstrapCallback = this.bootFile()
-
-    if (typeof userBootstrapCallback === "function") {
-      this.data = Object.freeze(await userBootstrapCallback(Config));
-    } else {
-      logger.debug(`%p%P Could not load user bootstrap file.`, 3, 0);
-    }
-
-    return this.data;
   }
 
   static get(): Readonly<SafeObject> {

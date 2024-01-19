@@ -1,3 +1,15 @@
+function keys(obj) {
+  return Object.keys(obj)
+}
+
+function isObject(value) {
+  return typeof value === "object" && value !== null;
+}
+
+function isNil(value) {
+  return value !== undefined && value !== null;
+}
+
 ["pushState", "replaceState"].forEach((name) => {
   window.history[name] = new Proxy(window.history[name], {
     apply: (target, thisArg, argArray) => {
@@ -111,7 +123,18 @@ function formToObject() {
 
   for (let i = 0; i < fields.length; i++) {
     const field = $(fields.item(i));
-    data[field.attr("name")] = field.val()
+
+    if (["button"].indexOf(field.get(0).localName) > -1) continue;
+
+    if (["radio", "checkbox"].indexOf(field.attr("type")) > -1) {
+      if (fields.item(i).checked) {
+        data[field.attr("name")] = field.val()
+      }
+    } if (field.attr("type") === "file") {
+      data[field.attr("name")] = field.get(0).files
+    } else {
+      data[field.attr("name")] = field.val()
+    }
   }
 
   return data;
@@ -121,31 +144,63 @@ function render(template, context, mode) {
   const { templates, partials } = Handlebars;
   const tpl = templates[template] || partials[template];
 
-  console.log("TEMPLATE", template, tpl, templates, partials)
-
   if (tpl) {
     if (mode === "append") {
-      return this.append(tpl(context));
+      return this.append(tpl({...context}));
     }
 
     if (mode === "prepend") {
-      return this.prepend(tpl(context));
+      return this.prepend(tpl({...context}));
     }
 
-    this.html(tpl(context));
+    this.html(tpl({...context}));
   }
 
   return this;
 }
 
+async function renderRemote(template, context, mode) {
+  const params = new URLSearchParams(context)
+
+  params.set("partialId", template)
+
+  const response = await fetch(`/_partial?${params.toString()}`)
+  const html = await response.text()
+
+  if (mode === "append") {
+    return this.append(html);
+  }
+
+  if (mode === "prepend") {
+    return this.prepend(html);
+  }
+
+  if (mode === "replace") {
+    return this.replaceWith(html);
+  }
+
+  this.html(html);
+}
+
 function swapClass(classOne, classTwo) {
-  this.removeClass(classOne)
-  this.addClass(classTwo)
+  if (!classTwo && isObject(classOne)) {
+    const classes = keys(classOne)
+
+    classes.forEach(className => {
+      this.removeClass(className)
+      if (!isNil(classOne[className])) {
+        this.addClass(classOne[className])
+      }
+    })
+  } else {
+    this.removeClass(classOne)
+    this.addClass(classTwo)
+  }
+
   return this;
 }
 
 function toggleBeetweenClasses(classOne, classTwo) {
-  console.log("SWAPING", classOne, classTwo)
   if (this.hasClass(classOne)) {
     this.swapClass(classOne, classTwo)
   } else {
@@ -154,31 +209,62 @@ function toggleBeetweenClasses(classOne, classTwo) {
   return this;
 }
 
-function toggleElements() {
-  $(`[hb-toggle]`).on("click", (e) => {
-    const el = $(e.currentTarget);
-    const target = el.attr("hb-toggle")
-    const targetEl = $(`#${target}`);
-
-    if (targetEl) {
-      if (targetEl.hasClass("hidden")) {
-
-      }
-    }
-  })
-}
-
 const modals = {
-  confirm: function (name, context, callback) {
-    this.render(name, context, "append");
+  custom(template, context, callback) {
+    if (!context.id) {
+      throw new Error(`Must provide "context.id" for a modal to be created.`)
+    }
+
+    if (!template) {
+      throw new Error(`Must provide "template" for a modal to be created.`)
+    }
+
+    $("body").render(template, context, "append");
 
     const modal = $(`#${context.id}`);
 
-    $("[data-modal-confirm]", modal).click(() => {
-      callback(modal);
+    $.dismiss(null, modal)
+
+    $("[data-dismiss]", modal).on("click",() => {
+      if (typeof callback === "function") {
+        callback(modal);
+      }
     });
-    $("[data-modal-cancel]", modal).click(() => {
-      modal.remove();
+  },
+  alert(context, callback) {
+    if (!context.id) {
+      throw new Error(`Must provide "context.id" for a modal to be created.`)
+    }
+
+    $("body").render(context.template || "_alert-modal", context, "append");
+
+    const modal = $(`#${context.id}`);
+
+    $.dismiss(null, modal)
+
+    $("[data-dismiss]", modal).on("click",() => {
+      if (typeof callback === "function") {
+        callback(modal);
+      }
+    });
+  },
+  confirm(context, callback) {
+    if (!context.id) {
+      throw new Error(`Must provide "context.id" for a modal to be created.`)
+    }
+
+    $("body").render(context.template || "_confirm-modal", context, "append");
+
+    const modal = $(`#${context.id}`);
+
+    $.dismiss(null, modal)
+
+    $("[data-modal-confirm]", modal).on("click", () => {
+      if (typeof callback === "function") {
+        callback(modal);
+      }
+
+      $.dismiss(context.id, modal)
     });
   },
 };
@@ -230,7 +316,12 @@ const scrollTop = () => {
   });
 }
 
-const dismiss = (elementId) => {
+/**
+ * Fades an element out and removes it from the view.
+ * @param elementId
+ * @param context
+ */
+const dismiss = (elementId, context) => {
   const close = (el) => {
     el.swapClass("opacity-100", "opacity-0")
 
@@ -240,16 +331,288 @@ const dismiss = (elementId) => {
   }
 
   if (!elementId) {
-    $(`button[hb-dismiss]`).on("click", (e) => {
-      e.preventDefault();
-      close($($(e.target).attr("hb-dismiss")))
-    })
+    $(`button[data-dismiss]`, context || $("body"))
+      .on("click", (e) => {
+        e.preventDefault();
+        close($(`#${$(e.currentTarget).data("dismiss")}`))
+      })
   } else {
-    close($(elementId))
+    close($(`#${elementId}`))
   }
 }
 
+function disable(v = true) {
+  if (v) {
+    this.attr("disabled", "disabled")
+  } else {
+    this.removeAttr("disabled")
+  }
+  return this;
+}
+
+function toggleEl(el) {
+  if (!el) return;
+
+  let target;
+  if (typeof el === "string") {
+    target = $(`#${el}`)
+  } else if (isObject(el)) {
+    target = $(el)
+  }
+
+  if (target.length > 0) {
+    if (target.hasClass("hidden")) {
+      target.removeClass("hidden")
+    } else {
+      target.addClass("hidden")
+    }
+  }
+}
+
+function toggles(context) {
+  $("[hb-toggle],[data-toggle]", context || $("body")).on("click", (e) => {
+    const el = $(e.currentTarget)
+    const target = $(`#${el.attr("hb-toggle") || el.attr("data-toggle")}`)
+    toggleEl(target)
+  })
+}
+
+function swap(context) {
+  $("[hb-swap]", context || $("body")).each((i, el) => {
+    let timer = null;
+    $(el).on("click", (e) => {
+      const el = $(e.currentTarget)
+      if (!el) return;
+
+      const target = $(`#${el.attr("hb-swap")}`)
+      const swapEl = $(`#${el.attr("hb-swap-target")}`)
+      const swapDuration = el.attr("hb-swap-duration")
+
+      if ((swapEl || el) && target) {
+        if (target.hasClass("hidden")) {
+          (swapEl.length === 0 ? el : swapEl).addClass("hidden")
+          target.removeClass("hidden")
+
+          if (swapDuration) {
+            clearTimeout(timer)
+            timer = setTimeout(() => {
+              (swapEl.length === 0 ? el : swapEl).removeClass("hidden")
+              target.addClass("hidden")
+            }, parseInt(swapDuration, 10))
+          }
+        } else {
+          (swapEl.length === 0 ? el : swapEl).removeClass("hidden")
+          target.addClass("hidden")
+
+          if (swapDuration) {
+            clearTimeout(timer)
+            timer = setTimeout(() => {
+              (swapEl.length === 0 ? el : swapEl).addClass("hidden")
+              target.removeClass("hidden")
+            }, parseInt(swapDuration, 10))
+          }
+        }
+      }
+    })
+  })
+}
+
+function hide() {
+  this.addClass("hidden")
+  return this
+}
+
+function show() {
+  this.removeClass("hidden")
+  return this
+}
+
+function differ(time) {
+  let timer = null
+  this.then = (callback) => {
+    if (typeof callback === "function") {
+      const t = typeof time === "string" ? parseInt(time, 10) : time;
+      clearTimeout(timer)
+      timer = setTimeout(() => callback(), t)
+    }
+  }
+  return this;
+}
+
+function initState(states) {
+  this.setState = (name) => {
+    const nextState = typeof states === "function" ? states(name) : states[name];
+    const stateKeys = typeof states === "function" ? states() : keys(states)
+
+    stateKeys.forEach(key => {
+      if (key !== name && key !== "init") {
+        const classes = ((typeof states === "function" ? states(key) : states[key]) || "").split(" ")
+
+        classes.forEach(className => this.removeClass(className))
+      }
+    })
+
+    this.addClass(nextState)
+
+    return this;
+  }
+
+  return this;
+}
+
+function button() {
+  this.isLoading = function() {
+    const spinner = this.find(`[data-spinner="true"]`)
+    return spinner.hasClass("hidden")
+  }
+
+  this.loading = function(on, text) {
+    const spinner = this.find(`[data-spinner="true"]`)
+    const textEl = this.find(`.button-text`)
+    const loadingText = this.data("loading-text")
+
+    if (on) {
+      spinner.show()
+
+      if (!this.data("loading-text")) {
+        textEl.hide()
+      } else {
+        if (text) {
+          this.data("default-text", textEl.html())
+          textEl.html(text)
+        } else if (loadingText) {
+          this.data("default-text", textEl.html())
+          textEl.html(loadingText)
+        }
+      }
+    } else {
+      spinner.hide()
+      textEl.show()
+
+      if (this.data("default-text")) {
+        textEl.html(this.data("default-text"))
+        this.data("default-text", null)
+      }
+    }
+    return this;
+  }
+
+  this.disable = function(on) {
+    if (on) {
+      this.addClass("cursor-not-allowed")
+      this.attr("disabled", "disabled")
+    } else {
+      this.removeClass("cursor-not-allowed")
+      this.removeAttr("disabled")
+    }
+    return this;
+  }
+
+  return this;
+}
+
+function toggleElClass(el, className, callback) {
+  this.on("click", (e) => {
+    let on = localStorage.getItem("hb-side-panel") || true;
+    let elem = null
+
+    if (el !== null && typeof el === "object") {
+      elem = el
+
+      if (el.hasClass(className)) {
+        el.removeClass(className)
+      } else {
+        el.addClass(className)
+      }
+    } else {
+      elem = $(`#${el}`)
+
+      if (elem.hasClass(className)) {
+        elem.removeClass(className)
+      } else {
+        elem.addClass(className)
+      }
+    }
+
+    console.log(el, elem)
+    on = elem.hasClass(className)
+
+    if (typeof callback === "function") {
+      callback(on)
+    }
+  })
+
+  return this;
+}
+
+function toast(type, message, timeout = 5000, position = "bottom-right") {
+  const { templates, partials } = Handlebars;
+  const tpl = templates["_toast"] || partials["_toast"];
+  const newContainer = $(`<div class="fixed z-50" data-toasts="true"></div>`)
+  let container = $('div[data-toasts]')
+
+  if (!container.length) {
+    if (position === "top-right" || position === "top-left") {
+      newContainer.addClass(`top-10`)
+    }
+
+    if (position === "bottom-right" || position === "bottom-left") {
+      newContainer.addClass(`bottom-2`)
+    }
+
+    if (position === "bottom-right" || position === "top-right") {
+      newContainer.addClass(`right-10`)
+    }
+
+    if (position === "bottom-left" || position === "top-left") {
+      newContainer.addClass(`left-10`)
+    }
+
+    container = newContainer
+    $("body").append(newContainer)
+  }
+
+  const newToast = $(tpl({ message, type, position: null }).trim())
+
+  container.prepend(newToast)
+
+  $.dismiss(null, newToast)
+
+  $(".hb-toast-backdrop", newToast)
+    .addClass(`w-0 ease-linear duration-[${timeout}ms]`)
+
+  setTimeout(() => {
+    $(".hb-toast-backdrop", newToast)
+      .swapClass("w-0", "w-full")
+  }, 50)
+
+  setTimeout(() => {
+    $.dismiss(newToast.attr("id"))
+  }, timeout)
+
+  return newToast
+}
+
+function toQueryString(obj, prefix) {
+  var str = [], k, v;
+  for(var p in obj) {
+    if (!obj.hasOwnProperty(p)) {continue;} // skip things from the prototype
+    if (~p.indexOf('[')) {
+      k = prefix ? prefix + "[" + p.substring(0, p.indexOf('[')) + "]" + p.substring(p.indexOf('[')) : p;
+// only put whatever is before the bracket into new brackets; append the rest
+    } else {
+      k = prefix ? prefix + "[" + p + "]" : p;
+    }
+    v = obj[p];
+    str.push(typeof v == "object" ?
+      toQueryString(v, k) :
+      encodeURIComponent(k) + "=" + encodeURIComponent(v));
+  }
+  return str.join("&");
+}
+
 (function () {
+
   $.extend({
     url: function () {
       return new URL(window.location.href);
@@ -259,27 +622,41 @@ const dismiss = (elementId) => {
       if (key) return q.get(key);
       return q;
     },
+    searchParams: function(params) {
+      const q = new URLSearchParams(params);
+      return q.toString()
+    },
     pushState,
     navigate,
     stateChange,
     stickyHeader,
     scrollTop,
     dismiss,
+    swap,
+    differ,
+    modals,
+    toast,
+    toggle: toggleEl,
+    toQueryString
   });
 
   $.fn.extend({
-    formToObject: formToObject,
-    swapClass: swapClass,
-    scrollTop: scrollTop,
-    toggleBeetweenClasses: toggleBeetweenClasses,
-    modal: function (name, context) {
-      this.render(name, context, "append");
-    },
-    confirm: modals.confirm,
+    hide,
+    show,
+    button,
+    initState,
+    formToObject,
+    swapClass,
+    scrollTop,
+    toggleBeetweenClasses,
     render,
+    renderRemote,
     mutate: mutationObserver,
+    disable,
+    toggleElClass,
   });
 
+  swap()
+  toggles()
   dismiss()
-  console.log($)
 })();

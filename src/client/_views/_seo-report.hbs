@@ -1,0 +1,20 @@
+{{#extend "_default" title="SEO Report"}}
+  {{#content "pageHeader"}}
+    <section class="flex px-4 pt-8 pb-4">
+      <div class="container flex">
+        {{{embed "_link" text="" url="/_hotbars/_seo" size=12 prefixIcon="chevron-left"}}}
+        <div class="flex flex-col">
+          {{{embed "_heading" size="h2" margin=0 text=request.params.path prefix="Lighthouse Report"}}}
+        </div>
+      </div>
+    </section>
+  {{/content}}
+  {{#content "main"}}
+    <div id="report" data-path="{{request.params.path}}" data-theme="{{settings.theme}}" class="relative w-full h-full grow">
+      <iframe class="absolute top-0 right-0 left-0 bottom-0 w-full h-full" src="/_hotbars/_seo/report/{{request.params.path}}"></iframe>
+    </div>
+  {{/content}}
+  {{#content "scripts"}}
+    {{scripts "/public/hotbars/seo-report.js"}}
+  {{/content}}
+{{/extend}}

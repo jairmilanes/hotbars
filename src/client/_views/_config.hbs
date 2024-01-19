@@ -1,0 +1,13 @@
+{{#extend "_default" title="Config"}}
+  {{#content "main"}}
+    <section class="container flex flex-col mx-auto w-full relative grow overflow-hidden">
+      {{{embed "_config"}}}
+    </section>
+  {{/content}}
+  {{#content "styles"}}
+    {{styles (replace "/public/libs/prism-{THEME}.css" "{THEME}" settings.theme)}}
+  {{/content}}
+  {{#content "scripts"}}
+    {{scripts "/public/libs/prism.js"}}
+  {{/content}}
+{{/extend}}

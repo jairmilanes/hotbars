@@ -12,7 +12,4 @@ export const errorPageHandler = () => {
       config: Config.get(),
     });
   });
-
-  logger.debug("%p%P Error page handler", 3, 0);
-  logger.debug("%p%P [GET]/error", 5, 0);
 };

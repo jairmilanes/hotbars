@@ -162,7 +162,7 @@ export const initLogger = (level: number, toFile = true) => {
 
   for (const level in levelNames) {
     const parts: string[] = split(levelNames[level], ":");
-    console.log(parts)
+
     const color = parts.pop();
 
     if (parseInt(level, 10) > 0) {

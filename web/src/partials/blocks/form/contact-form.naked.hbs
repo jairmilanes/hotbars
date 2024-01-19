@@ -2,7 +2,6 @@
 <!-- hb-captcha="contact-captcha" -->
 <form
   hb-ajax="true"
-  hb-contact-form="true"
   hb-needs-validation="true"
   hb-content-type="application/json"
   hb-success-message="We have received your message and will get back to you soon, thank you!"
@@ -54,7 +53,7 @@
   }}}
 
   <div class="mt-3">
-    {{#embed
+    {{{embed
       "_button"
       id=""
       type="submit"
@@ -65,6 +64,6 @@
       width="full"
       disabled=true
       text="Send Message"
-    }}{{/embed}}
+    }}}
   </div>
 </form>

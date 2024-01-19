@@ -1,0 +1,36 @@
+<div id="hb-side-panel" class="{{#if settings.sidePanel}}open{{/if}} flex flex-col group shrink-0 border-r border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900">
+  <div class="grow flex flex-col w-[4rem] group-[.open]:w-60">
+    <div class="px-4 mb-8 sm:px-4 py-3 border-b border-gray-300 dark:border-gray-700">
+      <a href="/" class="flex items-center group-[.open]:mr-8">
+        <img
+          src="https://flowbite.com/docs/images/logo.svg"
+          class="h-6 w-auto mr-3 sm:h-9"
+          alt="Flowbite Logo"
+        />
+        <span
+          class="hidden group-[.open]:flex self-center text-xl font-semibold whitespace-nowrap text-gray-900 dark:text-white/[.85]"
+        >Hotbars</span>
+      </a>
+    </div>
+    <ul class="grow flex flex-col space-y-2 md:p-0 md:mt-0  md:text-sm md:font-medium">
+      {{#each (i "_hbs.menu")}}
+        <li class="group-[.open]:pl-4">
+          <a
+            href="{{path}}"
+            title="Go to {{title}}"
+            data-path="{{replace path '/' ''}}"
+            class="flex items-center justify-center py-2 pl-0 group-[.open]:pl-2 hover:bg-gray-300 dark:hover:bg-gray-800 text-color"
+            aria-current="page"
+          >
+            <span class="group-[.open]:mr-2">{{{embed (append (append "icons/" icon) ".icon") url=path size=6}}}</span>
+            <span class="grow hidden group-[.open]:flex">{{title}}</span>
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+    <div class="flex justify-end px-4 sm:px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+      {{{embed "_button" id="hb-close-side-panel" style="link" color="gray" size="icon" icon="chevron-left.icon" class="hidden group-[.open]:block"}}}
+      {{{embed "_button" id="hb-open-side-panel" style="link" color="gray" size="icon" icon="chevron-right.icon" class="block group-[.open]:hidden"}}}
+    </div>
+  </div>
+</div>

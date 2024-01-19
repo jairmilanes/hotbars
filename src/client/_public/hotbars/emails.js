@@ -11,7 +11,7 @@ function EmailPage() {
   this.header = $("#hbs-email-header");
 
   this.fetch = async (page = 1) => {
-    return fetch(`/_mail?_page=${page}&_sort=id&_order=desc`)
+    return fetch(`/_mail?_page=${page}&_sort=id&_order=asc`)
       .then((response) => response.json())
       .then((emails) => {
         this.emails = emails;
@@ -128,7 +128,7 @@ function EmailPage() {
         message: "Are you sure you want to delete this email?",
       };
 
-      $("body").confirm("_confirm-modal", context, async (modal) => {
+      $.modals.confirm(context, async (modal) => {
         await this.remove(id);
         await this.load(this.page);
 

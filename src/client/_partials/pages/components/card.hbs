@@ -1,0 +1,60 @@
+{{#embed "pages/components/section" id=id title="Card"}}
+  {{#content "body"}}
+    <div class="grid grid-cols-4 gap-2 w-full">
+      {{#embed "_card" title="Default"}}
+        {{#content "body"}}
+          <p>Default card</p>
+        {{/content}}
+      {{/embed}}
+
+      {{#embed "_card" title=""}}
+        {{#content "body"}}
+          <p>No title</p>
+        {{/content}}
+      {{/embed}}
+
+      {{#embed "_card" title="Shadow" shadow="md"}}
+        {{#content "body"}}
+          <p>Shadowed card</p>
+        {{/content}}
+      {{/embed}}
+
+      {{#embed "_card" title="Flush" padding="0"}}
+        {{#content "body"}}
+          <p>Flushed card</p>
+        {{/content}}
+      {{/embed}}
+
+      {{#embed "_card" title="Success" bg="success"}}
+        {{#content "body"}}
+          <p>No title</p>
+        {{/content}}
+      {{/embed}}
+
+      {{#embed "_card" title="Info" bg="info"}}
+        {{#content "body"}}
+          <p>No title</p>
+        {{/content}}
+      {{/embed}}
+
+      {{#embed "_card" title="Warning" bg="warn"}}
+        {{#content "body"}}
+          <p>No title</p>
+        {{/content}}
+      {{/embed}}
+
+      {{#embed "_card" title="Error" bg="error"}}
+        {{#content "body"}}
+          <p>No title</p>
+        {{/content}}
+      {{/embed}}
+    </div>
+  {{/content}}
+  {{#content "code"}}
+    \{{#embed "_card" title="Default"}}
+      \{{#content "body"}}
+          <p>Default card</p>
+      \{{/content}}
+    \{{/embed}}
+  {{/content}}
+{{/embed}}

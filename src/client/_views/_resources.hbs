@@ -16,81 +16,22 @@
           </div>
         </div>
         <div class="col-span-7 rounded-r-xl flex flex-col bg-white dark:bg-gray-800 mb-6 flex flex-col h-full grow overflow-hidden">
-          <div class="pt-6 px-6 rounded-tr-xl">
-            <div class="flex py-2">
-              <div id="hbs-request-method-none"
-                   class="form-input rounded-l-full border-r-0 border-gray-100 mr-0 text-center font-bold text-slate-600 min-w-[80px]">
-                <span class="text-gray-300">*</span>
-              </div>
-              {{#each (i "_hbs.methods")}}
-                <div id="hbs-request-method-{{lowercase name}}"
-                     class="hbs-request-method hidden form-input rounded-l-full border-r-0 border-gray-100 mr-0 text-center font-bold min-w-[80px] {{color}} {{bg}}">
-                  {{name}}
-                </div>
-              {{/each}}
-              <div class="form-input border-gray-100 grow ml-0">
-                  <span id="hbs-request-resource">
-                      <span class="text-gray-300">
-                        {{_hbs.messages.noActiveResource}}
-                      </span>
-                  </span>
-              </div>
-              <div id="{{prefix "status"}}" class="hidden text-gray-100 px-3 py-2">
-                <strong id="{{prefix "status-code"}}"></strong> <span id="{{prefix "status-text"}}"></span>
-              </div>
-              <button id="hbs-send-request" disabled class="rounded-r-full bg-rose-600 hover:bg-rose-500 text-white font-bold px-5">
-                <span id="send-btn">Send</span>
-                {{#embed "_spinner" id="sending-btn" class="hidden" size="4"}}{{/embed}}
-              </button>
-            </div>
-            <div class="flex items-center">
-              {{> "_tabs" (i "_hbs.tabs")}}
-              <div class="grow"></div>
-            </div>
-          </div>
+          {{{embed "pages/resources/header" name=name color=color bg=bg}}}
+
           <div id="{{prefix "resource-content"}}" class="relative text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-l border-t border-slate-200 dark:border-slate-700 h-full grow flex flex-col overflow-hidden">
             <div id="{{prefix "body-content"}}" class="hidden relative grow shrink-0" role="tabpanel">
-              <div id="ace-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 text-base"></div>
-              <div id="multipart-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 p-6">
-                <form id="hbs-multipart-form">
-                  <div id="hbs-multipart-form-data">
-                    {{#embed "_key-value-form-item"}}{{/embed}}
-                  </div>
-                  <div class="flex">
-                    <div class="grow"></div>
-                    {{#embed "_button" id="hbs-multipart-add" theme="default" color="rose" label="Add" rounded="lg"}}{{/embed}}
-                  </div>
-                </form>
-              </div>
-              <div id="binary-editor" class="hidden absolute top-0 bottom-0 left-0 right-0 p-6">
-                <form id="hbs-multipart-binary-form">
-                  {{#embed "_input"  type="dropzone" name="key" label="Key"}}{{/embed}}
-                </form>
-              </div>
+              {{{embed "pages/resources/editor" id="json-editor"}}}
+              {{{embed "pages/resources/editor" id="plain-editor"}}}
+              {{{embed "pages/resources/multipart"}}}
+              {{{embed "pages/resources/binary"}}}
             </div>
-            <div id="{{prefix "headers-content"}}" class="hidden overflow-auto h-full" role="tabpanel">
 
-            </div>
-            <div id="{{prefix "response-content"}}" class="hidden overflow-auto h-full" role="tabpanel">
-              <pre class="whitespace-normal m-0 p-6 overflow-visible">
-                <code class="whitespace-pre-wrap"></code>
-              </pre>
-            </div>
-            <div id="{{prefix "preview-content"}}" class="hidden overflow-auto h-full" role="tabpanel">
-              <pre class="line-numbers" style="margin: 0; border-radius: 0; overflow: visible; white-space:pre-wrap;">
-                <code class="language-json"></code>
-              </pre>
-            </div>
-            <div id="{{prefix "empty-content"}}" class="flex flex-col overflow-hidde h-full" role="tabpanel">
-              <div class="flex flex-col grow items-center justify-center">
-                <h1 class="mb-2 text-center text-2xl font-bold text-gray-600 md:text-3xl">Select a resource</h1>
-                <p class="mb-12 max-w-screen-md text-center text-gray-400 md:text-lg">Click resources on the left to see more information.</p>
-              </div>
-            </div>
-            <div
-              id="loading"
-              class="hidden flex justify-center items-center absolute top-0 bottom-0 left-0 right-0"
-            >
+            {{{embed "pages/resources/headers" name=name color=color bg=bg}}}
+            {{{embed "pages/resources/content" name=name color=color bg=bg}}}
+            {{{embed "pages/resources/preview" name=name color=color bg=bg}}}
+            {{{embed "pages/resources/empty" name=name color=color bg=bg}}}
+
+            <div hb-loader="true" class="hidden flex justify-center items-center absolute top-0 bottom-0 left-0 right-0">
               {{#embed "_spinner" size="14"}}{{/embed}}
             </div>
           </div>
@@ -98,9 +39,11 @@
       </div>
     </section>
   {{/content}}
+
   {{#content "styles"}}
-      {{styles "/public/libs/prism.css"}}
+    {{styles (replace "/public/libs/prism-{THEME}.css" "{THEME}" settings.theme)}}
   {{/content}}
+
   {{#content "scripts"}}
     {{scripts "https://cdn.jsdelivr.net/npm/ace-builds@1.12.5/src-noconflict/ace[.min].js,
                /public/libs/prism.js,

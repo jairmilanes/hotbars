@@ -15,6 +15,8 @@ import {
   EventManager,
   PreRenderer,
   DashboardConfig,
+  EnvManager,
+  Versioning
 } from "./core";
 import { Router } from "./router";
 import { AuthManager } from "./auth";
@@ -35,7 +37,7 @@ export class App {
 
     if (Config.enabled("language")) {
       logger.info("%p%P Languages enabled", 1, 1);
-      logger.info(`%p%P defaults to %s`, 3, 0, Config.get("currentLanguage"));
+      logger.debug(`%p%P defaults to "%s"`, 3, 0, Config.get("currentLanguage"));
     }
 
     EventManager.create();
@@ -47,6 +49,8 @@ export class App {
     FakeSMPTServer.create();
     BrowserifyCompiler.create();
     SassCompiler.create();
+    Versioning.create();
+    EnvManager.create(Config.get("deployment.service"));
 
     if (Config.is("env", Env.Dev)) {
       this.watcher = new Watcher(Config.get());
@@ -67,6 +71,8 @@ export class App {
     await BootstrapData.run();
     await Controllers.load();
     await AuthManager.load();
+    await Versioning.load();
+    await EnvManager.get()?.load();
 
     if (Config.get("jsonDb")) {
       await DataManager.create("jsonDb");

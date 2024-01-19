@@ -1,78 +1,76 @@
-{{#extend "_auth" title="Sign Up"}}
+{{#extend "_auth" title="Sign Up" scroll=true}}
   {{#content "main"}}
     <section>
       <div
         class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
       >
-        <a
-          href="#"
-          class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
-        >
-          <img
-            class="w-8 h-8 mr-2"
-            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
-            alt="logo"
-          />
-          Flowbite
-        </a>
+        {{{embed "_auth-header"}}}
+
         {{#embed "_card" title=(i "auth.createAccount") titleSize="h3" size="sm" padding="md" }}
           {{#content "body"}}
-            <form
-              class="w-full space-y-4 md:space-y-6"
-              method="post"
-              action="{{append auth.signUp '/local'}}"
-              data-captcha="signup"
-            >
-              {{#each messages}}
-                {{#embed "_alert-message" message=this level="error"}}{{/embed}}
-              {{/each}}
-              {{{embed
-                "_input"
-                type="text"
-                label=(i "auth.yourUsername")
-                name="username"
-                required=true
-              }}}
-              {{{embed
-                "_input"
-                type="email"
-                label=(i "auth.yourEmail")
-                name="email"
-                required=true
-              }}}
-              {{{embed
-                "_input"
-                type="password"
-                label=(i "auth.yourPassword")
-                name="password"
-                required=true
-              }}}
-              {{{embed
-                "_input"
-                type="password"
-                label=(i "auth.confirmPassword")
-                name="confirm-password"
-                required=true
-              }}}
-              {{#if auth.terms}}
-                {{#embed "_input" type="checkbox" name="terms"}}
-                  {{#content "label"}}
-                    {{{embed
-                      "_link"
-                      url=auth.terms
-                      prefix=(i "auth.acceptThe")
-                      text=(i "auth.termsAndCOnditions")
-                    }}}
-                  {{/content}}
-                {{/embed}}
-              {{/if}}
-              {{{embed
-                "_re-captcha"
-                id="signup"
-                version=auth.reCaptcha
-                text=(i "auth.createAccount")
-              }}}
-            </form>
+            {{#embed "_form"
+               id="_sign-up-form"
+               class="space-y-2"
+               action=(append auth.signUp '/local')
+               method="POST"
+               submitText=(i "auth.signUp")
+               messages=messages
+               validation=true
+               captcha="signup"
+            }}
+              {{#content "body"}}
+                {{{embed
+                  "_input"
+                  id=null
+                  type="text"
+                  label=(i "auth.yourUsername")
+                  name="username"
+                  required=true
+                }}}
+                {{{embed
+                  "_input"
+                  id=null
+                  type="email"
+                  label=(i "auth.yourEmail")
+                  name="email"
+                  required=true
+                }}}
+                {{{embed
+                  "_input"
+                  id=null
+                  type="text"
+                  label=(i "auth.yourPassword")
+                  name="password"
+                  required=true
+                }}}
+                {{{embed
+                  "_input"
+                  id=null
+                  type="text"
+                  label=(i "auth.confirmPassword")
+                  name="confirmPassword"
+                  required=true
+                }}}
+                {{#if auth.terms}}
+                  {{#embed "_input" type="checkbox" name="terms"}}
+                    {{#content "label"}}
+                      {{{embed
+                        "_link"
+                        url=auth.terms
+                        prefix=(i "auth.acceptThe")
+                        text=(i "auth.termsAndCOnditions")
+                      }}}
+                    {{/content}}
+                  {{/embed}}
+                {{/if}}
+                {{{embed
+                  "_re-captcha"
+                  id="signup"
+                  version=auth.reCaptcha
+                  text=(i "auth.createAccount")
+                }}}
+              {{/content}}
+            {{/embed}}
           {{/content}}
         {{/embed}}
         <p class="text-sm mt-8 font-light text-gray-500 dark:text-gray-400">
@@ -85,5 +83,51 @@
         </p>
       </div>
     </section>
+  {{/content}}
+
+  {{#content "scripts"}}
+    <script>
+      (() => {
+        validate.validators.exists = (value, other, name) => {
+          if (!value) return;
+          return fetch(`/_api/users?username=${value}`)
+            .then((response) => {
+              if (response.status === 404) return { total: 0 };
+              if (response.status !== 200) return { total: 0 };
+              return response.json()
+            })
+            .then((response) => {
+              console.log("RESPONSE", response.total === 0 ? undefined : `${name} already exists`)
+              return response.total === 0 ? undefined : `${name} already exists`
+            })
+            .catch((e) => undefined)
+        }
+
+        const constrains = {
+          username: {
+            presence: { allowEmpty: false },
+            type: "string",
+            exists: true
+          },
+          email: {
+            presence: { allowEmpty: false },
+            type: "string",
+            email: true
+          },
+          password: {
+            presence: { allowEmpty: false },
+            type: "string"
+          },
+          confirmPassword: {
+            equality: "password"
+          }
+        }
+
+        $("#_sign-up-form").form(
+          constrains,
+          (formData) => (formData)
+        )
+      })()
+    </script>
   {{/content}}
 {{/extend}}

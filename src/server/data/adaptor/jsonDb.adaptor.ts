@@ -46,9 +46,21 @@ export default class JsonDbAdaptor extends QueryBuilder {
     return Promise.resolve(_.keys(this._api.getState()));
   }
 
-  async createCollection(name: string): Promise<void> {
+  hasCollection(name: string) {
     const state = this._api.getState();
-    state[name] = [];
+    return name in state;
+  }
+
+  async createCollection(name: string, single = false): Promise<void> {
+    const state = this._api.getState();
+    state[name] = single ? {} : [];
+    this._api.setState(state);
+    await this._api.write();
+  }
+
+  async deleteCollection(name: string): Promise<void> {
+    const state = this._api.getState();
+    delete state[name]
     this._api.setState(state);
     await this._api.write();
   }
@@ -204,11 +216,15 @@ export default class JsonDbAdaptor extends QueryBuilder {
 
     let collection = this._api.get(this.collection);
 
+    if (!Array.isArray(collection.value())) {
+      return collection.value();
+    }
+
     if (this.id) {
       return collection.getById(this.id as string).value();
     }
 
-    collection = this.query(collection);
+    collection = this.query(collection as CollectionChain<object>);
 
     if (this._limit === 1) {
       if (this.fields.length) {

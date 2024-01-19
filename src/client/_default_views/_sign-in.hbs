@@ -1,41 +1,30 @@
-{{#extend "_auth" title="Sign In"}}
+{{#extend "_auth" title="Sign In" scroll=true}}
   {{#content "main"}}
     <section>
       <div
         class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
       >
-        <a
-          href="#"
-          class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
-        >
-          <img
-            class="w-8 h-8 mr-2"
-            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
-            alt="logo"
-          />
-          Hotbars
-        </a>
+        {{{embed "_auth-header"}}}
 
         {{#embed "_card" title="" titleSize="h3" size="sm" padding="md" bodyLayout="column"}}
           {{#content "body"}}
             {{#eq (get "action" query) "confirmed"}}
               {{#embed "_alert-message" message="Your account has been confirmed!" level="info"}}{{/embed}}
             {{/eq}}
-            {{#each messages}}
-              {{#embed "_alert-message" message=this level="error"}}{{/embed}}
-            {{/each}}
 
-            <form
-              class="w-full space-y-4 md:space-y-4"
-              method="post"
-              action="{{append auth.signIn '/local'}}"
-            >
-              {{#each messages}}
-                {{#embed "_alert-message" message=this level="error"}}{{/embed}}
-              {{/each}}
-              <div class="space-y-3">
+            {{#embed "_form"
+              id="_sign-in-form"
+              class="space-y-2"
+              action=(append auth.signIn '/local')
+              method="POST"
+              submitText=(i "auth.signIn")
+              messages=messages
+              validation=true
+            }}
+              {{#content "body"}}
                 {{{embed
                   "_input"
+                  id=null
                   label=(i "auth.yourEmailOrUsername")
                   name="username"
                   required=true
@@ -44,38 +33,35 @@
                 }}}
                 {{{embed
                   "_input"
+                  id=null
                   type="password"
                   name="password"
                   label=(i "auth.yourPassword")
                   required=true
                 }}}
-              </div>
-              <div class="flex-col items-center justify-between">
-                {{{embed
-                  "_input"
-                  type="checkbox"
-                  value="remember"
-                  label=(i "auth.rememberMe")
-                  name="remember"
-                }}}
-              </div>
-              {{{embed
-                "_button"
-                type="submit"
-                text=(i "auth.signIn")
-                width="full"
-                size="lg"
-                disabled=true
-              }}}
 
-              <div class="text-center">
-                {{{embed
-                  "_link"
-                  url=auth.passwordRecovery
-                  text=(i "auth.forgotPassword")
-                }}}
-              </div>
-            </form>
+                <div class="flex-col items-center justify-between">
+                  {{{embed
+                    "_input"
+                    id=null
+                    type="checkbox"
+                    value="rememberMe"
+                    label=(i "auth.rememberMe")
+                    name="rememberMe"
+                  }}}
+                </div>
+              {{/content}}
+
+              {{#content "after"}}
+                <div class="text-center">
+                  {{{embed
+                    "_link"
+                    url=auth.passwordRecovery
+                    text=(i "auth.forgotPassword")
+                  }}}
+                </div>
+              {{/content}}
+            {{/embed}}
           {{/content}}
         {{/embed}}
 
@@ -89,5 +75,26 @@
         </p>
       </div>
     </section>
+  {{/content}}
+  {{#content "scripts"}}
+    <script>
+      $(() => {
+        const constrains = {
+          username: {
+            presence: { allowEmpty: false },
+            type: "string"
+          },
+          password: {
+            presence: { allowEmpty: false },
+            type: "string"
+          }
+        };
+
+        $("#_sign-in-form").form(
+          constrains,
+          (formData) => (formData)
+        )
+      })
+    </script>
   {{/content}}
 {{/extend}}

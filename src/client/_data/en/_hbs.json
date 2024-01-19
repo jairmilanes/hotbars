@@ -7,19 +7,38 @@
   "menu": [
     {
       "title": "Home",
+      "icon": "home",
       "path": "/_hotbars/_index"
     },
     {
       "title": "Resources",
+      "icon": "cloud",
       "path": "/_hotbars/_resources"
     },
     {
       "title": "Data",
+      "icon": "database",
       "path": "/_hotbars/_data"
     },
     {
+      "title": "SEO",
+      "icon": "done_all",
+      "path": "/_hotbars/_seo"
+    },
+    {
+      "title": "Components",
+      "icon": "grid_view",
+      "path": "/_hotbars/_components"
+    },
+    {
       "title": "Emails",
+      "icon": "mail",
       "path": "/_hotbars/_emails"
+    },
+    {
+      "title": "Config",
+      "icon": "settings",
+      "path": "/_hotbars/_config"
     }
   ],
   "methods": [
@@ -78,5 +97,67 @@
   },
   "messages": {
     "noActiveResource": "Click on a resourse to view results"
-  }
+  },
+  "components": [
+    { "id": "avatar",
+      "url": "#avatar",
+      "title": "Avatar" },
+    { "id": "alerts",
+      "url": "#alerts",
+      "title": "Alerts" },
+    { "id": "button",
+      "url": "#button",
+      "title": "Button" },
+    { "id": "card",
+      "url": "#card",
+      "title": "Card" },
+    { "id": "dropdown",
+      "url": "#dropdown",
+      "title": "Dropdown" },
+    { "id": "heading",
+      "url": "#heading",
+      "title": "Heading" },
+    { "id": "link",
+      "url": "#link",
+      "title": "Link" },
+    { "id": "modal",
+      "url": "#modal",
+      "title": "Modal" },
+    { "id": "pagination",
+      "url": "#pagination",
+      "title": "Pagination" },
+    { "id": "placeholder",
+      "url": "#placeholder",
+      "title": "Placeholder" },
+    { "id": "spinner",
+      "url": "#spinner",
+      "title": "Spinner" },
+    { "id": "tabs",
+      "url": "#tabs",
+      "title": "Tabs" },
+    { "id": "toast",
+      "url": "#toast",
+      "title": "Toast" },
+    { "id": "icons",
+      "url": "#icons",
+      "title": "Icons" }
+  ],
+  "deployment": [
+    {
+      "id": "status",
+      "url": "#status",
+      "title": "Status"
+    },
+    {
+      "id": "versioning",
+      "url": "#versioning",
+      "title": "Versioning"
+    },
+    {
+      "id": "deployment",
+      "url": "#deployment",
+      "title": "Deployment"
+    }
+  ]
 }
+

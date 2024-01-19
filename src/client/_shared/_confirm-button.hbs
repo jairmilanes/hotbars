@@ -1,0 +1,28 @@
+{{{embed "_button"
+   id=id
+   type="button"
+   style=style
+   color=color
+   text=text
+   icon=icon
+   prefixIcon=prefixIcon
+   suffixIcon=suffixIcon
+   disabled=disabled
+   rounded=rounded
+   size=size
+   width=width
+   class=class
+   attributes=(attr hb-swap=(append id "-confirm") hb-swap-duration=3000)
+}}}
+{{{embed "_button"
+   id=(append id "-confirm")
+   type=type
+   style=style
+   color=(default confirmColor color)
+   text=(default confirmText "Confirm?")
+   disabled=disabled
+   rounded=rounded
+   size=size
+   width=width
+   class=(append "hidden " (default class ""))
+}}}

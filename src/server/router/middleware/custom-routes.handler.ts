@@ -26,27 +26,16 @@ const createRouter = (): express.Router => {
     createRoutes(router);
   }
 
-  const userRoutes = mapRoutes(router.stack);
-
-  userRoutes.forEach((route) => {
-    route.methods?.forEach((method) => {
-      logger.debug(`%p%P [%S]%s`, 5, 0, method, route.path);
-    });
-  });
-
   if (!Config.is("env", Env.Prod)) {
     router.get("/_custom", (req, res) =>
       res.jsonp(mapRoutes(Server.app._router.stack))
     );
-    logger.debug(`%p%P [GET]/_custom - Get all user routes.`, 5, 0);
   }
 
   return router;
 };
 
 export const createUserRouter = () => {
-  logger.debug(`%p%P User custom routes...`, 3, 0);
-
   const router = createRouter();
   Server.app.use(router);
 

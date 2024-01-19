@@ -3,10 +3,9 @@ const clb = require("../../_lib/clb");
 module.exports._body = clb({
   /* This can be anything `classnames` accepts. */
   defaults: {
-    color: "gray",
-    bg: "gray",
+    level: "success",
   },
-  base: "flex p-4 transition-opacity duration-[6 00ms] opacity-100",
+  base: "flex p-4 text-%level-800 bg-%level-200 border-%level-500 transition-opacity duration-[600ms] opacity-100",
   defaultVariants: {
     style: "default",
     spacing: "md",
@@ -16,11 +15,6 @@ module.exports._body = clb({
       default: "",
       rounded: "rounded-lg",
       bordered: "border-t-4",
-    },
-    theme: {
-      dark: "dark:text-%color-900 dark:bg-%bg-200 dark:border-%bg-500",
-      light: "text-%color-800 bg-%bg-200 border-%bg-500",
-      opaque: "text-%color-200 bg-%bg-800 border-%bg-800",
     },
     spacing: {
       sm: "mb-2",

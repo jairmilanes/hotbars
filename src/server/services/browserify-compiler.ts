@@ -22,7 +22,7 @@ export class BrowserifyCompiler {
   }
 
   static compileDashboardRuntime(data?: WatcherChange): Promise<void> {
-    logger.debug(`%p%P Browserify: Compiling dashboard's runtime...`, 1, 1);
+    logger.debug(`%p%P Dashboard's runtime`, 1, 1);
     const runtime = DashboardConfig.fullPath(
       "public",
       "bundles",
@@ -54,7 +54,7 @@ export class BrowserifyCompiler {
   }
 
   static async compileUserRuntime(data?: WatcherChange): Promise<void> {
-    logger.debug(`%p%P Browserify: Compiling users's runtime...`, 1, 1);
+    logger.debug(`%p%P Users's runtime`, 1, 1);
 
     const userHelpersPath = Config.fullPath("helpers");
     const defaults = DashboardConfig.fullPath(

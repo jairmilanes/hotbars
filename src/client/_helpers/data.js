@@ -14,7 +14,7 @@
  * @param {object} options
  * @returns {(string|number|null|undefined)}
  */
-module.exports.data = function (path, options) {
+module.exports = function (path, options) {
   const parts = path.split(".");
 
   return (function recurse(props, opts) {
@@ -28,4 +28,3 @@ module.exports.data = function (path, options) {
   })(parts, options.data.root);
 };
 
-module.exports.d = module.exports.data;

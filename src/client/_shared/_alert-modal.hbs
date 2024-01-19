@@ -1,0 +1,15 @@
+{{#embed "_modal" id=id closable=true}}
+  {{#content "body"}}
+    {{{embed "icons/info.icon"
+             size=14
+             class="mx-auto mb-4 text-gray-400 dark:text-gray-200"}}}
+    {{{embed "_heading" size="h4" text=message}}}
+    {{{embed "_button"
+             id=""
+             type="button"
+             color="gray"
+             text=(default cancelText "No, cancel")
+             attributes=(attr data-dismiss=id)
+    }}}
+  {{/content}}
+{{/embed}}

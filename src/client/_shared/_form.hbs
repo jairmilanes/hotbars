@@ -1,0 +1,65 @@
+<div class="w-{{default width "full"}}">
+  {{#gte (length messages) 1}}
+    <div class="mb-6">
+      {{#each messages}}
+        {{#if (isString this)}}
+          {{{embed "_alert-message" message=this level="info" spacing="sm"}}}
+        {{/if}}
+        {{#if (isObject this)}}
+          {{{embed "_alert-message" message=this.message level=this.level spacing="sm"}}}
+        {{/if}}
+      {{/each}}
+    </div>
+  {{/gte}}
+
+  <form
+    id="{{id}}"
+    action="{{action}}"
+    method="{{default method "GET"}}"
+    hb-ajax="{{#if ajax}}true{{else}}false{{/if}}"
+    hb-needs-validation="{{#if validation}}true{{else}}false{{/if}}"
+    hb-content-type="{{default contentType "application/json"}}"
+    hb-success-message="{{successMessage}}"
+    hb-captcha="{{captcha}}"
+    hb-silent="{{default silent "false"}}"
+    hb-auto="{{default autoload "false"}}"
+    hb-prevent-default="{{default preventDefault "false"}}"
+    class="block m-0 {{class}}"
+    noValidate
+  >
+    {{#if (content "before")}}
+      <div class="w-full mb-2">
+        {{{block "before"}}}
+      </div>
+    {{/if}}
+
+    <div class="flex {{#eq (default layout "col") "col"}}flex-col{{/eq}} items-{{default align "start"}} justify-{{default align "start"}}">
+      <div class="{{#eq (default layout "col") "col"}}w-full{{/eq}}">
+        {{{block "body"}}}
+      </div>
+
+      <div class="{{#eq (default layout "col") "col"}}w-full{{/eq}}">
+        {{#block "submit"}}
+          <div class="mt-3">
+            {{{embed
+              "_button"
+              id=(append id "-submit")
+              type="submit"
+              size="lg"
+              style="solid"
+              color=""
+              width=(default submitWidth "full" )
+              disabled=validation
+              text=(default submitText "Submit")
+            }}}
+          </div>
+        {{/block}}
+      </div>
+    </div>
+    {{#if (content "after")}}
+      <div class="w-full mt-2">
+        {{{block "after" id=""}}}
+      </div>
+    {{/if}}
+  </form>
+</div>

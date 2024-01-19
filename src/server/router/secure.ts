@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import { NextFunction, Request, Response } from "express";
 import { Config, ContextConfig } from "../core";
+import { logger } from "../../services";
 
 export const secureMiddleware = (
   req: Request,
@@ -10,9 +11,16 @@ export const secureMiddleware = (
   if (ContextConfig.init(req).enabled("auth")) {
     const config = ContextConfig.init(req);
     const authRoutesMap = config.get<Record<string, any>>("auth.views")
-    const authRoutesValues = Object.values(authRoutesMap);
+    // need this to include the index page in the check
+    const authRoutesValues = Object.values(authRoutesMap)
+      .filter(v => v !== "_index" && v !== "_hotbars/_index");
 
-    if (!authRoutesValues.some(v => req.originalUrl.indexOf(v) >= 0) && req.url !== "/_emails") {
+    const isAuthRoute = authRoutesValues
+      .some(v => req.originalUrl.indexOf(v) >= 0)
+
+    const isByPassed = ["/_emails"].indexOf(req.url) > -1
+
+    if (!isAuthRoute && !isByPassed) {
       if (!req.isAuthenticated()) {
         return res.redirect(
           config.get<string>("auth.views.signIn")

@@ -17,7 +17,7 @@ export class SassCompiler {
   }
 
   static compile(data?: WatcherChange): void {
-    logger.debug(`%p%P Sass compiler`, 1, 1);
+    logger.debug(`%p%P Compiling SASS files`, 1, 1);
 
     const sourcePath = Config.relPath("styles");
 
@@ -115,7 +115,7 @@ export class SassCompiler {
       });
     }
 
-    logger.info("%p%P Processing path %s", 3, 0, path);
+    logger.debug("%p%P from %s", 3, 0, source);
 
     const files = Object.keys(this.graph.index).map((path) => {
       const filename = basename(path);
@@ -128,6 +128,8 @@ export class SassCompiler {
     });
 
     if (path) {
+      logger.debug("%p%P path %s", 3, 0, path);
+
       const target = files.find((file) => {
         return file.path.endsWith(path);
       });

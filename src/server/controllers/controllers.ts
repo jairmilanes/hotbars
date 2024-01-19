@@ -11,12 +11,13 @@ import {
 } from "../types";
 import { ControllerAbstract } from "./abstract";
 import * as _ from "lodash";
+import { DataManager } from "../data";
 
 export class Controllers {
   private static controllers: UserControllers = {};
 
   static create() {
-    logger.info(`%p%P Controllers`, 1, 1);
+    logger.debug(`%p%P Controllers`, 1, 1);
     EventManager.i.on(ServerEvent.CONTROLLERS_CHANGED, this.load.bind(this));
   }
 
@@ -31,7 +32,7 @@ export class Controllers {
       ...glob.sync(DashboardConfig.fullGlobPath("controllers")),
     ];
 
-    logger.info(`%p%P Loading controllers:`, 1, 1);
+    logger.debug(`%p%P Controllers`, 1, 1);
 
     for (let i = 0; i < (controllers || []).length; i++) {
       try {
@@ -100,26 +101,28 @@ export class Controllers {
   ): Promise<SafeObject> {
     ContextConfig.init(req);
     const authenticated = req.isAuthenticated && req.isAuthenticated();
+    const db = DataManager.get()
+    const settings = await db.from("settings").get("default")
+
+    const { query, params, body} = req
 
     const context: Record<string, any> = {
-      env: ContextConfig.get("env"),
+      config: ContextConfig.get(),
+      secure: req.secure,
+      authenticated,
       url: req.url,
+      user: req.user,
+      xhr: req.xhr,
       page: route,
       query: { ...req.query },
       params: { ...req.params },
       request: {
-        ...req.query,
-        ...req.params,
-        ...req.body,
+        query,
+        params,
+        body,
       },
-      secure: req.secure,
-      authenticated,
-      user: req.user,
-      xhr: req.xhr,
-      auth: {
-        terms: ContextConfig.get("auth.terms"),
-        reCaptcha: ContextConfig.get("auth.reCaptcha"),
-      },
+      auth: ContextConfig.get("auth"),
+      settings,
     };
 
     // Add auth page routes to context

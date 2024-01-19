@@ -1,7 +1,7 @@
 import slugify from "slugify";
 import { RequestMethod, RouteLayer, RouteMap, RouterMap } from "../types";
 
-const slugifyPath = (path: string): string => {
+export const slugifyPath = (path: string): string => {
   // Extra white space needed here to delimit the param removal regex starting with ":"
   return (
     slugify(`${path} `.replace(/\//g, " ").replace(/(:.*\s)/g, ""), {
@@ -116,7 +116,6 @@ const mapStatic = (
   prefix?: string
 ): RouteMap[] => {
   const path = `${prefix || ""}${stripRegex(layer.regexp) || "/"}`;
-
   return [
     {
       index,

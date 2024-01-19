@@ -1,0 +1,27 @@
+<li data-path="{{path}}" class="relative col-span-4 rounded-md border border-slate-200 dark:border-slate-100 bg-white hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 h-60 overflow-hidden">
+  <div class="flex w-full">
+    {{#embed "_link"
+             url=(append "/_hotbars/_seo-report" path)
+             prefix=""
+             title="Click to visit"
+             class="grow block hover:text-primary-600 pt-2 pb-4 px-4"
+    }}
+      {{#content "text"}}
+        <span class="block w-full text-gray-700 dark:text-gray-200">Home</span>
+        <span class="block w-full text-sm opacity-50">{{path}}</span>
+      {{/content}}
+    {{/embed}}
+    <div class="group relative min-w-[20%] border-l border-gray-700">
+      {{{embed "_button" text="score" size="sm" class="hidden" attributes=(attr data-score-btn="true")}}}
+      <div data-score="true" class="hidden h-full flex flex-col items-center justify-center">
+        <span class="text-sm pt-1 opacity-50">Score</span>
+        <strong class="text-xl grow flex items-start justify-center"></strong>
+      </div>
+      <div class="hidden group-hover:flex items-center justify-center absolute top-0 right-0 left-0 bottom-0 bg-gray-200 dark:bg-gray-700">
+        {{{embed "_button" text="Re" size="icon" attributes=(attr data-regenerate="true")}}}
+      </div>
+    </div>
+  </div>
+  {{{embed "_placeholder" width="auto" height=48}}}
+  {{{embed "_spinner" message="Generating score..." layout="col" size=8 cover=true backdropColor="gray" backdropintensity=80}}}
+</li>

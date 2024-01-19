@@ -40,7 +40,7 @@ export class Mailer {
     this.transport = nodemailer.createTransport(transportOptions);
 
     EventManager.i.on(ServerEvent.EMAIL_FILES_CHANGED, () => {
-      logger.debug(`%p%P Reconfiguring email files`, 1, 1);
+      logger.debug(`%p%P Reconfiguring Mailer files`, 1, 1);
       this.renderer = this.configureRenderer();
     });
   }
@@ -165,6 +165,8 @@ export class Mailer {
   }
 
   private configureRenderer(): typeof Handlebars {
+    logger.debug(`%p%P Configuring renderer...`, 3, 0);
+
     const handlebars = Handlebars.create();
 
     hbsHelpers({ handlebars });

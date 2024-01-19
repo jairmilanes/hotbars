@@ -1,0 +1,35 @@
+{{#extend "_default" title="SEO" description="Here you can view and re-generate your page SEO scores" scroll=true}}
+  {{#content "actions"}}
+    {{#embed "_form" id="hb-score-form" layout="row" width="auto" silent=true preventDefault=true}}
+      {{#content "body"}}
+        <div class="mr-4 flex gap-4">
+          {{{embed "_input" type="radio" label="Mobile" name="formFactor" value="mobile" checked=true}}}
+          {{{embed "_input" type="radio" label="Desktop" name="formFactor" value="desktop"}}}
+        </div>
+      {{/content}}
+      {{#content "submit"}}
+        {{{embed "_button" type="submit" id="hb-run-scoring" text="Score All" size="md" width="full"}}}
+      {{/content}}
+    {{/embed}}
+  {{/content}}
+
+  {{#content "main"}}
+    <section class="container flex flex-col mx-auto w-full relative grow">
+      <ul id="hb-pages-list" class="w-full grid grid-cols-12 gap-4">
+        {{#filter routes "pages" property="source"}}
+          {{#filter routes "/" property="path"}}
+            {{{embed "pages/seo/page-list-item" }}}
+          {{/filter}}
+          {{#each (sort routes)}}
+            {{#not (eq this.path "/")}}
+              {{{embed "pages/seo/page-list-item" }}}
+            {{/not}}
+          {{/each}}
+        {{/filter}}
+      </ul>
+    </section>
+  {{/content}}
+  {{#content "scripts"}}
+    {{scripts "/public/hotbars/seo.js"}}
+  {{/content}}
+{{/extend}}

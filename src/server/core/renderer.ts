@@ -1,5 +1,7 @@
 import * as _ from "lodash";
 import frontMatter from "front-matter";
+import htmlPretify from "html-prettify"
+import * as htmlfy from 'htmlfy'
 import { logger } from "../../services";
 import {
   HandlebarsWax,
@@ -10,7 +12,7 @@ import {
 import { loadTemplate } from "../utils";
 import { HandlebarsException } from "../exceptions";
 import { configureHandlebars } from "../services";
-import { Config } from "../core";
+import { Config, DashboardConfig } from "../core";
 import { EventManager, ServerEvent } from "./event-manager";
 
 export class Renderer {
@@ -64,7 +66,12 @@ export class Renderer {
   }
 
   configure(data?: WatcherChange): void {
-    logger.debug(`%p%P Configuring renderer`, 1, 1);
+    if (!data) {
+      logger.debug(`%p%P Configuring renderer...`, 3, 0);
+    } else {
+      logger.debug(`%p%P Re-configuring renderer...`, 1, 1);
+    }
+
     const { instance, error } = configureHandlebars();
 
     if (instance) {
@@ -77,6 +84,25 @@ export class Renderer {
 
     if (data) {
       EventManager.i.emit(ServerEvent.HOT_RELOAD, data);
+    }
+  }
+
+  async renderPartial(path: string, key: string, context: object) {
+    logger.debug(`Rendering partial %s`, path.replace(process.cwd(), ""));
+
+    const { template } =
+    (await loadTemplate(path, Config.get("encoding"), key)) || {};
+
+    if (!template) {
+      throw new Error(`Partial "${path}" not found.`);
+    }
+
+    const html = this.compile(template, context)
+
+    if (Config.get("dev")) {
+      return htmlfy.prettify(html || "", { strict: true, tab_size: 2})
+    } else {
+      return htmlfy.minify(html || "")
     }
   }
 
@@ -112,10 +138,17 @@ export class Renderer {
 
       logger.debug(`%p%P Page compiled.`, 1, 1);
 
-      return html || "";
-    } catch (e) {
-      logger.error("Failed to compile %O", e);
-      return "";
+      if (Config.get("dev")) {
+        return htmlfy.prettify(html || "", { strict: true, tab_size: 2})
+      } else {
+        return htmlfy.minify(html || "")
+      }
+    } catch (error) {
+      logger.error("Failed to compile %O", error);
+      return this.render(
+        DashboardConfig.fullPath("default_views", "error", ".hbs"),
+        { ...options, error }
+      );
     }
   }
 

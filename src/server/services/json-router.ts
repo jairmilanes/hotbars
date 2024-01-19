@@ -50,6 +50,10 @@ const render = (name: string) => {
       });
     }
 
+    if (!Array.isArray(res.locals.data)) {
+      return res.status(200).jsonp(res.locals.data)
+    }
+
     const total = await manager.from(collection).size();
     const pageSize: number = getPageSize(items, query._limit as string);
     const page = query._page ? parseInt(query._page as string, 10) : 1;

@@ -8,3 +8,4 @@ export * from "./server/auth/strategies/local.strategy";
 export * from "./server/auth/strategies/json-db.strategy";
 export * from "./server/controllers/abstract/controller.abstract";
 export * from "./server/services/mailer";
+export * from "./server/services/utils";

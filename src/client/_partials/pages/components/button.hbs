@@ -1,0 +1,28 @@
+{{#embed "pages/components/section" id=id title="Button"}}
+  {{#content "body"}}
+    {{{embed "_button" text="Default"}}}
+    {{{embed "_button" text="Default" color="white" textColor="gray-600"}}}
+    {{{embed "_button" text="Outlined" style="outline"}}}
+    {{{embed "_button" icon="close.icon" style="icon" size="icon"}}}
+    {{{embed "_button" icon="close.icon" style="link" size="icon"}}}
+    {{{embed "_button" text="Link" style="link" size="link"}}}
+    {{{embed "_button" text="Prefixed" prefixIcon="done_all.icon"}}}
+    {{{embed "_button" text="Suffixed" suffixIcon="done_all.icon"}}}
+    {{{embed "_button" text="Both" prefixIcon="done_all.icon" suffixIcon="done_all.icon"}}}
+    {{{embed "_button" id="hb-loader-btn" text="Loader" loader=true loaderColor="white" loaderFill="blue"}}}
+    {{{embed "_confirm-button" id="hb-confirm-btn" text="Are you sure?"}}}
+  {{/content}}
+  {{#content "code"}}
+      \{{{embed "_button" text="Default"}}}
+      \{{{embed "_button" text="Default" color="white" textColor="gray-600"}}}
+      \{{{embed "_button" text="Outlined" style="outline"}}}
+      \{{{embed "_button" icon="close.icon" style="icon" size="icon"}}}
+      \{{{embed "_button" icon="close.icon" style="link" size="icon"}}}
+      \{{{embed "_button" text="Link" style="link" size="link"}}}
+      \{{{embed "_button" text="Prefixed" prefixIcon="done_all.icon"}}}
+      \{{{embed "_button" text="Suffixed" suffixIcon="done_all.icon"}}}
+      \{{{embed "_button" text="Both" prefixIcon="done_all.icon" suffixIcon="done_all.icon"}}}
+      \{{{embed "_button" id="hb-loader-btn" text="Loader" loader=true loaderColor="white" loaderFill="blue"}}}
+      \{{{embed "_confirm-button" id="hb-confirm-btn" text="Are you sure?"}}}
+  {{/content}}
+{{/embed}}

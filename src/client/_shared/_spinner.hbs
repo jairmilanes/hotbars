@@ -1,12 +1,26 @@
 {{#block "_spinner"}}
-  <div id="{{id}}" class="{{class}}" role="status">
+  <div data-spinner="true"
+    id="{{id}}"
+    class="flex
+    {{#eq layout "col"}}
+      flex-col
+    {{/eq}}
+    items-{{default align "center"}} justify-{{default justify "center"}}
+    {{#if cover}}absolute top-0 left-0 right-0 bottom-0{{/if}}
+    {{#if padding}}p-{{padding}}{{/if}}
+    {{class}}"
+    role="status">
+    {{#if backdropColor}}
+      <div class="bg-{{backdropColor}}-200 dark:bg-{{backdropColor}}-800 opacity-{{default backdropIntensity "50"}} absolute top-0 left-0 right-0 bottom-0 z-0"></div>
+    {{/if}}
     <svg
-      class="inline mr-2 w-{{default size '10'}}
+      class="inline w-{{default size '10'}}
         h-{{default size '10'}}
-        text-gray-200 animate-spin dark:text-gray-600 fill-{{default
-          color
-          'rose'
-        }}-600"
+        animate-spin
+        text-{{default loaderFill 'gray'}}{{#neither (eq loaderFill "white") (eq loaderFill "black")}}-700{{/neither}}
+        dark:text-{{default loaderFill 'gray'}}{{#neither (eq loaderFill "white") (eq loaderFill "black")}}-200{{/neither}}
+        fill-{{default loaderFill 'primary'}}{{#neither (eq loaderFill "white") (eq loaderFill "black")}}-600{{/neither}}
+        z-10"
       viewBox="0 0 100 101"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -20,6 +34,6 @@
         fill="currentFill"
       ></path>
     </svg>
-    <span class="sr-only">{{default message "Loading..."}}</span>
+    <span class="{{#not message}}sr-only{{else}} {{#eq layout "col"}}mb-2{{else}}ml-2{{/eq}}{{/not}} z-10">{{default message "Loading..."}}</span>
   </div>
 {{/block}}

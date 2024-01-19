@@ -1,7 +1,6 @@
 import express from "express";
 import favicon from "serve-favicon";
 import { existsSync } from "fs";
-import { logger } from "../../../services";
 import { Config, DashboardConfig, Server } from "../../core";
 import { joinPath } from "../../utils";
 import { getServerDataDir } from "../../utils/get-server-data-dir";
@@ -13,6 +12,7 @@ export const staticFilesHandler = () => {
   const usersOptions = {
     maxAge: Config.get("env") !== Env.Dev ? "3h" : 0
   };
+
   const dashboardOptions = {
     maxAge: DashboardConfig.get("env") !== Env.Dev ? "3h" : 0
   };
@@ -31,8 +31,4 @@ export const staticFilesHandler = () => {
   Server.app.use("/public", express.static(usersPublic, usersOptions));
   Server.app.use("/public", express.static(dashboardPublic, dashboardOptions));
   Server.app.use("/_runtime", express.static(getServerDataDir("public")));
-
-  logger.debug("%p%P Static file server at %s", 3, 0);
-  logger.debug("%p%P [GET]%s", 5, 0, usersPublic);
-  logger.debug("%p%P [GET]%s", 5, 0, dashboardPublic);
 };

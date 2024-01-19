@@ -8,3 +8,5 @@ export * from "./bootstrap";
 export * from "./json-router";
 export * from "./mailer";
 export * from "./browserify-compiler";
+export * from "./utils"
+export * from "./deployment"

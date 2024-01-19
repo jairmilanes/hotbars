@@ -51,7 +51,7 @@ export const loadData = (name: string): Record<string, any> | string => {
 
   const languages = Config.get<string[]>("language.languages");
 
-  logger.warn("Loading data from", Config.fullPath(name))
+  logger.debug(`%p%P Loading data from "%s"`, 3, 0, Config.fullPath(name))
 
   return load(Config.fullPath(name), languages);
 };

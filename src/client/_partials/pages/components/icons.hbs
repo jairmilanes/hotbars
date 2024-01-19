@@ -1,0 +1,16 @@
+{{#embed "pages/components/section" id=id title="Icons"}}
+  {{#content "body"}}
+    <div class="grid grid-cols-12 gap-1">
+      {{#each (readdir "../src/client/_shared/icons")}}
+        {{var "icon" (replace (replace (replace this '\' "/") "../src/client/_shared/" "") ".hbs" "")}}
+        <div class="col-span-2 flex flex-col items-center px-4 py-4 border border-gray-800">
+          {{{embed (var "icon") size=10}}}
+          <span class="text-xs mt-4 opacity-50">{{replace (replace (var "icon") "icons/" "") ".icon" ""}}</span>
+        </div>
+      {{/each}}
+    </div>
+  {{/content}}
+  {{#content "code"}}
+    \{{{embed "icons/check.icon" size=10}}}
+  {{/content}}
+{{/embed}}

@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { compare, hash } from "bcryptjs";
-import { IVerifyOptions, Strategy as LocalStrategy } from "passport-local";
+import { IVerifyOptions, Strategy as LocalStrategy, VerifyFunction } from "passport-local";
 import { logger } from "../../../services";
 import { ActionResponse, AuthDoneCallback, User } from "../../types";
 import { Config, ContextConfig, Server } from "../../core";
@@ -34,7 +34,7 @@ export class LocalAuthStrategy extends StrategyAbstract {
   }
 
   createStrategy() {
-    const strat = new LocalStrategy(this.authenticate.bind(this));
+    const strat = new LocalStrategy(this.authenticate.bind(this) as VerifyFunction);
     strat.name = this.name;
     return strat;
   }
@@ -226,11 +226,11 @@ export class LocalAuthStrategy extends StrategyAbstract {
   async updatePassword(
     email: string,
     newPassword: string,
-    passwordConfirmation: string
+    confirmPassword: string
   ): Promise<ActionResponse<AuthException, User>> {
     const result: ActionResponse<AuthException, User> = {};
 
-    if (newPassword !== passwordConfirmation) {
+    if (newPassword !== confirmPassword) {
       result.error = new AuthException(
         "Password and password confirmation must be equal.",
         AUTH_ERROR_CODE.INVALID_PASSWORD

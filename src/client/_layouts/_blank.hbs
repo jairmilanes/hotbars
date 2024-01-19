@@ -11,23 +11,24 @@
   <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  {{#embed "_tailwind-config" }}{{/embed}}
-  {{#block "styles"}}{{/block}}
+  {{{embed "_tailwind-config"}}}
+
+  {{{block "styles"}}}
 </head>
 <body class="text-slate-800 dark:text-slate-50 bg-gray-100 dark:bg-gray-900 flex flex-col overflow-hidden h-full">
-  {{#block "main"}}{{/block}}
+  {{{block "main"}}}
 
-  {{#block "footer"}}{{/block}}
+  {{{block "footer"}}}
 
   {{> hotbarsFooter}}
 
-  {{scripts "https://cdn.tailwindcss.com?plugins=forms,
-                 https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
-                 https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js,
-                 https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js,
-                 /public/hotbars/common.js,
-                 /public/hotbars.js"}}
+  {{scripts "//cdn.tailwindcss.com?plugins=forms,
+             //cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
+             //cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js,
+             //cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js,
+             /public/hotbars/common.js,
+             /public/hotbars.js"}}
 
-  {{#block "scripts"}}{{/block}}
+  {{{block "scripts"}}}
 </body>
 </html>

@@ -4,7 +4,7 @@ import {
   TokenSavedCallback
 } from "@jmilanes/passport-remember-me";
 import { LocalAuthStrategy } from "./local.strategy";
-import { Config } from "../../core";
+import { ContextConfig } from "../../core";
 import { logger } from "../../../services";
 
 export { rememberUser, signOut } from "@jmilanes/passport-remember-me"
@@ -19,10 +19,11 @@ export class RememberMeAuthStrategy extends LocalAuthStrategy {
   createStrategy() {
     const strat = new RememberMeStrategy(
       {
-        salt: Config.get("auth.session.secret"),
+        salt: ContextConfig.get("auth.session.secret"),
         keyName: this.name,
-        cookie: { maxAge: Config.get<number>("auth.rememberMe") },
-        logger
+        cookie: { maxAge: ContextConfig.get<number>("auth.rememberMe") },
+        logger,
+        successRedirect: `/${ContextConfig.get("auth.views.signInRedirect")}` || "/"
       },
       this.getUserWithToken.bind(this),
       this.saveToken.bind(this),
@@ -33,7 +34,7 @@ export class RememberMeAuthStrategy extends LocalAuthStrategy {
 
   async getUserWithToken(userId: string, token: string, done: RefreshCallback) {
     try {
-      const user = this.db
+      const user = await this.db
         .eq("id", userId)
         .eq("remember", token)
         .single();
@@ -47,6 +48,7 @@ export class RememberMeAuthStrategy extends LocalAuthStrategy {
   async saveToken(token: string, userId: string, done: TokenSavedCallback) {
     try {
       await this.updateUser(userId, { remember: token });
+      return done()
     } catch (e) {
       return done(e as Error);
     }

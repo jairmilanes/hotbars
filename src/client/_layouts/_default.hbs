@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="{{config.language.default}}" class="{{settings.theme}}">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -6,40 +6,45 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <title>Hotbars: {{default title "User Api"}}</title>
+
     {{> hotbarsHead}}
 
-    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    {{styles "https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css,
+              https://fonts.googleapis.com/icon?family=Material+Icons"}}
 
-    {{#block "styles"}}{{/block}}
+    {{{block "styles"}}}
+    <style>
+      code[class*="language-"] .block, pre[class*="language-"] .block {
+        display: inline-block;
+      }
+    </style>
+
+    {{scripts "https://cdn.tailwindcss.com?plugins=forms"}}
+    {{{embed "_tailwind-config"}}}
   </head>
-  <body class="text-slate-800 dark:text-slate-50 bg-gray-100 dark:bg-gray-900 flex flex-col overflow-hidden h-full">
+  <body class="flex text-body-dark dark:text-body-light bg-base-light dark:bg-base-dark overflow-hidden h-full">
+  {{{embed "_side-menu"}}}
+
+  <div class="grow flex flex-col overflow-hidden">
     {{> "_header"}}
 
-    <main class="px-5 pb-5 flex-auto flex flex-col {{#if scroll}}overflow-y-scroll{{else}}overflow-hidden{{/if}}">
-      <section class="container mx-auto grid grid-cols-1 py-8">
-        {{#if title}}
-          {{> "_heading" size="h2" text=title margin="5"}}
-        {{/if}}
-        {{#block "hero"}}{{/block}}
-      </section>
-
-      {{#block "main"}}{{/block}}
+    <main class="h-auto grow px-{{default paddingX 8}} pb-{{default paddingY 8}} flex-auto flex flex-col {{#if scroll}}overflow-y-scroll{{else}}overflow-hidden{{/if}}">
+      {{#block "pageHeader"}}
+        {{{embed "_page-header" title=title description=description}}}
+      {{/block}}
+      {{{block "main"}}}
     </main>
 
-    {{#block "footer"}}{{/block}}
-
+    {{{block "footer"}}}
+  </div>
     {{> hotbarsFooter}}
 
-    {{scripts "https://cdn.tailwindcss.com?plugins=forms,
-               https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
+    {{scripts "https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
                https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js,
                https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js,
                /public/hotbars/common.js,
                /public/hotbars.js"}}
 
-    {{#block "scripts"}}
-      {{#embed "_tailwind-config" }}{{/embed}}
-    {{/block}}
+    {{{block "scripts"}}}
   </body>
 </html>

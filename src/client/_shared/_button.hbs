@@ -1,7 +1,45 @@
 <button id="{{id}}" type="{{default type "button"}}"
-        class="{{_button style=style theme=theme color=color rounded="md" size=size width=width}}"
+        class="{{_button style=style color=color rounded=rounded size=size width=width}} {{class}}"
         {{#if disabled}}disabled{{/if}}
-        {{{block "data"}}}>
-  {{{block "icon"}}}
-  {{text}}
+        data-button="true"
+        data-loading-text="{{loadingText}}"
+        {{#if (isObject attributes)}}
+          {{attr attributes}}
+        {{/if}}
+        {{#if (isString attributes)}}
+          {{{attributes}}}
+        {{/if}}>
+  {{#block "prefix"}}
+    {{#if prefixIcon}}
+      <span class="button-prefix mr-2 text-{{_color color 700}} dark:text-{{_color color 200}}">
+        {{{embed (append "icons/" prefixIcon)}}}
+      </span>
+    {{/if}}
+  {{/block}}
+
+  {{#block "text"}}
+    {{#if text}}
+      <span class="button-text {{#if textColor}}text-{{_color textColor 700}} dark:text-{{_color textColor 200}}{{/if}}">{{text}}</span>
+    {{/if}}
+  {{/block}}
+
+  {{#block "icon"}}
+    {{#if icon}}
+      <span class="button-icon">
+        {{{embed (append "icons/" icon) size=(default iconSize 8)}}}
+      </span>
+    {{/if}}
+  {{/block}}
+
+  {{#block "loading"}}
+    {{#if loader}}
+      {{#embed "_spinner" class="hidden" size="4" fill=(default loaderFill "gray")}}{{/embed}}
+    {{/if}}
+  {{/block}}
+
+  {{#block "suffix"}}
+    {{#if suffixIcon}}
+      <span class="button-suffix ml-2 text-{{color}}-700 dark:text-{{color}}-200">{{{embed (append "icons/" suffixIcon)}}}</span>
+    {{/if}}
+  {{/block}}
 </button>

@@ -28,7 +28,7 @@ export class DataManager {
   }
 
   static async create(name: string, ...args: unknown[]): Promise<QueryBuilder> {
-    logger.info("%p%P Data Manager", 1, 1);
+    logger.debug("%p%P Data Manager", 1, 1);
     const path = `./adaptor/${name}.adaptor`;
 
     try {

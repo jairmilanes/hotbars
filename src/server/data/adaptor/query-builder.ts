@@ -36,7 +36,11 @@ export abstract class QueryBuilder {
 
   abstract collections(): Promise<string[]>;
 
-  abstract createCollection(name: string): void;
+  abstract hasCollection(name: string): boolean;
+
+  abstract createCollection(name: string, single?: boolean): Promise<void>;
+
+  abstract deleteCollection(name: string): Promise<void>;
 
   abstract from(collection: string): QueryBuilder;
 
@@ -116,6 +120,7 @@ export abstract class QueryBuilder {
 
   order(fields: string[], direction: string[]) {
     this._order = [fields, direction];
+    return this;
   }
 
   offset(offset: number) {

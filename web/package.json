@@ -20,6 +20,7 @@
   "dependencies": {
     "@jmilanes/hotbars": "file:../pack/jmilanes-hotbars-1.7.4.tgz",
     "@supabase/supabase-js": "^2.1.0",
+    "chrome-launcher": "^0.15.2",
     "passport-github2": "^0.1.12"
   }
 }

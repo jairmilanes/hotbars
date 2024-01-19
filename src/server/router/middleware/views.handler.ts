@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import express, { Request, Response } from "express";
 import { RequestHandler } from "express-serve-static-core";
 import { logger } from "../../../services";
-import { Config, EventManager, Server, ServerEvent } from "../../core";
+import { Config, DashboardConfig, EventManager, Server, ServerEvent } from "../../core";
 import { mapPages } from "../../services";
 import { Controllers } from "../../controllers";
 import { AutoRouteConfig, Env } from "../../types";
@@ -20,14 +20,6 @@ const createMethodHandlers = (
   if (_.isArray(methods)) {
     _.forEach(methods, (method) => {
       if (_.includes(allowed, method.toLowerCase())) {
-        logger.debug(
-          `%p%P %S[%S]%s added`,
-          5,
-          0,
-          middlewares.length > 1 ? "secure " : "",
-          method,
-          route
-        );
         // @ts-ignore
         _.invoke(router, method, route, ...middlewares);
       } else {
@@ -35,24 +27,8 @@ const createMethodHandlers = (
       }
     });
   } else if (methods === "*") {
-    logger.debug(
-      `%p%P %S[%S]%s`,
-      5,
-      0,
-      middlewares.length > 1 ? "secure " : "",
-      "all",
-      route
-    );
     router.all(route, ...middlewares);
   } else if (_.isFunction(_.get(router, methods))) {
-    logger.debug(
-      `%p%P %S[%S]%s`,
-      5,
-      0,
-      middlewares.length > 1 ? "secure " : "",
-      methods,
-      route
-    );
     _.invoke(router, methods, route, ...middlewares);
   }
 };
@@ -103,22 +79,18 @@ const createRouter = () => {
   );
 
   if (!Config.is("env", Env.Prod)) {
-    Server.app.get("/_views", (req, res) => res.jsonp(pages));
-    logger.debug(`%p%P [GET]/_views - Get all view handlers`, 5, 0);
+    Server.app.get("/_views", (req, res) => res.json(pages));
   }
 
   return pagesRouter;
 };
 
 export const generateViewHandlers = () => {
-  logger.debug("%p%P Generating view handlers...", 3, 0);
-
   Server.app.use(createRouter());
 
   EventManager.i.on(ServerEvent.VIEWS_CHANGED, reGenerateViewHandlers);
 };
 
 export const reGenerateViewHandlers = () => {
-  logger.log("%P Reloading view routes...", 4);
   replaceRouter("pages", createRouter());
 };

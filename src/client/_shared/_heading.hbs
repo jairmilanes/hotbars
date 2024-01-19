@@ -1,21 +1,39 @@
-<{{size}} class="text-zinc-600 dark:text-zinc-300 font-bold
+<{{default size "h2"}} class="font-bold
 {{#if (eq size "h1")}}
   text-4xl mb-{{default margin "8"}}
-{{/if}}
-{{#if (eq size "h2")}}
+{{else if (eq size "h2")}}
 text-3xl mb-{{default margin "7"}}
-{{/if}}
-{{#if (eq size "h3")}}
+{{else if (eq size "h3")}}
   text-2xl mb-{{default margin "6"}}
+{{else if (eq size "h4")}}
+  text-xl mb-{{default margin "5"}}
+{{else if (eq size "h5")}}
+  text-lg mb-{{default margin "4"}}
+{{else if (eq size "h6")}}
+  text-md mb-{{default margin "3"}}
 {{/if}}
-{{#if (eq size "h4")}}
-  text-1xl mb-{{default margin "5"}}
-{{/if}}
-{{#if (eq size "h5")}}
-  text-xl mb-{{default margin "4"}}
-{{/if}}
-{{#if (eq size "h6")}}
-  text-lg mb-{{default margin "3"}}
-{{/if}}
-">{{text}}</{{size}}>
+{{#or this.prefix this.suffix}}
+  flex flex-col
+{{/or}}
+{{class}}">
+  {{#block "prefix"}}
+    {{#if prefix}}
+      <span class="block text-sm w-full">{{this.prefix}}</span>
+    {{/if}}
+  {{/block}}
+  <span class="{{#or this.prefix this.suffix}}block w-full{{/or}}">
+    {{#if prefixIcon}}
+      {{{embed "_icon" name=prefixIcon size=(default prefixSize 5) class="mr-2"}}}
+    {{/if}}
+    {{text}}
+    {{#if suffixIcon}}
+      {{{embed "_icon" name=suffixIcon size=(default prefixSize 5) class="ml-2"}}}
+    {{/if}}
+  </span>
+  {{#block "suffix"}}
+    {{#if suffix}}
+      <span class="block text-sm w-full">{{suffix}}</span>
+    {{/if}}
+  {{/block}}
+</{{size}}>
 

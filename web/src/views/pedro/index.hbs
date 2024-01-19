@@ -1,0 +1,71 @@
+{{#extend "site"
+   bodyClass="antialiased text-slate-700 bg-white font-sans text-rose-700"
+   googleFontsUrl="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap"
+   backToTopColor="orange-600"
+}}
+    {{#content "main"}}
+    <!-- start header -->
+    {{{embed "blocks/headers/header-02"
+             title="Pedro"
+             menu=menu
+             actionUrl="#"
+             actionLabel="I'm Awesome"
+             display="center"
+             bg="transparent"
+             stickyBg="lime-700"
+             color="white"
+             hoverColor="purple-500"
+             stickyText="white"
+    }}}
+    <!-- end header -->
+
+
+    <main class="w-full">
+      <!-- start hero -->
+      {{#embed "blocks/hero/hero-01"
+               bgImage="/public/templates/corporate/images/cover-bg-3.jpg"
+               title="Your Success is Our Success"
+               overlay="green"
+               buttonColor="lime"
+               actionHref="#"
+               actionLabel="Order Now"
+               zoom=true
+      }}
+        {{#content "body"}}
+          {{{embed "blocks/feature/feature-04" color="purple" features=features}}}
+        {{/content}}
+      {{/embed}}
+      <!-- end hero -->
+
+    </main>
+
+    {{{embed "blocks/footer/footer-01"
+             title="Pedro"
+             description="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy."
+             address="1985 Kerry Way, Whittier, CA, USA"
+             workingHours="Mon - Fri: 9:00 - 19:00<br />Closed on Weekends"
+             phoneNumber="+1 562-789-1935"
+             email="lawpro@example.com"
+             menuTitle="Services"
+             color="lime"
+             menu=true
+             menuItems=footer.menu
+             social=true
+             socialLinks=footer.socialLinks
+             contact=true
+    }}}
+
+  {{/content}}
+
+  {{#content "scripts"}}
+
+    {{{embed "tailwind-config"
+             headingFontName="Black Han Sans"
+             heading1FontWeight=400
+             heading2FontWeight=400
+             heading3FontWeight=400
+             primaryColorName="lime"
+             secondaryColorName="purple"
+    }}}
+  {{/content}}
+{{/extend}}

@@ -7,7 +7,7 @@ import {
   AutoRouteConfig,
   Browser,
   CliOptions,
-  CorsConfig,
+  CorsConfig, DeploymentConfig,
   Env,
   HTTPProtocol,
   JsonServerConfig,
@@ -16,7 +16,7 @@ import {
   Options,
   SMTPServerConfig,
   StylesType,
-  UploadsConfig,
+  UploadsConfig
 } from "../types";
 import { initLogger } from "../../services";
 import { ConfigManager } from "../services/config-manager";
@@ -29,6 +29,8 @@ const moduleName = "hotbars";
 
 export class Config extends ConfigManager implements Options {
   dev = false;
+  debug = false;
+  base = "/";
   root = slash(process.cwd());
   env = Env.Dev;
   port = 3000;
@@ -65,6 +67,11 @@ export class Config extends ConfigManager implements Options {
   ignore: string[] = [];
   serverUrl = "";
   ignorePattern?: RegExp;
+  deployment: DeploymentConfig = {
+    enabled: false,
+    service: "heroku",
+    region: "us"
+  }
   language: LanguageConfig = {
     enabled: false,
     languages: ["en"],
@@ -112,6 +119,12 @@ export class Config extends ConfigManager implements Options {
     enabled: false,
     origin: false,
     credentials: false,
+  };
+  git = {
+    name: undefined,
+    repo: undefined,
+    org: undefined,
+    remote: undefined
   };
   auth: AuthConfig = {
     enabled: false,
@@ -173,21 +186,29 @@ export class Config extends ConfigManager implements Options {
 
     const options = _.assign({}, userConfig, argv);
 
+    if (options.env === "local") {
+      options.env = Env.Local;
+    }
+
     // Normalize environment naming
     if (options.env === "dev") {
       options.env = Env.Dev;
+    }
+
+    if (options.env === "test") {
+      options.env = Env.Test;
     }
 
     if (options.env === "prod") {
       options.env = Env.Prod;
     }
 
-    const production = options.env === Env.Prod;
+    const local = options.env === Env.Local;
 
     const cors: CorsConfig = {
-      enabled: production,
-      origin: production,
-      credentials: production,
+      enabled: !local,
+      origin: !local,
+      credentials: !local,
     };
 
     _.merge(this, options, { cors });
@@ -218,7 +239,7 @@ export class Config extends ConfigManager implements Options {
 
     this.set("currentLanguage", this.language.default);
 
-    if (!production) {
+    if (local) {
       this.watch = [
         this.relPath("routesConfigName", ".js"),
         this.relPath("routesConfigName", ".cjs"),
@@ -250,6 +271,8 @@ export class Config extends ConfigManager implements Options {
         return joinPath(this.root, relativePath);
       });
     }
+
+
   }
 
   static create(argv?: CliOptions): Readonly<Config> {

@@ -1,0 +1,18 @@
+{{#embed "pages/components/section" id=id title="Dropdown"}}
+  {{#content "body"}}
+    {{{embed "_dropdown"
+             id="hb-dropdown"
+             label="Dropdown"
+             plain=false
+             options=(JSONparse '[{"label": "Option 1"},{"label": "Option 2"}, {"label": "Option 3"}]')
+    }}}
+  {{/content}}
+  {{#content "code"}}
+    \{{{embed "_dropdown"
+             id="hb-dropdown"
+             label="Dropdown"
+             plain=false
+             options=(JSONparse '[{"label": "Option 1"},{"label": "Option 2"}, {"label": "Option 3"}]')
+    }}}
+  {{/content}}
+{{/embed}}

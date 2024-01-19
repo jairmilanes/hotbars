@@ -33,8 +33,6 @@ const logg = (req: Request) => {
 };
 
 export const requestLoggerHandler = () => {
-  logger.debug("%p%P Request logger", 3, 0);
-
   Server.app.use((req: Request, res: Response, next: NextFunction) => {
     const methods = ["end"];
     // const chunks = [];

@@ -32,6 +32,4 @@ export const errorHandler = () => {
       });
     }
   );
-
-  logger.debug("%p%P Error handler", 3, 0);
 };

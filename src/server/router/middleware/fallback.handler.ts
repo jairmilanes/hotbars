@@ -12,6 +12,4 @@ export const fallbackHandler = () => {
       config: Config.get(),
     });
   });
-
-  logger.debug("%p%P Fallback handler...", 3, 0);
 };

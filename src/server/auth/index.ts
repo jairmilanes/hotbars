@@ -21,7 +21,7 @@ export class AuthManager {
       return;
     }
 
-    logger.info(`%p%P Auth Manager`, 1, 1);
+    logger.debug(`%p%P Auth Manager`, 1, 1);
 
     EventManager.i.on(
       ServerEvent.AUTH_HANDLERS_CHANGED,
@@ -40,9 +40,10 @@ export class AuthManager {
       return;
     }
 
+    logger.debug("%p%P Authentication enabled", 1, 1);
+
     await this.loadStrategies();
 
-    logger.debug("%p%P Setting up session serialization", 3, 0);
     this.serialize();
   }
 
@@ -51,7 +52,7 @@ export class AuthManager {
       return;
     }
 
-    logger.info("%p%P Auth strategies", 1, 1);
+    logger.debug("%p%P Auth strategies", 1, 1);
 
     // Add local as default loaded strategy
     const local = new LocalAuthStrategy();
@@ -65,29 +66,16 @@ export class AuthManager {
       passport.use(rememberMe.createStrategy());
     }
 
-    logger.debug("%p%P Default %s strategy loaded %s", 3, 0, local.name);
+    logger.debug(`%p%P Loading from "%s"`, 3, 0, Config.fullPath("auth.path"));
 
     const strategies = glob.sync(Config.fullGlobPath("auth.path", ".js"));
 
     for (let i = 0; i < (strategies || []).length; i++) {
       const module = await import(strategies[i]);
-      const name = this.normalizePath(strategies[i]);
-
-      logger.debug(
-        `%p%P found /%s.%s`,
-        3,
-        0,
-        name,
-        strategies[i].split(".").pop()
-      );
-
       const authModule = new module.default() as StrategyAbstract;
-
-      logger.debug("%p%P registering %s", 3, 0, authModule.name);
-
       this.strategies[authModule.name] = authModule;
-
       passport.use(this.strategies[authModule.name].createStrategy());
+      logger.debug(`%p%P Registered "%s" from "%s"`, 3, 0, authModule.name, strategies[i]);
     }
 
     if (data) {

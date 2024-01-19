@@ -1,5 +1,4 @@
-<div id="{{id}}" class="{{_card size=size shadow=shadow layout=layout padding=padding spacing=spacing}} {{classNames}}">
-
+<div id="{{id}}" class="{{_card size=size theme=theme bg=bg color=color shadow=shadow layout=layout padding=padding spacing=spacing}} {{class}} {{#not (eq overflow "hidden")}}overflow-hidden{{/not}}">
   {{#if title}}
     {{{embed "_heading" size=(default titleSize "h3") text=title }}}
   {{/if}}
@@ -7,7 +6,7 @@
   {{{block "content"}}}
 
   {{#if (content "body")}}
-    <div class="{{_cardBody padding=0 spacing=0 layout=bodyLayout}} {{bodyClass}}">
+    <div class="{{_cardBody overflow=overflow height=height padding=0 spacing=0 layout=bodyLayout}} {{bodyClass}}">
       {{{block "body"}}}
     </div>
   {{/if}}

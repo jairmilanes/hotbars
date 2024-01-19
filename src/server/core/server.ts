@@ -51,7 +51,7 @@ export class Server {
   }
 
   static create(): Server {
-    logger.info(`%p%P HTTP server...`, 1, 1);
+    logger.debug(`%p%P HTTP server`, 1, 1);
     this.instance = new Server();
     this.instance.serveURL = this.instance.resolveServerUrl();
     return this.instance;

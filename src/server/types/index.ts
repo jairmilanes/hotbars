@@ -8,10 +8,11 @@ import { CorsOptions } from "cors";
 import { SessionOptions } from "express-session";
 import { ParamsDictionary } from "express-serve-static-core";
 import { ParsedQs } from "qs";
-import { ConfigManager } from "../services/config-manager";
 import { Config } from "../core";
+import { App } from "../services";
 
 export enum Env {
+  Local = "local",
   Prod = "production",
   Dev = "development",
   Test = "test",
@@ -40,12 +41,13 @@ export type AnymatchFn = (testString: string) => boolean;
 
 export type AnymatchPattern = string | RegExp | AnymatchFn;
 
-export type JsonDb = Record<string, Record<string, any>[]>;
+export type JsonDb = Record<string, Record<string, any>[] | Record<string, any>>;
 
 export interface RequestEnhanced extends Request {
   original: {
     params: ParamsDictionary;
     query: ParsedQs;
+    env?: App;
   };
 }
 
@@ -161,6 +163,12 @@ export interface AutoRouteConfig {
   [view: string]: string | string[];
 }
 
+export interface DeploymentConfig {
+  enabled: boolean;
+  service: string;
+  region: string;
+}
+
 export type HTTPProtocol = "http" | "https";
 
 export type StylesType = "css" | "scss";
@@ -185,6 +193,7 @@ export interface CliOptions {
 
 export interface BaseOptions extends PrivateOptions {
   env: string;
+  debug: boolean;
   language: LanguageConfig;
   extname: string;
   source: string;
@@ -208,6 +217,7 @@ export interface BaseOptions extends PrivateOptions {
 }
 
 export interface Options extends BaseOptions {
+  deployment: DeploymentConfig;
   configName: string;
   socketPort: number;
   logLevel: number;
@@ -229,6 +239,12 @@ export interface Options extends BaseOptions {
   cors: CorsConfig;
   auth?: AuthConfig;
   autoroute: AutoRouteConfig;
+  git?: {
+    name?: string;
+    repo?: string;
+    org?: string;
+    remote?: string
+  };
   [key: string]: any;
 }
 

@@ -14,7 +14,7 @@ import { Mailer } from "../../services";
 import { User } from "../../types";
 import { Controllers } from "../../controllers";
 import cookieParser from "cookie-parser";
-import { rememberUser, signOut } from "../../auth/strategies/remember-me.strategy";
+import { RememberMeAuthStrategy, rememberUser, signOut } from "../../auth/strategies/remember-me.strategy";
 
 const authPageHandler =
   (view: string) => async (req: Request, res: Response) => {
@@ -108,11 +108,7 @@ const oAuthHandler = (req: Request, res: Response, next: NextFunction) => {
     const instance = AuthManager.get(req.params.provider);
     const provider = passport.authenticate(instance.name, instance.configure(req));
 
-    return provider(req, res, () => {
-      return res.redirect(
-        `/${ContextConfig.get("auth.views.signInRedirect")}` || "/"
-      )
-    });
+    return provider(req, res, next);
   }
 
   next(
@@ -166,7 +162,7 @@ const passwordRecoveryHandler = async (
   ContextConfig.init(req);
 
   if (req.isAuthenticated()) {
-    return res.redirect("/");
+    return res.redirect(ContextConfig.get("base"));
   }
 
   if (_.toLower(req.method) === "post") {
@@ -201,8 +197,9 @@ const passwordResetCodeHandler = async (
   next: NextFunction
 ) => {
   ContextConfig.init(req);
+
   if (req.isAuthenticated()) {
-    return res.redirect("/");
+    return res.redirect(ContextConfig.get("base"));
   }
 
   const { code, provider } = _.assign({}, req.query, req.body);
@@ -216,7 +213,7 @@ const passwordResetCodeHandler = async (
 
     if (!valid) {
       req.session.messages = [
-        "Your recovery link is either expired or invalid, enter your email to try again.",
+        { level: "error", message: "Your recovery link is either expired or invalid, enter your email to try again." }
       ];
 
       return res.redirect(`/${ContextConfig.get("auth.views.passwordRecovery")}`);
@@ -235,11 +232,12 @@ const passwordResetHandler = async (
   res: Response,
 ) => {
   ContextConfig.init(req);
+
   if (req.isAuthenticated()) {
-    return res.redirect("/");
+    return res.redirect(`/`);
   }
 
-  const { code, password, "confirm-password": confirm, provider } = req.body;
+  const { code, password, confirmPassword, provider } = req.body;
 
   const instance = AuthManager.has(provider as string)
     ? AuthManager.get<LocalAuthStrategy>(provider as string)
@@ -250,7 +248,10 @@ const passwordResetHandler = async (
 
     if (!valid) {
       req.session.messages = [
-        "Your recovery link is either expired or invalid, enter your email to try again.",
+        {
+          level: "error",
+          message: "Your recovery link is either expired or invalid, enter your email to try again."
+        },
       ];
 
       return res.redirect(`/${ContextConfig.get("auth.views.passwordRecovery")}`);
@@ -259,13 +260,15 @@ const passwordResetHandler = async (
     const { error, data: user } = await instance.updatePassword(
       valid.email,
       password,
-      confirm
+      confirmPassword
     );
 
     if (error) {
       logger.error(error);
 
-      req.session.messages = [error.message];
+      req.session.messages = [
+        {level: "error", message: error.message}
+      ];
 
       if (error.code === AUTH_ERROR_CODE.INVALID_EMAIL_ADDRESS) {
         return res.redirect(`/${ContextConfig.get("auth.views.signIn")}`);
@@ -278,7 +281,9 @@ const passwordResetHandler = async (
       );
     }
 
-    req.session.messages = ["Password updated successfully!"];
+    req.session.messages = [
+      { level: "success", message: "Password updated successfully!" }
+    ];
 
     await Mailer.sendTemplate(
       user?.email as string,
@@ -293,7 +298,9 @@ const passwordResetHandler = async (
   } catch (e) {
     logger.error(e as Error);
 
-    req.session.messages = ["Unexpected error."];
+    req.session.messages = [
+      {level: "error", message: "Unexpected error."}
+    ];
 
     return res.redirect(
       `/${ContextConfig.get(
@@ -352,54 +359,43 @@ export const authRoutes = (config: typeof Config | typeof DashboardConfig, app: 
     app.use(passport.authenticate("rememberMe"));
   }
 
-  logger.debug("%p%P Auth handlers", 3, 0);
-
   // Sign Out View
   const signOutView = config.get<string>("auth.views.signOut").replace("_hotbars/", "");
-  logger.debug("%p%P [GET]/%s", 5, 0, signOutView);
   app.get(`/${signOutView}`, signOut('/'));
   app.post(`/${signOutView}`, signOut('/'));
 
   // Sign In Handlers
   const signInView = config.get<string>("auth.views.signIn").replace("_hotbars/", "");
-  logger.debug("%p%P [GET]/%s/:provider/callback", 5, 0, signInView);
   app.get(`/${signInView}/:provider/callback`, oAuthHandler);
-  logger.debug("%p%P [POST]/%s/:provider", 5, 0, signInView);
-  app.post(`/${signInView}/:provider`, oAuthHandler, rememberUser);
-  logger.debug("%p%P [GET]/%s", 5, 0, signInView);
+  const st = (AuthManager.get("rememberMe") as RememberMeAuthStrategy)
+  app.post(`/${signInView}/:provider`, oAuthHandler, rememberUser(
+    st.saveToken.bind(st)
+  ));
   app.get(`/${signInView}`, authPageHandler(signInView));
 
   // Sign Up Handlers
   const signUpView = config.get<string>("auth.views.signUp").replace("_hotbars/", "");
   app.get(`/${signUpView}`, authPageHandler(signUpView));
-  logger.debug("%p%P [GET]/%s", 5, 0, signUpView);
   app.get(`/${signUpView}/confirm`, signUpProviderConfirmHandler);
-  logger.debug("%p%P [GET]/%s/confirm", 5, 0, signUpView);
   app.post(`/${signUpView}/:provider`, signUpProviderHandler);
-  logger.debug("%p%P [POST]/%s/:provider", 5, 0, signUpView);
   app.get(`/${signUpView}/confirm/re-send`, resendConfirmationHandler);
-  logger.debug("%p%P [GET]/%s/confirm/re-send", 5, 0, signUpView);
 
   const signUpPendingView = config.get<string>("auth.views.signUpPending").replace("_hotbars/", "");
-  logger.debug("%p%P [GET]/%s", 5, 0, signUpPendingView);
   app.get(`/${signUpPendingView}`, authPageHandler(signUpPendingView));
 
   // Password Recovery Handlers
   const passRecoverView = config.get<string>("auth.views.passwordRecovery").replace("_hotbars/", "");
-  logger.debug("%p%P [POST]/%s/:provider", 5, 0, passRecoverView);
   app.post(`/${passRecoverView}/:provider`, passwordRecoveryHandler);
-  logger.debug("%p%P [GET]/%s", 5, 0, passRecoverView);
   app.get(`/${passRecoverView}`, authPageHandler(passRecoverView));
 
   // Password Reset Handlers
   const passResetView = config.get<string>("auth.views.passwordReset").replace("_hotbars/", "");
-  logger.debug("%p%P [GET]/%s", 5, 0, passResetView);
   app.get(
     `/${passResetView}`,
     passwordResetCodeHandler,
     authPageHandler(passResetView)
   );
-  logger.debug("%p%P [POST]/%s", 5, 0, passResetView);
+
   app.post(
     `/${passResetView}`,
     passwordResetCodeHandler,
@@ -407,13 +403,10 @@ export const authRoutes = (config: typeof Config | typeof DashboardConfig, app: 
   );
 
   // Re-Captcha verification
-  logger.debug("%p%P [GET]/re-captcha/verify", 5, 0);
   app.get(`/re-captcha/verify/:token`, verifyUserRecaptcha);
 }
 
 export const authenticateHandler = () => {
-  logger.debug("%p%P Authentication enabled", 1, 1);
-
   if (!Config.enabled("auth")) {
     return;
   }

@@ -1,0 +1,46 @@
+<div class="inline-flex items-center py-0 pl-3md:py-0 relative">
+  {{#if avatar}}
+    <button class="text-body-light mr-2 rounded-full h-10 w-10 overflow-hidden bg-{{default color "gray"}}-200 border border-4 border-{{default color "gray"}}-200"
+         hb-toggle-slide="{{id}}"
+         hb-slide-direction="{{default direction "top"}}"
+         hb-slide-start="{{default start "3rem"}}"
+         hb-slide-end="{{default end "1rem"}}"
+         hb-slide-duration="{{default duration "300"}}"
+         style="{{#if avatar}}background-image: url({{#gte (length avatar) 5}}{{avatar}}{{else}}{{append "https://ui-avatars.com/api/?name=" (replace username " " "+")}}{{/gte}}); background-size: cover; background-position: center;{{/if}}">
+
+    </button>
+  {{else}}
+    {{#embed "_button"
+       id=""
+       type="button"
+       style="link"
+       size="icon"
+       rounded="none"
+       class="flex items-center justify-center"
+       attributes=(attr
+         hb-toggle-slide=id
+         hb-slide-direction=(default direction "top")
+         hb-slide-start=(default start "3rem")
+         hb-slide-end=(default end "1rem")
+         hb-slide-duration=(default duration "300")
+       )
+    }}
+      {{#content "icon"}}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor" class="w-6 h-auto">
+          <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"/>
+        </svg>
+      {{/content}}
+    {{/embed}}
+  {{/if}}
+
+  <div id="{{id}}" class="bg-{{default color "gray"}}-100 dark:bg-{{default color "gray"}}-900 rounded-md min-w-[250px] absolute top-[1rem] right-0 opacity-0 overflow-hidden">
+    {{#if (content "header")}}
+      <div class="p-4 text-{{default align "left"}} border-b border-{{default color "gray"}}-200 dark:border-{{default color "gray"}}-700 bg-{{default color "gray"}}-800">
+        {{{block "header"}}}
+      </div>
+    {{/if}}
+    <div class="p-4 text-{{default align "left"}}">
+      {{{block "actions"}}}
+    </div>
+  </div>
+</div>

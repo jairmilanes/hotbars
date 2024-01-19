@@ -44,6 +44,4 @@ export const hotReloadHandler = () => {
   });
 
   EventManager.i.on(ServerEvent.HOT_RELOAD, reloadAllClients);
-
-  logger.debug("%p%P Hot reloading socket", 3, 0);
 };

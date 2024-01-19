@@ -1,0 +1,32 @@
+<section id="{{id}}" class="py-16 grow border-b border-gray-800">
+  <div class="container flex flex-col px-8">
+    {{{embed "_heading" size="h3" text=title}}}
+    <div class="container flex flex-wrap {{#eq layout "col"}}flex-col{{/eq}}  gap-{{default gap "2"}}">
+      {{{block "body"}}}
+    </div>
+    <pre id="code-{{id}}" class="hidden mt-8 max-h-48 overflow-x-auto overflow-y-hidden bg-gray-800 py-4">
+      <code class="language-handlebars line-numbers p-0 m-0">
+      {{#raw}}
+        {{{block "code"}}}
+      {{/raw}}
+      </code>
+    </pre>
+    <div class="w-full py-4 px-0 text-right">
+      {{{embed "_button"
+         id=(append "view-code-" id)
+         text="View code"
+         style="link"
+         size="link"
+         attributes=(attr hb-swap=(append "close-code-" id) data-toggle=(append "code-" id))
+      }}}
+      {{{embed "_button"
+         id=(append "close-code-" id)
+         text="Close code"
+         style="link"
+         size="link"
+         class="hidden"
+         attributes=(attr hb-swap=(append "view-code-" id) data-toggle=(append "code-" id))
+      }}}
+    </div>
+  </div>
+</section>

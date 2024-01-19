@@ -5,6 +5,9 @@
   "source": "src",
   "styles": "styles",
   "styleMode": "scss",
+  "deployment": {
+    "enabled": true
+  },
   "language": {
     "enabled": true
   },

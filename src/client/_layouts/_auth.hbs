@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="en" class="{{settings.theme}}">
 <head>
   <meta charset="UTF-8" />
   <meta
@@ -10,7 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-  {{#embed "_tailwind-config" }}{{/embed}}
+  {{{embed "_tailwind-config"}}}
 
   {{{block "head"}}}
 </head>
@@ -25,12 +25,8 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   {{/and}}
 
-  {{scripts "https://code.jquery.com/jquery-3.6.2[.min].js,
-             https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate[.min].js,
-             https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/additional-methods[.min].js,
-             https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
-             /public/hotbars.js,
-             /public/scripts/_forms.js"}}
+  {{scripts "//cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite[.turbo].js,
+             /public/hotbars.js"}}
 
   {{{block "scripts"}}}
 </body>

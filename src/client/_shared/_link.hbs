@@ -1,11 +1,23 @@
-{{this.prefix}}
 <a
-  href="{{url}}"
-  class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
+  href="{{this.url}}"
+  class="inline-flex font-{{default this.weight "medium"}} text-{{default this.color "primary"}}-600 hover:underline dark:text-{{default this.color "primary"}}-500 {{this.class}}"
+  title="{{this.title}}"
+  target="{{this.target}}"
+  {{{default attributes ""}}}
 >
-  {{text}}
-  {{#if icon}}
-    {{icon}}
+  {{this.prefix}}
+  {{#if this.prefixIcon}}
+    <span class="mr-2">
+      {{{embed (prepend (append this.prefixIcon ".icon") "icons/")}}}
+    </span>
   {{/if}}
+  {{#block "text"}}
+    {{this.text}}
+  {{/block}}
+  {{#if this.suffixIcon}}
+    <span class="ml-2">
+      {{{embed (prepend (append this.suffixIcon ".icon") "icons/")}}}
+    </span>
+  {{/if}}
+  {{this.suffix}}
 </a>
-{{this.suffix}}

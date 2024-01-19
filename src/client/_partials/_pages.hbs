@@ -1,20 +1,40 @@
-{{#embed "_card" title="Pages" overflow="y-scroll" padding="md"}}
+{{#embed "_card" title="Pages" overflow="y" height="md" size="full" padding="md"}}
   {{#content "body"}}
     <ul class="w-full">
       {{#filter routes "pages" property="source"}}
-        {{#each (get "routes" this)}}
-          <li
-            class="border-b border-slate-100 hover:bg-slate-100 dark:border-slate-800 dark:hover:bg-slate-800 py-1 px-2"
-          >
-            <a
-              href="{{this.path}}"
-              title="Click to visit"
-              target="_blank"
-              class="block hover:text-rose-600 py-1 px-2"
-            >
-              {{titleize this.slug}}
-            </a>
+        {{#filter routes "/" property="path"}}
+          <li class="border-b border-slate-200 dark:border-slate-100 hover:bg-slate-100 dark:border-slate-800 dark:hover:bg-slate-800 py-1 px-2">
+            {{#embed "_link"
+               url=this.path
+               prefix=""
+               title="Click to visit"
+               target="_blank"
+               class="block hover:text-primary-600 py-1 px-2"
+            }}
+              {{#content "text"}}
+                <span class="block w-full text-gray-700 dark:text-gray-200">Home</span>
+                <span class="block w-full text-sm opacity-50">{{this.path}}</span>
+              {{/content}}
+            {{/embed}}
           </li>
+        {{/filter}}
+        {{#each (sort routes)}}
+          {{#not (eq this.path "/")}}
+            <li class="border-b border-slate-200 dark:border-slate-100 hover:bg-slate-100 dark:border-slate-800 dark:hover:bg-slate-800 py-1 px-2">
+              {{#embed "_link"
+                 url=this.path
+                 prefix=""
+                 title="Click to visit"
+                 target="_blank"
+                 class="block hover:text-primary-600 py-1 px-2"
+              }}
+                {{#content "text"}}
+                  <span class="block w-full text-gray-700 dark:text-gray-200">{{titleize this.slug}}</span>
+                  <span class="block w-full text-sm opacity-[75%]">{{this.path}}</span>
+                {{/content}}
+              {{/embed}}
+            </li>
+          {{/not}}
         {{/each}}
       {{/filter}}
     </ul>

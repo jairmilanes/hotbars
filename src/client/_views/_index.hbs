@@ -1,0 +1,43 @@
+{{#extend "_default" title="Application" paddingX=0 paddingY=0 }}
+  {{#content "pageHeader"}}
+    {{{embed "_page-header" title=title description=description paddingX=8 class="border-b border-gray-800"}}}
+  {{/content}}
+  {{#content "main"}}
+    <div class="w-full relative flex grow overflow-y-scroll overflow-x-hidden">
+      <div class="grow">
+        <div class="w-full flex flex-col">
+          <div class="px-8 py-8 flex flex-col">
+            {{#each messages}}
+              {{{embed "_alert-message" message=this.message}}}
+            {{/each}}
+            {{{embed "pages/index/current-env"}}}
+            <div class="mt-8">
+              <pre id="hb-changed-files" class="language-raw hidden">
+                <code>
+                  {{#each status.modified}}
+                    {{this}}<br />
+                  {{/each}}
+                </code>
+              </pre>
+            </div>
+          </div>
+          <div class="px-8 py-8 border-t border-gray-800">
+            {{{embed "_heading" text="Other environments" size="h4"}}}
+            <div class="w-full flex gap-4">
+              {{{embed "pages/index/env" title="Development" name="development" env=envs.apps.development}}}
+              {{{embed "pages/index/env" title="Test" name="test" env=envs.apps.test}}}
+              {{{embed "pages/index/env" title="Production" name="production" env=envs.apps.production}}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/content}}
+  {{#content "styles"}}
+    {{styles (replace "/public/libs/prism-{THEME}.css" "{THEME}" settings.theme)}}
+  {{/content}}
+  {{#content "scripts"}}
+    {{scripts "/public/libs/prism.js,
+               /public/hotbars/index.js"}}
+  {{/content}}
+{{/extend}}

@@ -1,0 +1,19 @@
+{{#embed "pages/components/section" id=id title="Tabs" gap=0}}
+  {{#content "body"}}
+    {{{embed "_tabs"
+             targets=(JSONparse '[{"id": "test-1", "text": "Tab 1"},{"id": "test-2", "text": "Tab 2"},{"id": "test-3", "text": "Tab 3"}]')}}}
+    <div class="w-full">
+      <div id="hbs-test-1-content" class="w-full p-8 rounded-md bg-gray-200 dark:bg-gray-800">Test 1 content</div>
+      <div id="hbs-test-2-content" class="w-full p-8 rounded-md bg-gray-200 dark:bg-gray-800 hidden">Test 2 content</div>
+      <div id="hbs-test-3-content" class="w-full p-8 rounded-md bg-gray-200 dark:bg-gray-800 hidden">Test 3 content</div>
+    </div>
+  {{/content}}
+  {{#content "code"}}
+    \{{{embed "_tabs" targets=(JSONparse '[{"id": "test-1", "text": "Tab 1"},{"id": "test-2", "text": "Tab 2"},{"id": "test-3", "text": "Tab 3"}]')}}}
+    <div class="w-full">
+      <div id="hbs-test-1-content" class="w-full p-8 rounded-md bg-gray-200 dark:bg-gray-800">Test 1 content</div>
+      <div id="hbs-test-2-content" class="w-full p-8 rounded-md bg-gray-200 dark:bg-gray-800 hidden">Test 2 content</div>
+      <div id="hbs-test-3-content" class="w-full p-8 rounded-md bg-gray-200 dark:bg-gray-800 hidden">Test 3 content</div>
+    </div>
+  {{/content}}
+{{/embed}}

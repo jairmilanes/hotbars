@@ -36,7 +36,7 @@ export class FakeSMPTServer {
 
   constructor() {
     this.config = Config.get("smtpServer");
-    logger.info(`%p%P SMTP server`, 1, 1);
+    logger.debug(`%p%P SMTP server`, 1, 1);
 
     const path = saveServerFile(
       "smtp-db.json",
@@ -191,10 +191,12 @@ export class FakeSMPTServer {
     if (diff > 0) {
       const all = await this._db.all();
 
-      const trash = all.slice(all.length - diff, all.length);
+      if (Array.isArray(all)) {
+        const trash = all.slice(all.length - diff, all.length);
 
-      for (let i = 0; i < trash.length; i++) {
-        await this._db.delete(trash[i]["id"]);
+        for (let i = 0; i < trash.length; i++) {
+          await this._db.delete(trash[i]["id"]);
+        }
       }
     }
   }
