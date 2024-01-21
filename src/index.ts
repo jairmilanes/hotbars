@@ -1,5 +1,6 @@
 export * from "./server/app";
 export * from "./server/core/config";
+export * from "./server/core/server";
 export * from "./server/data/index";
 export * from "./server/data/adaptor/query-builder";
 export * from "./server/auth/index";

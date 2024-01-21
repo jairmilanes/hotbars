@@ -178,7 +178,6 @@ export interface PrivateOptions {
 }
 
 export interface CliOptions {
-  dev?: boolean;
   env?: string;
   port?: number;
   source?: string;
@@ -212,7 +211,6 @@ export interface BaseOptions extends PrivateOptions {
   mailer: MailerConfig;
   ignore: string[];
   ignorePattern?: RegExp;
-  dev: boolean;
   serverUrl: string;
 }
 

@@ -25,6 +25,8 @@ export class Server {
 
   routes: RouteMap[] = [];
 
+  static created = false;
+
   private constructor() {
     const ws = expressWs(express(), undefined, {
       wsOptions: {
@@ -53,7 +55,8 @@ export class Server {
   static create(): Server {
     logger.debug(`%p%P HTTP server`, 1, 1);
     this.instance = new Server();
-    this.instance.serveURL = this.instance.resolveServerUrl();
+    this.instance.serveURL = this.instance.resolveServerUrl(Config.get("port"));
+    this.created = true;
     return this.instance;
   }
 

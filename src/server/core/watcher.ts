@@ -6,7 +6,6 @@ import {
   WatcherChangeType,
   WatcherEvent,
   WatcherListeners,
-  BaseOptions,
 } from "../types";
 import { EventManager, ServerEvent } from "./event-manager";
 import { ConfigManager } from "../services/config-manager";
@@ -49,7 +48,7 @@ export class Watcher {
           logger.error(`%p %sWatcher error: %O`, 2, this.pfx(), err);
         });
 
-      EventManager.i.on(ServerEvent.RELOAD, () => {});
+      EventManager.i.on(ServerEvent.RELOAD, () => null);
     });
   }
 

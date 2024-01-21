@@ -1,9 +1,0 @@
-{
-  "size": 5,
-  "name": "posts",
-  "schema": {
-    "title": "lorem.sentence",
-    "content": "lorem.paragraphs:4..6",
-    "userId": "one-to-one:users.id"
-  }
-}

@@ -27,8 +27,7 @@ export abstract class StrategyAbstract {
 
     this.successRedirect = successRedirect || `/`;
 
-    this.failureRedirect =
-      failureRedirect || `/${Config.get("auth.views.signIn")}`;
+    this.failureRedirect = failureRedirect || `/_sign-in`;
   }
 
   abstract createStrategy(): Strategy;

@@ -15,9 +15,8 @@ export class DashboardConfig
   extends ConfigManager
   implements BaseOptions
 {
-  dev = false;
   debug = false;
-  env: Env = Env.Dev;
+  env: Env = Env.Local;
   base = "/_hotbars";
   encoding = "utf-8" as BufferEncoding;
   extname = "hbs";
@@ -94,7 +93,6 @@ export class DashboardConfig
 
     this.root = resolvePath(__dirname, "..", "..", "client");
     this.env = (argv.env as Env) || Env.Local;
-    this.dev = argv.dev || false;
 
     if (this.language.default) {
       this.set("currentLanguage", this.language.default);

@@ -1,7 +1,7 @@
 import glob from "glob";
 import passport from "passport";
 import { logger } from "../../services";
-import { Config, EventManager, ServerEvent } from "../core";
+import { Config, EventManager, Server, ServerEvent } from "../core";
 import { DataManager } from "../data";
 import { WatcherChange } from "../types";
 import { LocalAuthStrategy } from "./strategies/local.strategy";
@@ -15,8 +15,7 @@ export class AuthManager {
     if (Config.get("auth.confirmEmail") && !Config.enabled("mailer")) {
       logger.warn(
         `%p%P When email confirmation is enabled, you must also enable and configure the mailer service to enable authentication.`,
-        1,
-        1
+        1, 1
       );
       return;
     }
@@ -57,6 +56,7 @@ export class AuthManager {
     // Add local as default loaded strategy
     const local = new LocalAuthStrategy();
     this.strategies[local.name] = local;
+
     passport.use(local.createStrategy());
 
     // Add remember me strategy
@@ -66,15 +66,26 @@ export class AuthManager {
       passport.use(rememberMe.createStrategy());
     }
 
-    logger.debug(`%p%P Loading from "%s"`, 3, 0, Config.fullPath("auth.path"));
+    const authPath = Config.fullGlobPath("auth.path", ".js")
 
-    const strategies = glob.sync(Config.fullGlobPath("auth.path", ".js"));
+    logger.debug(`%p%P Loading from "%s"`, 3, 0, authPath);
+
+    const strategies = glob.sync(authPath);
+
+    logger.debug(`%p%P %o`, 3, 0, strategies)
 
     for (let i = 0; i < (strategies || []).length; i++) {
       const module = await import(strategies[i]);
       const authModule = new module.default() as StrategyAbstract;
+
+      logger.debug(`%p%P %o`, 3, 0, authModule)
+
       this.strategies[authModule.name] = authModule;
+
+      logger.debug(`%p%P %s`, 3, 0, Server.url)
+
       passport.use(this.strategies[authModule.name].createStrategy());
+
       logger.debug(`%p%P Registered "%s" from "%s"`, 3, 0, authModule.name, strategies[i]);
     }
 

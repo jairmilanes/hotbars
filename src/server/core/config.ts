@@ -28,11 +28,10 @@ import { DashboardConfig } from "./dashboard-config";
 const moduleName = "hotbars";
 
 export class Config extends ConfigManager implements Options {
-  dev = false;
   debug = false;
   base = "/";
   root = slash(process.cwd());
-  env = Env.Dev;
+  env = Env.Local;
   port = 3000;
   socketPort = 5001;
   browser?: Browser;
@@ -185,23 +184,6 @@ export class Config extends ConfigManager implements Options {
     );
 
     const options = _.assign({}, userConfig, argv);
-
-    if (options.env === "local") {
-      options.env = Env.Local;
-    }
-
-    // Normalize environment naming
-    if (options.env === "dev") {
-      options.env = Env.Dev;
-    }
-
-    if (options.env === "test") {
-      options.env = Env.Test;
-    }
-
-    if (options.env === "prod") {
-      options.env = Env.Prod;
-    }
 
     const local = options.env === Env.Local;
 
