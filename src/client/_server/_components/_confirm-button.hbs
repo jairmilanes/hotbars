@@ -1,0 +1,31 @@
+{{{embed "_button"
+   id=id
+   type="button"
+   style=style
+   color=color
+   text=text
+   icon=icon
+   prefixIcon=prefixIcon
+   suffixIcon=suffixIcon
+   disabled=disabled
+   rounded=rounded
+   size=size
+   width=width
+   class=class
+   attributes=(attr data-action=id data-swap=(append id "-confirm") data-swap-duration=4000)
+}}}
+{{{embed "_button"
+   id=(append id "-confirm")
+   type=type
+   title=(default confirmTitle "Confirm?")
+   style=(default confirmStyle style)
+   color=(default confirmColor color)
+   text=(default confirmText (iIf confirmIcon "" "Confirm?"))
+   icon=confirmIcon
+   disabled=disabled
+   rounded=rounded
+   size=size
+   width=width
+   class=(append "hidden animate-pulse " (default class ""))
+   attributes=(concat (attr data-confirm-action=id data-swap=id data-dispatch=dispatch) attributes)
+}}}

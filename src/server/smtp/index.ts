@@ -36,7 +36,6 @@ export class FakeSMPTServer {
 
   constructor() {
     this.config = Config.get("smtpServer");
-    logger.debug(`%p%P SMTP server`, 1, 1);
 
     const path = saveServerFile(
       "smtp-db.json",
@@ -60,13 +59,14 @@ export class FakeSMPTServer {
       onMailFrom: this.onMailFrom.bind(this),
       onData: this.onData.bind(this),
       onRcptTo: this.onRcptTo.bind(this),
-      onConnect: this.onConnect.bind(this),
+      onConnect: this.onConnect.bind(this)
     });
 
     this.server.on("error", this.onError.bind(this));
   }
 
   static create(): void {
+    logger.debug(`SMTP server`);
     this.instance = new FakeSMPTServer();
   }
 

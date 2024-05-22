@@ -1,0 +1,186 @@
+{
+  "title": {
+    "pages": "Pages",
+    "watch": "Watching",
+    "endpoints": "Endpoints"
+  },
+  "menu": [
+    {
+      "title": "Home",
+      "icon": "home",
+      "path": "/_hotbars/_index"
+    },
+    {
+      "type": "placeholder",
+      "data": {
+        "id": "hb-user-menu-container"
+      }
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "title": "Types",
+      "icon": "format_list_bulleted",
+      "path": "/_hotbars/_data-types"
+    },
+    {
+      "title": "Data",
+      "icon": "storage",
+      "path": "/_hotbars/_data"
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "title": "SEO",
+      "icon": "done_all",
+      "path": "/_hotbars/_seo"
+    },
+    {
+      "title": "Components",
+      "icon": "grid_view",
+      "path": "/_hotbars/_components"
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "title": "Resources",
+      "icon": "cloud",
+      "path": "/_hotbars/_resources"
+    },
+    {
+      "title": "Emails",
+      "icon": "mail",
+      "path": "/_hotbars/_emails"
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "title": "Config",
+      "icon": "settings",
+      "path": "/_hotbars/_config"
+    }
+  ],
+  "methods": [
+    { "name": "GET", "color": "text-lime-700", "bg": "bg-lime-100" },
+    { "name": "POST", "color": "text-teal-700", "bg": "bg-teal-100" },
+    { "name": "PATCH", "color": "text-purple-700", "bg": "bg-purple-100" },
+    { "name": "PUT", "color": "text-indigo-700", "bg": "bg-indigo-100" },
+    { "name": "DELETE", "color": "text-red-700", "bg": "bg-red-100" }
+  ],
+  "tabs": {
+    "id": "resource",
+    "targets": [
+      {
+        "id": "body",
+        "hidden": true,
+        "active": false,
+        "text": "Body",
+        "options": [
+          {
+            "label": "Json",
+            "value": "json"
+          },
+          {
+            "label": "Plain",
+            "value": "plain"
+          },
+          {
+            "label": "Multipart",
+            "value": "multipart"
+          },
+          {
+            "label": "Binary",
+            "value": "binary"
+          }
+        ]
+      },
+      {
+        "id": "response",
+        "hidden": false,
+        "active": true,
+        "text": "Response"
+      },
+      {
+        "id": "preview",
+        "hidden": false,
+        "active": false,
+        "text": "Preview"
+      },
+      {
+        "id": "headers",
+        "hidden": false,
+        "active": false,
+        "text": "Headers"
+      }
+    ]
+  },
+  "messages": {
+    "noActiveResource": "Click on a resourse to view results"
+  },
+  "components": [
+    { "id": "avatar",
+      "url": "#avatar",
+      "title": "Avatar" },
+    { "id": "alerts",
+      "url": "#alerts",
+      "title": "Alerts" },
+    { "id": "button",
+      "url": "#button",
+      "title": "Button" },
+    { "id": "card",
+      "url": "#card",
+      "title": "Card" },
+    { "id": "dropdown",
+      "url": "#dropdown",
+      "title": "Dropdown" },
+    { "id": "heading",
+      "url": "#heading",
+      "title": "Heading" },
+    { "id": "link",
+      "url": "#link",
+      "title": "Link" },
+    { "id": "modal",
+      "url": "#modal",
+      "title": "Modal" },
+    { "id": "pagination",
+      "url": "#pagination",
+      "title": "Pagination" },
+    { "id": "placeholder",
+      "url": "#placeholder",
+      "title": "Placeholder" },
+    { "id": "spinner",
+      "url": "#spinner",
+      "title": "Spinner" },
+    { "id": "tabs",
+      "url": "#tabs",
+      "title": "Tabs" },
+    { "id": "toast",
+      "url": "#toast",
+      "title": "Toast" },
+    { "id": "form",
+      "url": "#form",
+      "title": "Forms" }
+  ],
+  "deployment": [
+    {
+      "id": "status",
+      "url": "#status",
+      "title": "Status"
+    },
+    {
+      "id": "versioning",
+      "url": "#versioning",
+      "title": "Versioning"
+    },
+    {
+      "id": "deployment",
+      "url": "#deployment",
+      "title": "Deployment"
+    }
+  ]
+}
+

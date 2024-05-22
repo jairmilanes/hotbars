@@ -1,0 +1,55 @@
+
+<button {{#if id}}id="{{id}}"{{/if}} type="{{default type "button"}}"
+        class="{{_button style=style color=color rounded=rounded size=size width=width}} {{class}}"
+        {{#if disabled}}disabled{{/if}}
+        title="{{title}}"
+        {{#if formId}}form="{{formId}}"{{/if}}
+        data-loading-text="{{loadingText}}"
+        {{#if tooltip}}data-tooltip-target="{{concat id "-tooltip"}}"{{/if}}
+        data-button="true"
+        {{#if (isObject attributes)}}
+          {{{attrObj attributes}}}
+        {{/if}}
+        {{#if (isString attributes)}}
+          {{{attributes}}}
+        {{/if}}>
+  {{#block "prefix"}}
+    {{#if prefixIcon}}
+      <span class="material-symbols-outlined leading-none {{_icon size=(default iconSize "lg")}} button-prefix mr-1 text-{{_color textColor 700}} dark:text-{{_color textColor 600}}">
+        {{prefixIcon}}
+      </span>
+    {{/if}}
+  {{/block}}
+
+  {{#block "text"}}
+    {{#if text}}
+      <span class="button-text {{#if textColor}}text-{{_color textColor 700}} dark:text-{{_color textColor 600}}{{/if}}">{{text}}</span>
+    {{/if}}
+  {{/block}}
+
+  {{#block "icon"}}
+    {{#if icon}}
+      <span class="material-symbols-outlined leading-none {{_icon size=(default iconSize "lg")}} text-{{_color textColor 700}} dark:text-{{_color textColor 600}}">{{icon}}</span>
+    {{/if}}
+  {{/block}}
+
+  {{#block "loading"}}
+    {{#if loader}}
+      {{#embed "_spinner" id="" class="hidden" size="4" fill=(default loaderFill "white")}}{{/embed}}
+    {{/if}}
+  {{/block}}
+
+  {{#block "suffix"}}
+    {{#if suffixIcon}}
+      <span class="material-symbols-outlined leading-none {{_icon size=(default iconSize "lg")}} button-suffix ml-1 text-{{_color textColor 700}} dark:text-{{_color textColor 600}}">
+        {{suffixIcon}}
+      </span>
+    {{/if}}
+  {{/block}}
+
+  {{#if tooltip}}
+    <div id="{{concat id "-tooltip"}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+      {{tooltip}}
+    </div>
+  {{/if}}
+</button>

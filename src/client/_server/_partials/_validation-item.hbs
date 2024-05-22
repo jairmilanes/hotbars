@@ -1,0 +1,7 @@
+<div id="{{id}}" data-list-item="{{id}}" class="grid grid-cols-12 text-sm border-b border-gray-700 last:border-0">
+  <div class="col-span-5  leading-10 font-bold">{{titleize constrain}}</div>
+  <div class="col-span-6  leading-10">{{constrainValue}}</div>
+  <div class="col-span-1 leading-10 flex">
+    {{{embed "_button" icon="remove" style="link" size="iconSm" attributes=(attr data-dispatch="hb-remove-validation" data-id=id)}}}
+  </div>
+</div>

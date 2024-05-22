@@ -1,0 +1,21 @@
+{{#extend "_blank" title=title scroll=false}}
+  {{#content "blankMain"}}
+    {{{embed "_side-menu"}}}
+
+    <div class="grow flex flex-col overflow-hidden">
+      {{> "_header"}}
+
+      <main class="h-auto grow px-{{default paddingX 8}} pb-{{default paddingY 8}} flex-auto flex flex-col {{#if scroll}}overflow-y-scroll{{else}}overflow-hidden{{/if}}">
+        {{#block "pageHeader"}}
+          {{{embed "_modules/_page-header" title=title description=description}}}
+        {{/block}}
+        {{clear "title"}}
+        {{{block "main"}}}
+      </main>
+      {{{block "footer"}}}
+    </div>
+  {{/content}}
+  {{#content "blankScripts"}}
+    {{{block "scripts"}}}
+  {{/content}}
+{{/extend}}

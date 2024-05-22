@@ -1,4 +1,5 @@
-import { faker } from "@faker-js/faker/locale/pt_BR";
+// import { faker } from "@faker-js/faker/locale/pt_BR";
+import { UniqueEnforcer } from 'enforce-unique'
 import { hashSync } from "bcryptjs";
 import * as _ from "lodash";
 import { PropConfig, PropsConfig, SchemaConfig } from "./types";
@@ -68,9 +69,24 @@ const parseArgs = (args: string[]): any[] => {
       return parseArray(arg);
     }
 
+    if (_.indexOf(arg, "_") > -1) {
+      // Argument is an object
+      return parseObject(arg);
+    }
+
     return parseProp(arg);
   });
 };
+
+function createUniqueEnforcer() {
+  const uniqueEnforcer = new UniqueEnforcer();
+  return function enforce(fn: ((...args: any[]) => any) | false, args?: any[], options?: Record<string, any>) {
+    if (fn === false) {
+      return uniqueEnforcer.reset()
+    }
+    return uniqueEnforcer.enforce(() => fn(...(args || [])), options);
+  }
+}
 
 export const parsePropConfig = (name: string, value: string): PropConfig => {
   const parts = split(value, ":");
@@ -81,7 +97,7 @@ export const parsePropConfig = (name: string, value: string): PropConfig => {
   };
 
   if (parts[0] === "unique") {
-    result.unique = faker.helpers.unique;
+    result.unique = createUniqueEnforcer()
     parts.shift();
   }
 
@@ -97,7 +113,7 @@ export const parsePropConfig = (name: string, value: string): PropConfig => {
 
     const targets = split(result.args.shift(), "-");
 
-    result.args = _.map(result.args, (arg) => arg.replace(/^.*\./, ""));
+    result.args = _.map(result.args, arg => arg.replace(/^.*\./, ""));
 
     if (targets[0]) {
       if (parts[0] === "one-to-one") {

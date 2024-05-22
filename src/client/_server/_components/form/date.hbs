@@ -1,0 +1,19 @@
+{{#embed "form/text"
+         type="text"
+         inputClass=""
+         suffixIcon="calendar_month"
+         pattern=(get "type-date-pattern" this)
+         attributes=(attr data-input-type="date" data-format=(get "type-date-format" this) data-mask=(get "type-date-mask" this))
+}}
+{{#content "suffixCustom"}}
+  {{{embed "form/text"
+           type="date"
+           name=(concat name "-trigger")
+           label=null
+           suffixIcon=null
+           pattern=null
+           class="!absolute bottom-0 right-0 left-auto top-auto opacity-0 w-12 wz-10"
+           attributes=""
+  }}}
+{{/content}}
+{{/embed}}

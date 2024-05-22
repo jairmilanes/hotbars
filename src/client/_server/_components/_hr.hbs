@@ -1,0 +1,22 @@
+{{#eq (default style "default") "default"}}
+  <hr class="h-px border-t-1 border-base-light dark:border-gray-700 my-{{default marginY 0}}">
+{{/eq}}
+{{#eq (default style "default") "trimmed"}}
+  <hr class="w-48 h-1 mx-auto my-4 md:my-10 rounded my-{{marginY}} border-0 bg-base-light dark:bg-base-dark">
+{{/eq}}
+{{#eq (default style "default") "icon"}}
+  <div class="inline-flex items-center justify-center w-full">
+    <hr class="w-32 h-1 my-8 bg-gray-200 border-0 rounded bg-base-light dark:bg-gray-700">
+    <div class="px-4">
+      <span class="material-symbols-outlined">{{icon}}</span>
+    </div>
+    <hr class="w-32 h-1 my-8 bg-gray-200 border-0 rounded bg-base-light dark:bg-gray-700">
+  </div>
+{{/eq}}
+{{#eq (default style "default") "text"}}
+  <div class="inline-flex items-center justify-center w-full">
+    <hr class="w-32 h-1 my-8 bg-gray-200 border-0 rounded bg-base-light dark:bg-gray-700">
+    <div class="px-4 font-medium">{{text}}</div>
+    <hr class="w-32 h-1 my-8 bg-gray-200 border-0 rounded bg-base-light dark:bg-gray-700">
+  </div>
+{{/eq}}

@@ -1,4 +1,5 @@
 import { EnvConnector, EnvConnectors, getConnector } from "../services";
+import { logger } from "../../services";
 
 export { EnvConnector, EnvConnectors } from "../services/deployment";
 
@@ -19,7 +20,9 @@ export class EnvManager {
   }
 
   static create(connector: string) {
+    logger.debug(`Environments manager`);
     this.instance = new EnvManager(connector)
+    logger.silly("%p%P %s", 1, 1, connector)
     return this
   }
 
@@ -32,7 +35,9 @@ export class EnvManager {
     return null;
   }
 
-  load() {
-    return null;
+  static load(name?: keyof EnvConnectors) {
+    logger.info("Environments...")
+    if (!name) return this.instance.default.load();
+    return getConnector(name).load();
   }
 }

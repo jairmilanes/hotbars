@@ -3,9 +3,9 @@
 function mobileMenu(duration, direction = "down", bg) {
   $("#menu-toggle").on("click", (e) => {
     const el = $(e.currentTarget);
-    const menuId = el.attr("hb-toggle")
+    const menuId = el.attr("data-toggle")
     const menu = $(`#${menuId}`);
-    const close = $(`[hb-toggle="${menuId}"]`, menu)
+    const close = $(`[data-toggle="${menuId}"]`, menu)
 
     menu.toggleBeetweenClasses("z-[1000]", "z-[-1]")
     menu.toggleBeetweenClasses("opacity-0", "opacity-100")

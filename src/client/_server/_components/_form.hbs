@@ -1,0 +1,86 @@
+<div class="relative w-{{default width "full"}} {{class}}">
+  {{#gte (length messages) 1}}
+    <div class="mb-6">
+      {{#each messages}}
+        {{#if (isString this)}}
+          {{{embed "_alert-message" message=this level="info" spacing="sm"}}}
+        {{/if}}
+        {{#if (isObject this)}}
+          {{{embed "_alert-message" message=this.message level=this.level spacing="sm"}}}
+        {{/if}}
+      {{/each}}
+    </div>
+  {{/gte}}
+  <form
+    id="{{id}}"
+    action="{{action}}"
+    method="{{default method "GET"}}"
+    data-ajax="{{#if ajax}}true{{else}}false{{/if}}"
+    data-needs-validation="{{#if validation}}true{{else}}false{{/if}}"
+    data-content-type="{{default contentType "application/json"}}"
+    data-success-message="{{successMessage}}"
+    data-captcha="{{captcha}}"
+    data-silent="{{default silent "false"}}"
+    data-auto-init="{{default autoload "false"}}"
+    data-prevent-default="{{default preventDefault "false"}}"
+    data-submit="{{default submit ""}}"
+    class="block m-0 {{formClass}}"
+    noValidate
+    {{#if (isObject attributes)}}
+      {{attr attributes}}
+    {{/if}}
+    {{#if (isString attributes)}}
+      {{{attributes}}}
+    {{/if}}
+  >
+    {{clear "class"}}
+    {{#if (content "before")}}
+      <div class="w-full mb-2">
+        {{{block "before"}}}
+      </div>
+    {{/if}}
+
+    <div class="
+    {{#or (eq (default layout "col") "col") (eq (default layout "col") "row")}}
+      flex {{#eq (default layout "col") "col"}}flex-col{{/eq}}
+      items-{{default align "start"}} justify-{{default align "start"}}
+    {{/or}}
+    {{#eq layout "grid"}}
+      grid grid-cols-{{default cols 12}}
+    {{/eq}}
+      gap-{{default gap 4}}
+      {{bodyClass}}
+    ">
+      {{var "_id" id}}
+      {{clear "id"}}
+      {{{block "body"}}}
+
+      <div class="
+        {{#eq (default layout "col") "col"}}w-full{{/eq}}
+        {{#eq (default layout "col") "grid"}}col-span-{{default cols 12}}{{/eq}}
+      ">
+        {{#block "submit"}}
+          <div class="mt-3 flex justify-{{alignActions}} gap-2 w-full">
+            {{{embed
+              "_button"
+              type="submit"
+              size="lg"
+              style="solid"
+              color=""
+              width=(default submitWidth "full" )
+              disabled=validation
+              text=(default submitText "Submit")
+              class="order-1"
+            }}}
+            {{{block "actions"}}}
+          </div>
+        {{/block}}
+      </div>
+    </div>
+
+    {{{block "after"}}}
+    <div data-loader="{{var "_id"}}" class="hidden flex justify-center items-center absolute top-0 bottom-0 left-0 right-0">
+      {{{embed "_spinner" size="14" backdropColor="gray"}}}
+    </div>
+  </form>
+</div>

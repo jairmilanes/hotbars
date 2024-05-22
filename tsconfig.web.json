@@ -4,12 +4,14 @@
     "rootDir": "./src",
     "paths": {}
   },
-  "files": [],
-  "include": [
+  "files": [
     "./src/cli.ts",
     "./src/index.ts",
-    "./src/modules.d.ts",
-    "../hotbars-web/src/'**/*"
+    "./src/modules.d.ts"
+  ],
+  "include": [
+    "src/**/*",
+    "../hotbars-web/src/**/*"
   ],
   "exclude": [
     "./src/client",

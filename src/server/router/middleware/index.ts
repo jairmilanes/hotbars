@@ -18,11 +18,13 @@ import { errorHandler } from "./error.handler";
 import { smtpMailHandlers } from "./smtp-server-handlers";
 import { githugHandler } from "./github.handler"
 import { deploymentHandler } from "./deployment.handler"
+import { dependenciesHandler } from "./dependencies.handler";
 
 export const mountRoutes = () => {
   hotReloadHandler();
   staticFilesHandler();
   preCompilerHandler();
+  dependenciesHandler();
   persistParams();
   requestLoggerHandler();
   lighthouseHandler();

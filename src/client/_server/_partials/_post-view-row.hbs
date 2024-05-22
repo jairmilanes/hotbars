@@ -1,0 +1,37 @@
+{{var "layout" (get "view-post-layout" type)}}
+{{var "isCol" (eq (var "layout") "col")}}
+{{#with row}}
+  <div data-list-item="{{id}}" class="{{#if ../type.enableSelection}}pl-12 {{/if}}relative flex {{#if (var "isCol")}}flex-col {{else}}{{/if}} duration-200 hover:scale-[1.02] hover:shadow-lg">
+    {{#if ../type.enableSelection}}
+      <div class="absolute peer right-auto bottom-auto top-0 left-2 {{#if (var "isCol")}}{{else}}{{/if}}">
+        {{{embed "_input" type="checkbox" name=(concat id "-check") size="sm" value="true" class="!p-0" attributes=(attr data-id=id)}}}
+      </div>
+    {{/if}}
+    <div class="grow flex {{#if (var "isCol")}}flex-col {{else}}{{/if}} hover:outline hover:outline-[10px] bg-base-light hover:bg-base-lighter dark:bg-base-darker hover:dark:bg-base-dark hover:outline-offset-0 outline-base-dark peer-has-[:checked]:outline peer-has-[:checked]:outline-primary-500 cursor-pointer overflow-hidden rounded-lg">
+      {{#if (get "view-post-image-column" ../type)}}
+        <div class="relative {{#if (var "isCol")}}w-full h-56{{else}}min-w-64 w-64 h-auto{{/if}} overflow-hidden">
+          <img src="{{get "url" (get (get "view-post-image-column" ../type) this)}}" class="absolute  bottom-0 {{#if (var "isCol")}}top-1/2 left-0 right-0 -translate-y-1/2 w-full min-h-max h-auto{{else}}top-0 left-1/2 -translate-x-1/2 min-w-max w-auto h-full{{/if}}" />
+        </div>
+      {{/if}}
+      <div class="flex flex-col {{#if (var "isCol")}}w-full px-6 py-10{{else}} rounded-e-lg grow px-6 py-6{{/if}}">
+        {{var "user" (get (get "view-post-user-column" ../type) this)}}
+        {{{embed "_text" size="sm" text=(get (get "view-post-date-column" ../type) this) class="m-0"}}}
+        {{{embed "_heading" size="h2" text=(get (get "view-post-title-column" ../type) this) margin=0}}}
+        {{{embed "_text" color="primary" text=(concat "By " (get "firstName" (var "user")) " " (get "lastName" (var "user"))) class="opacity-75" }}}
+
+        {{{embed "_text" color="" text=(get (get "view-post-exerpt-column" ../type) this) class="mt-4 opacity-75"}}}
+
+        {{#if ../type.allowView}}
+          <div class="pt-6">
+            {{{embed "_link" text="Read more" url=(concat "/_hotbars/type/" ../type.name "/" id)}}}
+          </div>
+        {{/if}}
+      </div>
+    </div>
+    <div class="absolute top-auto left-auto bottom-4 right-4 {{#if (var "isCol")}}{{else}}{{/if}}">
+      {{#each ../actions}}
+        {{{embed type style="link" size="link" attributes=(attrData attr)}}}
+      {{/each}}
+    </div>
+  </div>
+{{/with}}

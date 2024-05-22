@@ -2,13 +2,14 @@ import * as _ from "lodash";
 import { Config, Server } from "../core";
 import cors from "cors";
 import express from "express";
+import nocache from "nocache";
 import { logger } from "../../services";
-import { CorsConfig, RouteMap } from "../types";
+import { CorsConfig, Env, RouteMap } from "../types";
 import { mountRoutes } from "./middleware";
 
 export class Router {
   configure(): void {
-    logger.debug(`HTTP Router...`);
+    logger.info(`Router...`);
 
     /**
      * Configure CORS, possibily dynamic if whitelist is set.
@@ -31,9 +32,12 @@ export class Router {
       logger.debug("%p%P CORS enabled %o", 1, 1, corsConfig);
     }
 
-    if (Config.get("env") === "production") {
+    if (Config.get("env") !== Env.Local) {
       // @todo better understand this setting
       Server.app.set("trust proxy", 1); // trust first proxy
+    } else {
+      Server.app.set("etag", false);
+      Server.app.use(nocache())
     }
 
     Server.app.use(express.urlencoded({ extended: true, limit: "10mb" }));
@@ -113,6 +117,7 @@ export class Router {
   }
 
   logRoutes() {
+    logger.silly("%p%P Middlewares:", 1, 1)
     this.groupRoutes().forEach(route => {
       this.logRoute(route)
     })
@@ -122,7 +127,7 @@ export class Router {
     // logger.debug(route)
 
     if (route.type === "middleware") {
-      logger.debug("%p%P [%s][%s]%s", (level * 2), 1, "Middleware", route.slug, `${this.getPrefix(route)}${route.path || ""}`)
+      logger.silly("%p%P [%s][%s]%s", (level * 2), -1, "Middleware", route.slug, `${this.getPrefix(route)}${route.path || ""}`)
       return;
     }
 
@@ -130,12 +135,12 @@ export class Router {
       const prefix = this.getGroup(route)
 
       if (level === 1) {
-        logger.debug("%p%P %s", (level * 2), 1, prefix)
+        logger.silly("%p%P %s", (level * 2), -1, prefix)
       }
 
       if (Array.isArray(route.routes)) {
         route.routes.forEach((subRoute) => {
-          this.logRoute(subRoute, level + 1)
+          this.logRoute(subRoute, level + 2)
         })
       }
       return;
@@ -144,10 +149,10 @@ export class Router {
     if (route.type === "route") {
       if (Array.isArray(route.methods)) {
         route.methods.forEach(method => {
-          logger.debug("%p%P [%s]%s", (level * 2), 0, method, `${this.getPrefix(route)}${route.path}`)
+          logger.silly("%p%P [%s]%s", (level * 2), -1, method, `${this.getPrefix(route)}${route.path}`)
         })
       } else {
-        logger.debug("%p%P [%s]%s", (level * 2), 0, route.method, `${this.getPrefix(route)}${route.path}`)
+        logger.silly("%p%P [%s]%s", (level * 2), -1, route.method, `${this.getPrefix(route)}${route.path}`)
       }
       return;
     }

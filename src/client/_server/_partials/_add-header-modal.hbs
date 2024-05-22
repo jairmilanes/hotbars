@@ -1,0 +1,15 @@
+{{#embed "_modal" id=id title="Test" closable=true size="sm" textAlign="left"}}
+  {{#content "body"}}
+    {{{embed "_heading" size="h4" text=(iIf values.id (concat "Edit header: " values.name) "New header")}}}
+    {{#embed "_form" id="hb-add-header-form" title="New header" layout="grid" preventDefault=true ajax=false gap=2 wrap=true class=""}}
+      {{#content "body"}}
+        {{{embed "_input" name="id" type="hidden"}}}
+        {{{embed "_input" name="name" type="hidden"}}}
+        {{{embed "_input" name="order" type="hidden"}}}
+        {{{embed "_input" name="type" value="header" type="hidden"}}}
+        {{{embed "_input" name="placement" value="main" type="hidden"}}}
+        {{{embed "_input" name="title" type="text" size="sm" cols=12 placeholder="Name" label="Name"}}}
+      {{/content}}
+    {{/embed}}
+  {{/content}}
+{{/embed}}

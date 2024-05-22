@@ -1,0 +1,74 @@
+{{#block "_data_field"}}
+  {{#eq type "header"}}
+    <div id="{{id}}" data-list-item="{{id}}" data-header="{{id}}" data-name="{{name}}" class="grid grid-cols-12 gap-2 items-center w-full ps-4 py-0 bg-gray-200 dark:bg-base-dark">
+      {{{embed "_input" id="" type="checkbox" name=(concat id "-check") value="true" cols=1 disabled=(eq name "id") class=(iIf (eq name "id") "opacity-50" "") attributes=(attr data-id=id)}}}
+      <div class="col-span-9 font-bold">{{title}} <span class="font-normal opacity-25">Header</span></div>
+      <div class="col-span-2 flex items-center justify-end gap-4">
+        {{#not (eq name "id")}}
+          <!-- {{{embed "_input" type="select" name="order" size="xs" value=order items=orderOptions class="w-full" attributes=(attr data-field=id)}}} -->
+          {{{embed "_button" id="" type="button" icon="edit" tooltip="Edit entry" style="link" size="link" class="edit" color="neutral" attributes=(attr data-dispatch="hb-edit-header" data-id=id)}}}
+        {{/not}}
+        <div class="flex flex-col opacity-[10%] group-hover/item:opacity-[90%] border-s border-gray-800">
+          {{{embed "_button" id="" type="button" style="link" color="gray" size="link" icon="expand_less" attributes=(attr data-dispatch="hb-move-field-up" data-id=(default id name))}}}
+          {{{embed "_button" id="" type="button" style="link" color="gray" size="link" icon="expand_more" attributes=(attr data-dispatch="hb-move-field-down" data-id=(default id name))}}}
+        </div>
+      </div>
+    </div>
+  {{else if (eq type "group")}}
+    <div id="{{id}}" data-list-item="{{id}}" data-group="{{id}}" data-name="{{name}}" class="flex flex-col w-full ps-4 py-0 bg-gray-200 dark:bg-gray-950  border-b border-base-light dark:border-base-dark">
+      <div class="grid grid-cols-12 gap-2 items-center ">
+        {{{embed "_input" id="" type="checkbox" name=(concat id "-check") value="true" cols=1 disabled=(eq name "id") class=(iIf (eq name "id") "opacity-50" "") attributes=(attr data-id=id)}}}
+        <div class="col-span-9 font-bold">{{title}}  <span class="font-normal opacity-25">{{#eq behaviour "list"}}List{{else}}Group{{/eq}}</span></div>
+        <div class="col-span-2 flex items-center gap-2 justify-end">
+          {{#not (eq name "id")}}
+            {{{embed "_button" id="" type="button" icon="edit" tooltip="Edit entry" style="link" size="link" class="edit" color="neutral" attributes=(attr data-dispatch="hb-edit-group" data-id=id)}}}
+            {{{embed "_button" id="" type="button" icon="title" tooltip="Add header" style="link" size="link" class="edit" color="neutral" attributes=(attr data-dispatch="hb-new-header" data-group=id)}}}
+            {{{embed "_button" id="" type="button" icon="variable_add" tooltip="Add field" style="link" size="link" class="edit" color="neutral" attributes=(attr data-dispatch="hb-new-field" data-group=id)}}}
+          {{/not}}
+          <div class="flex flex-col opacity-[10%] group-hover/item:opacity-[90%] border-s border-gray-800">
+            {{{embed "_button" id="" type="button" style="link" color="gray" size="link" icon="expand_less" attributes=(attr data-dispatch="hb-move-field-up" data-id=(default id name) data-group=groupName)}}}
+            {{{embed "_button" id="" type="button" style="link" color="gray" size="link" icon="expand_more" attributes=(attr data-dispatch="hb-move-field-down" data-id=(default id name) data-group=groupName)}}}
+          </div>
+        </div>
+      </div>
+      <div data-name="{{name}}" data-id="{{id}}" data-list-children="{{id}}" class="col-span-12 border-s border-t border-base-dark">
+        {{#if children}}
+          {{#each children}}
+            {{{embed "_data_field"}}}
+          {{/each}}
+        {{/if}}
+      </div>
+    </div>
+  {{else}}
+    <div id="{{id}}" data-list-item="{{id}}" data-field="{{id}}" data-name="{{name}}" class="group/item grid grid-cols-12 gap-2 items-center w-full ps-4 py-0 text-sm {{#if groupName}}bg-base-light dark:bg-base-pitch{{/if}} hover:bg-white hover:dark:bg-base-dark border-b border-base-light dark:border-base-dark last:border-b-0">
+      {{{embed "_input" id="" type="checkbox" name=(concat id "-check") value="true" cols=1 disabled=(eq name "id") class=(iIf (eq name "id") "opacity-50" "") attributes=(attr data-id=id)}}}
+      <div class="col-span-3">{{title}}</div>
+      <div class="col-span-2 opacity-75">{{type}}</div>
+      <div class="col-span-2 flex items-center" data-attributes="{{id}}">
+        {{#if (eq required "true")}}
+          <span data-attr-type="required" class="material-symbols-outlined text-xxl text-gray-600 text-2xl">priority</span>
+        {{/if}}
+        {{#if (eq listHeader "true")}}
+          <span data-attr-type="listHeader" class="material-symbols-outlined text-xxl text-gray-600 text-2xl">subheader</span>
+        {{/if}}
+        {{#if (eq readOnly "true")}}
+          <span data-attr-type="readOnly" class="material-symbols-outlined text-xxl text-gray-600 text-2xl">visibility</span>
+        {{/if}}
+        {{#if (eq searchable "true")}}
+          <span data-attr-type="searchable" class="material-symbols-outlined text-xxl text-gray-600 text-2xl">search</span>
+        {{/if}}
+      </div>
+      <div class="col-span-2 opacity-75">{{placement}}</div>
+      <div class="col-span-2 flex items-center justify-end gap-4">
+        {{#not (eq name "id")}}
+          <!--{{{embed "_input" type="select" name="order" size="xs" value=order items=orderOptions class="w-full" attributes=(attr data-field=id)}}}-->
+          {{{embed "_button" id="" type="button" icon="edit" tooltip="Edit entry" style="link" size="link" class="edit" color="neutral" attributes=(attr data-dispatch="hb-edit-field" data-id=id data-group=groupName)}}}
+        {{/not}}
+        <div class="flex flex-col opacity-[30%] group-hover/item:opacity-[90%] border-s border-base-light dark:border-base-dark">
+          {{{embed "_button" id="" type="button" style="link" color="gray" size="link" icon="expand_less" attributes=(attr data-dispatch="hb-move-field-up" data-id=(default id name) data-group=groupName)}}}
+          {{{embed "_button" id="" type="button" style="link" color="gray" size="link" icon="expand_more" attributes=(attr data-dispatch="hb-move-field-down" data-id=(default id name) data-group=groupName)}}}
+        </div>
+      </div>
+    </div>
+  {{/eq}}
+{{/block}}

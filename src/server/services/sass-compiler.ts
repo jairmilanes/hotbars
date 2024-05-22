@@ -1,5 +1,5 @@
 import { spawnSync } from "child_process";
-import sass from "sass";
+// import * as sass from "sass";
 import sassGraph from "sass-graph";
 import { logger } from "../../services";
 import { Config, EventManager, ServerEvent } from "../core";
@@ -10,14 +10,14 @@ export class SassCompiler {
   static graph: any;
 
   static create(): void {
-    if (Config.is("env", Env.Dev)) {
-      logger.debug(`%p%P Sass compiler`, 1, 1);
+    if (Config.is("env", Env.Local)) {
+      logger.debug(`Sass compiler`);
       EventManager.i.on(ServerEvent.SASS_CHANGED, this.compile);
     }
   }
 
   static compile(data?: WatcherChange): void {
-    logger.debug(`%p%P Compiling SASS files`, 1, 1);
+    logger.info(`Styles (.scss)`);
 
     const sourcePath = Config.relPath("styles");
 
@@ -27,7 +27,8 @@ export class SassCompiler {
       data?.path
     );
 
-    logger.debug("%p%P targets %O", 3, 0, files);
+    logger.silly("%p%P targets:", 1, 1);
+    files.forEach(file => logger.silly("%p%P %s", 3, 0, file))
 
     const cwd = Config.value<string>("root");
     const env = Config.get("env");
@@ -48,10 +49,10 @@ export class SassCompiler {
       return;
     }
 
-    logger.debug(`%p%P compiling:`, 3, 0);
+    logger.silly(`%p%P compiling:`, 1, 1);
 
     paths.forEach((path: string) => {
-      logger.debug(`%p%P %s`, 5, 1, path);
+      logger.silly(`%p%P %s`, 3, 0, path);
     });
 
     try {
@@ -60,7 +61,7 @@ export class SassCompiler {
         [
           paths.join(" "),
           "--style",
-          env !== "development" ? "compressed" : "expanded",
+          env !== Env.Local ? "compressed" : "expanded",
         ],
         {
           cwd,
@@ -71,23 +72,24 @@ export class SassCompiler {
       if (result.error) {
         const stderr = result.stderr.toString().trim();
         if (stderr.length) {
-          logger.debug("%p%P %s", 3, 1, result.stderr.toString());
+          logger.error("%p%P %s", 1, 1, result.stderr.toString());
         }
       } else {
         const stdout = result.stdout.toString().trim();
 
         if (stdout.length) {
-          logger.debug("%p%P %s", 3, 1, result.stdout.toString());
+          logger.error("%p%P %s", 1, 1, result.stdout.toString());
         }
       }
 
       const output = result.output.toString().trim();
 
       if (output.length) {
+        logger.silly(`%p%P output:`, 1, 1);
         output.split(/\r?\n|\r|\n/g).forEach((line) => {
           const result = line.replace(",,", "").trim();
           if (result.length) {
-            logger.debug(`%p%P %s`, 3, 1, result);
+            logger.silly(`%p%P %s`, 3, 0, result);
           }
         });
       }
@@ -100,7 +102,7 @@ export class SassCompiler {
         });
       }
     } catch (e) {
-      logger.error("%p%P %O", 3, 1, e);
+      logger.error("%p%P %O", 1, 1, e);
     }
   }
 
@@ -115,7 +117,7 @@ export class SassCompiler {
       });
     }
 
-    logger.debug("%p%P from %s", 3, 0, source);
+    logger.debug("%p%P from %s", 1, 1, source);
 
     const files = Object.keys(this.graph.index).map((path) => {
       const filename = basename(path);

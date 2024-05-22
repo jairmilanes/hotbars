@@ -1,0 +1,14 @@
+{{#embed "_modal" id=id title="Test" closable=true size="sm" textAlign="left"}}
+  {{#content "body"}}
+    {{{embed "_heading" size="h4" class="grow" text=(iIf values.id (concat "Edit field: " values.name) "New field")}}}
+    {{#embed "_form" id="hb-move-field-form" class="grow" title="New field" layout="col" gap=2 wrap=true preventDefault=true class=""}}
+      {{#content "body"}}
+        {{clear "id"}}
+        <div class="flex gap-4 w-full">
+          {{{embed "_input" name="direction" type="select" size="sm" placeholder="Move" class="grow" label="Move" items=options }}}
+          {{{embed "_input" name="targetId" type="select" size="sm" placeholder="Where" class="grow" label="Where" items=items }}}
+        </div>
+      {{/content}}
+    {{/embed}}
+  {{/content}}
+{{/embed}}

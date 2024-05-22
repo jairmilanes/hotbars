@@ -7,13 +7,15 @@ import { logger } from "../../services";
 import { configureHandlebars } from "../services";
 import { HandlebarsException } from "../exceptions";
 import { loadTemplate } from "../utils";
-import { Config, ContextConfig, DashboardConfig } from "../core";
+import { Config, DashboardConfig } from "../core";
 import { EventManager, ServerEvent } from "./event-manager";
+import * as htmlfy from "htmlfy";
 
 interface TemplateDefintion {
   name: string;
   template: string;
 }
+
 
 export class PreRenderer {
   private static instance: PreRenderer;
@@ -22,12 +24,12 @@ export class PreRenderer {
 
   private template = `
     (function() {
-        Handlebars.templates = {};
-        Handlebars.partials = {};
+        Handlebars.partials = {
+          ...(Handlebars.partials || {})
+        };
 
-        {PARTIALS}
-        {TEMPLATES}
-        {DASH_PARTIALS}
+        {SHARED}
+        {DASH_SHARED}
     })();
   `;
 
@@ -36,13 +38,12 @@ export class PreRenderer {
   private prod = Config.get("env") === Env.Prod;
 
   static create(): void {
-    logger.debug(`%p%P Pre-renderer`, 1, 1);
+    logger.debug(`Pre-renderer`);
     this.instance = new PreRenderer();
 
-    EventManager.i.on(
-      ServerEvent.PRE_COMPILED_CHANGED,
-      this.instance.configure.bind(this)
-    );
+    EventManager.i.on(ServerEvent.PRE_COMPILED_CHANGED, this.instance.configure.bind(this));
+    EventManager.i.on(ServerEvent.USER_RUNTIME_CHANGED, this.instance.configure.bind(this));
+    EventManager.i.on(ServerEvent.DASHBOARD_RUNTIME_CHANGED, this.instance.configure.bind(this));
 
     this.instance.configure();
   }
@@ -51,46 +52,7 @@ export class PreRenderer {
     this.instance._template = this.instance.template;
 
     try {
-      const partials = this.instance.resolvePartials(isSystem);
-      const templates = this.instance.resolveTemplates(isSystem);
-      // Load dashboard shared folder into the users precompiled
-      const dashShared = !isSystem ? this.instance.resolvePartials(true) : null
-
-      if (!partials.length) {
-        this.instance.update(
-          "{PARTIALS}",
-          `console.warn("No shared partials found in ${this.instance.getTemplatesPath(
-            isSystem
-          )}");`
-        );
-      }
-
-      if (!templates.length) {
-        this.instance.update(
-          "{TEMPLATES}",
-          `console.warn("No templates found in ${this.instance.getTemplatesPath(
-            isSystem
-          )}");`
-        );
-      }
-
-      if (!dashShared || !dashShared.length) {
-        this.instance.update(
-          "{DASH_PARTIALS}",
-          ``
-        );
-      }
-
-      if (!partials.length && !templates.length && (!dashShared || !!dashShared.length)) {
-        return this.instance._template;
-      }
-
-      await this.instance.preCompile(partials, "partials");
-      await this.instance.preCompile(templates, "templates");
-
-      if (dashShared) {
-        await this.instance.preCompile(dashShared, "dash_partials");
-      }
+      await this.instance.loadFromServer(isSystem)
 
       if (this.instance.prod) {
         return this.instance.uglyfy();
@@ -103,11 +65,93 @@ export class PreRenderer {
     }
   }
 
+  private async loadPartial(definition: TemplateDefintion, paths: TemplateDefintion[]): Promise<TemplateDefintion | null> {
+    logger.debug(`Pre-Rendering partial %s`, definition.template.replace(process.cwd(), ""));
+
+    try {
+      const { template } =
+      (await loadTemplate(definition.template, Config.get("encoding"), definition.name)) || {};
+
+      definition.template = template
+
+      return definition
+    } catch(e) {
+      if (!paths.length) {
+        return null
+      }
+
+      return this.loadPartial(paths.shift() as TemplateDefintion, paths)
+    }
+  }
+
+  static async preload(templates: string[]) {
+    const codeTemplates: Record<string, any> = {}
+
+    for (let i = 0; i < templates.length; i++) {
+      const name = templates[i]
+      const paths: TemplateDefintion[] = [
+        { name: name, template: Config.fullPath("partials", name, `.${Config.get("extname")}`) },
+        // { name: name, template: Config.fullPath("shared", name, `.${Config.get("extname")}`) },
+        { name: name, template: DashboardConfig.fullPath("partials", name, `.${Config.get("extname")}`) },
+        // { name: name, template: DashboardConfig.fullPath("shared", name, `.${Config.get("extname")}`) },
+      ]
+
+      const template = await this.instance.loadPartial(
+        paths.shift() as TemplateDefintion,
+        paths
+      )
+
+      if (template) {
+        logger.debug("--template found")
+        codeTemplates[template.name] = this.instance.hbs?.handlebars.precompile(template.template);
+        logger.debug("--format", typeof codeTemplates[template.name])
+      }
+    }
+
+    return codeTemplates
+  }
+
+  private async loadFromServer(isSystem: boolean) {
+    const templates: Record<string, string[] | null> = {
+      shared: this.resolveShared(isSystem),
+      // Load dashboard shared folder into the users precompiled
+      dashShared: !isSystem ? this.resolveShared(true) : null
+    }
+
+    _.map(_.keys(templates), (key, i) => {
+      if (!templates[key]?.length) {
+        this.update(
+          `{${_.toUpper(_.snakeCase(key))}}`,
+          `console.warn("No shared ${key} found in ${this.getTemplatesPath(
+            isSystem
+          )}");`
+        );
+      }
+    })
+
+    const { shared, dashShared} = templates;
+
+    if (!shared?.length && (!dashShared || !!dashShared?.length)) {
+      return "";
+    }
+
+    const keys = _.keys(templates)
+
+    await keys.reduce((ac: Promise<void>, key: string) => {
+        return ac.then(() =>
+          this.loadAll(key, templates[key] || [])
+            .then(items =>
+                this.preCompile(items, key)
+            )
+        )
+      }, Promise.resolve())
+  }
+
   private configure(data?: WatcherChange): void {
     if (!data) {
-      logger.debug(`%p%P Configuring pre-renderer...`, 3, 0);
+      logger.silly(`%p%P Configuring pre-renderer...`, 1, 1);
     } else {
-      logger.debug(`%p%P Re-configuring pre-renderer...`, 1, 1);
+      logger.silly(`%p%P Re-configuring pre-renderer...`, 1, 1);
     }
 
     const { instance, error } = configureHandlebars();
@@ -131,14 +175,8 @@ export class PreRenderer {
 
   private getTemplatesPath(isSystem?: boolean): string[] {
     return isSystem
-      ? [
-          DashboardConfig.fullGlobPath("shared"),
-          DashboardConfig.fullGlobPath("precompile"),
-        ]
-      : [
-          Config.fullGlobPath("precompile"),
-          Config.fullGlobPath("shared")
-        ];
+      ? [DashboardConfig.fullGlobPath("shared"),]
+      : [Config.fullGlobPath("shared")];
   }
 
   private resolve(path: string): string[] {
@@ -148,15 +186,7 @@ export class PreRenderer {
     });
   }
 
-  private resolveTemplates(isSystem?: boolean) {
-    const path = isSystem
-      ? DashboardConfig.fullGlobPath("precompile")
-      : Config.fullGlobPath("precompile");
-
-    return this.resolve(path);
-  }
-
-  private resolvePartials(isSystem?: boolean) {
+  private resolveShared(isSystem?: boolean) {
     const path = isSystem
       ? DashboardConfig.fullGlobPath("shared")
       : Config.fullGlobPath("shared");
@@ -164,26 +194,24 @@ export class PreRenderer {
     return this.resolve(path);
   }
 
-  private async preCompile(paths: string[], key: string): Promise<void> {
+  private async preCompile(templates: TemplateDefintion[], key: string): Promise<void> {
     try {
-      const templates = await this.loadAll(key, paths);
-      const allCode = this.compileAll(templates, key);
-      this.update(`{${key.toUpperCase()}}`, allCode.join("\r\n"));
+      const allCode = this.compileAll(templates);
+      this.update(`{${_.toUpper(_.snakeCase(key))}}`, allCode.join("\r\n"));
     } catch (err) {
       this.update(
-        `{${key.toUpperCase()}}`,
+        `{${_.toUpper(_.snakeCase(key))}}`,
         `console.warn("${(err as Error).message}");`
       );
     }
   }
 
   private compileAll(
-    templates: { name: string; template: string }[],
-    key: string
+    templates: { name: string; template: string }[]
   ): string[] {
     return templates.map(({ name, template }) => {
       const code = this.hbs?.handlebars.precompile(template);
-      return `Handlebars.${key.toLowerCase()}["${name}"] = Handlebars.template(${code});`;
+      return `Handlebars.partials["${name}"] = Handlebars.template(${code});`;
     });
   }
 

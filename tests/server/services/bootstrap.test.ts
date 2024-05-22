@@ -1,3 +1,4 @@
+import {expect, jest, test} from '@jest/globals';
 import { CliOptions } from "#server/types";
 import { Config } from "#server/core";
 import { BootstrapData } from "#server/services";
@@ -13,7 +14,7 @@ describe("Bootstrap", () => {
   });
 
   test("should load bootstrap file", async () => {
-    const data = await BootstrapData.load();
+    const data = await BootstrapData.run();
     expect(data).toHaveProperty("message");
     expect(data["message"]).toEqual("Project bootstraped!");
     expect(BootstrapData.get()).toEqual(data);

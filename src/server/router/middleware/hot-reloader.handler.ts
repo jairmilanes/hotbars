@@ -24,7 +24,7 @@ const reloadAllClients = (change: WatcherChange) => {
 };
 
 export const hotReloadHandler = () => {
-  if (!Config.is("env", Env.Dev)) {
+  if (!Config.is("env", Env.Local)) {
     // no hot reloading needed in other environments
     return;
   }

@@ -1,0 +1,52 @@
+<div data-input-container="{{name}}" class="relative {{#if cols}}col-span-{{cols}}{{/if}} {{class}}">
+  {{#not (eq type "hidden")}}
+    {{{embed "_input-label" }}}
+  {{/not}}
+  {{{block "prefixCustom"}}}
+  <div class="relative w-full">
+    {{#if (content "prefixIcon")}}
+      <span class="text-[1.3rem] absolute inset-y-0 start-0 top-0 flex items-center ps-3.5">
+        {{{block "prefixIcon"}}}
+      </span>
+    {{/if}}
+    {{#if prefixIcon}}
+      <span class="material-symbols-outlined text-[1.3rem] absolute inset-y-0 start-0 top-0 flex items-center ps-3.5 pointer-events-none">
+        {{prefixIcon}}
+      </span>
+    {{/if}}
+    <input id="{{default id name}}"
+           type="{{default type "text"}}"
+           name="{{name}}"
+           value="{{default value (value (default name id))}}"
+      {{{attr maxLength=maxLength
+              minLength=minLength
+              max=max
+              min=min
+              accept=accept
+              multiple=multiple
+              required=required
+              disabled=disabled
+              pattern=pattern
+              readonly=readonly
+              autofocus=autofocus
+              placeholder=placeholder
+              autocomplete=autocomplete}}}
+           class="{{_input style=style invalid=invalid disabled=disabled size=size}} {{inputClass}} {{#if prefixIcon}}ps-10{{/if}} {{#if suffixIcon}}pe-10{{/if}}"
+      {{{default attributes ""}}}>
+    {{#if suffixIcon}}
+      <span class="material-symbols-outlined text-[1.3rem] absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+        {{suffixIcon}}
+      </span>
+    {{/if}}
+    {{#if (content "suffixIcon")}}
+      <span class="text-[1.3rem] absolute inset-y-0 end-0 top-0 flex items-center pe-3.5">
+        {{{block "suffixIcon"}}}
+      </span>
+    {{/if}}
+  </div>
+  {{{block "suffixCustom"}}}
+  {{#not (eq type "hidden")}}
+    {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+    {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
+  {{/not}}
+</div>

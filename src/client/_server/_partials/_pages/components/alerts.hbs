@@ -1,0 +1,14 @@
+{{#embed "_pages/components/section" id=id title="Alerts" layout="col"}}
+  {{#content "body"}}
+    {{{embed "_alert-message" id="alert-1" title="" closable=true level="success" message="test alert message"}}}
+    {{{embed "_alert-message" id="alert-2" title="" closable=true level="info" message="test alert message"}}}
+    {{{embed "_alert-message" id="alert-3" title="" closable=true level="warn" message="test alert message"}}}
+    {{{embed "_alert-message" id="alert-4" title="" closable=true level="error" message="test alert message"}}}
+  {{/content}}
+  {{#content "code"}}
+    \{{{embed "_alert-message" id="alert-1" title="" closable=true level="success" message="test alert message"}}}
+    \{{{embed "_alert-message" id="alert-2" title="" closable=true level="info" message="test alert message"}}}
+    \{{{embed "_alert-message" id="alert-3" title="" closable=true level="warn" message="test alert message"}}}
+    \{{{embed "_alert-message" id="alert-4" title="" closable=true level="error" message="test alert message"}}}
+  {{/content}}
+{{/embed}}

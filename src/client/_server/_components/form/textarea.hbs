@@ -1,0 +1,16 @@
+<div data-input-container="{{name}}" class="relative {{#if cols}}col-span-{{cols}}{{/if}} {{class}}">
+  {{{embed "_input-label" }}}
+  <textarea id="{{default id name}}"
+            name="{{name}}"
+            cols="{{cols}}"
+            rows="{{default rows 18}}"
+            class="{{_input invalid=invalid}}"
+            placeholder="{{default placeholder ""}}"
+            {{#if required}}required{{/if}}
+            {{#if disabled}}disabled{{/if}}
+            {{#if autofocus}}autofocus{{/if}}
+            {{#if readonly}}readonly{{/if}}
+  >{{default value (value (default name id))}}</textarea>
+  {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+  {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
+</div>

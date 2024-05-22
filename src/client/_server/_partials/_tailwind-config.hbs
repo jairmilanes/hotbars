@@ -1,0 +1,40 @@
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        container: { center: true },
+        colors: {
+          success: tailwind.colors.lime,
+          info: tailwind.colors.blue,
+          warn: tailwind.colors.orange,
+          error: tailwind.colors.red,
+          gray: {
+            ...tailwind.colors.gray,
+            850: "#1a2330",
+            950: "#0d131e"
+          },
+          base: {
+            bright: tailwind.colors.gray[50],
+            lighter: tailwind.colors.gray[200],
+            light: tailwind.colors.gray[300],
+            mid: tailwind.colors.gray[500],
+            dark: tailwind.colors.gray[800],
+            darker: tailwind.colors.gray[900],
+            pitch: "#0d131e"
+          },
+          body: {
+            lighter: tailwind.colors.gray[100],
+            light: tailwind.colors.gray[300],
+            dark: tailwind.colors.gray[600],
+            darker: tailwind.colors.gray[800],
+            pitch: tailwind.colors.gray[900],
+          },
+          primary: tailwind.colors.rose,
+          accent: tailwind.colors.blue,
+          neutral: tailwind.colors.gray
+        }
+      }
+    }
+  };
+</script>

@@ -1,0 +1,73 @@
+<div data-module="categories" class="flex flex-col gap-2 p-4 bg-base-bright dark:bg-gray-850 border border-base-light dark:border-base-dark rounded-lg">
+  {{{embed "_heading" size="h4" text="Categories"}}}
+  <div class="overflow-y-auto max-h-[300px]">
+    <ul data-category-menu="true" class="text-left text-gray-500 dark:text-gray-400">
+      {{#each tree}}
+        <li class="rtl:space-x-reverse">
+          {{{embed "_input" type="checkbox" name=(concat value "-check") label=label class="!py-2 w-full"}}}
+          {{#if children}}
+            <ul class="text-left text-gray-500 dark:text-gray-400 pl-8">
+              {{#each children}}
+                <li class="rtl:space-x-reverse">
+                  {{{embed "_input" type="checkbox" name=(concat value "-check") label=label class="!py-2 w-full"}}}
+                  {{#if children}}
+                    <ul class="text-left text-gray-500 dark:text-gray-400 pl-8">
+                      {{#each children}}
+                        <li class="rtl:space-x-reverse">
+                          {{{embed "_input" type="checkbox" name=(concat value "-check") label=label class="!py-2 w-full" }}}
+                          {{#if children}}
+                            <ul class="text-left text-gray-500 dark:text-gray-400 pl-8">
+                              {{#each children}}
+                                <li class="rtl:space-x-reverse">
+                                  {{{embed "_input" type="checkbox" name=(concat value "-check") label=label class="!py-2 w-full" }}}
+                                </li>
+                              {{/each}}
+                            </ul>
+                          {{/if}}
+                        </li>
+                      {{/each}}
+                    </ul>
+                  {{/if}}
+                </li>
+              {{/each}}
+            </ul>
+          {{/if}}
+        </li>
+      {{/each}}
+      <!--
+    <li class="">
+      <div class="flex items-center space-x-3 rtl:space-x-reverse">
+        {{{embed "_input" type="checkbox" name=""}}}
+        <span>Cars</span>
+      </div>
+      <ul class="space-y-2 text-left text-gray-500 dark:text-gray-400 pl-8">
+        <li class="flex items-center space-x-3 rtl:space-x-reverse">
+          {{{embed "_input" type="checkbox" name=""}}}
+          <span>Sedam</span>
+        </li>
+        <li class="flex items-center space-x-3 rtl:space-x-reverse">
+          {{{embed "_input" type="checkbox" name=""}}}
+          <span>SUV</span>
+        </li>
+      </ul>
+    </li>
+    -->
+    </ul>
+  </div>
+  <div class="border-t border-gray-700 pt-4">
+    {{#embed "_form" id="hb-new-cat-form" formClass="hidden" ajax=true action="/_api/__categories" method="POST" layout="col" gap=2}}
+      {{#content "body"}}
+        {{{embed "_input" size="sm" name="name" type="text" label="Category name" cols=7 class="w-full"}}}
+        {{{embed "_input" size="sm" name="parent" type="select" label="Category parent" items=categories cols=6 class="w-full"}}}
+      {{/content}}
+      {{#content "submit"}}
+        <div class="flex w-wull pt-2">
+          {{{embed "_button" id="hb-save-cat-btn" type="button" style="link" size="link" color="gray" text="Cancel" attributes=(attr data-swap="hb-add-cat-btn" data-swap-target="hb-cat-form")}}}
+            <div class="grow"></div>
+          {{{embed "_button" id="hb-save-cat-btn" type="submit" style="link" size="link" text="Create category" attributes=(attr data-swap="hb-cat-form" data-swap-target="hb-add-cat-btn")}}}
+        </div>
+      {{/content}}
+    {{/embed}}
+    {{{embed "_button" id="hb-add-cat-btn" type="button" style="link" size="link" text="Add new category" attributes=(attr data-action="hb-add-cat" data-swap="hb-add-cat-btn" data-swap-target="hb-cat-form")}}}
+  </div>
+</div>

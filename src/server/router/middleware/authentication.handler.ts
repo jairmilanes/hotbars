@@ -108,7 +108,17 @@ const oAuthHandler = (req: Request, res: Response, next: NextFunction) => {
     const instance = AuthManager.get(req.params.provider);
     const provider = passport.authenticate(instance.name, instance.configure(req));
 
-    return provider(req, res, next);
+    return provider(req, res, () => {
+      const { type, action } = req.query
+
+      logger.info("HEELLLL YEAH 1 %O", req.query)
+
+      if (type === "json") {
+        return res.json(req.user)
+      }
+
+      next()
+    });
   }
 
   next(
@@ -117,7 +127,6 @@ const oAuthHandler = (req: Request, res: Response, next: NextFunction) => {
     )
   );
 };
-
 
 /**
  * Confirms a user comming from an email confirmation message
@@ -368,6 +377,7 @@ export const authRoutes = (config: typeof Config | typeof DashboardConfig, app: 
   const signInView = config.get<string>("auth.views.signIn").replace("_hotbars/", "");
   app.get(`/${signInView}/:provider/callback`, oAuthHandler);
   const st = (AuthManager.get("rememberMe") as RememberMeAuthStrategy)
+
   app.post(`/${signInView}/:provider`, oAuthHandler, rememberUser(
     st.saveToken.bind(st)
   ));

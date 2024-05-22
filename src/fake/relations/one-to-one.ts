@@ -12,6 +12,15 @@ import {
 } from "../types";
 import { split } from "../../utils";
 
+const transpile = (prop: string, entry: GeneratedEntry) => {
+  const backup = ""+prop
+  const r = Object.keys(entry).reduce((ac, key: keyof GeneratedEntry) => {
+    return ac.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), entry[key] as any)
+  }, prop)
+  logger.debug(`%p%P Transpiled: %s => %s`, 3, 0, backup, r);
+  return r
+}
+
 const parseTarget = (target: string): { table: string; column: string } => {
   const [table, column] = split(target, ".");
   return { table, column };
@@ -31,7 +40,7 @@ const relateRandomly = (propConfig: PropConfig, data: GeneratedData): any => {
     _.sample(data[table]),
     propConfig.args[0] || column || "id"
   );
-  logger.debug(`%p%P Ramdom %s.%s => %s.%s`, 3, 0, table, column);
+  logger.debug(`%p%P Ramdom %s.%s => %s`, 3, 0, table, column, value);
   return value || "";
 };
 
@@ -95,6 +104,11 @@ const relatebyValue = (
   return "";
 };
 
+/**
+ * @param propConfig
+ * @param schemaConfig
+ * @param data
+ */
 const resolveForProp = (
   propConfig: PropConfig,
   schemaConfig: SchemaConfig,
@@ -102,12 +116,20 @@ const resolveForProp = (
 ) => {
   return _.map(data[schemaConfig.name], (entry: GeneratedEntry, i) => {
     if (i === 0) logger.update(1);
+
     const relation = _.get(propConfig, "relation") as PropRelation;
-    const { source } = relation || {};
+    const { source, target } = relation || {};
+
+    const parseConfig = _.merge({}, propConfig, {
+      relation: {
+        source: source ? transpile(source, entry) : undefined,
+        target: transpile(target, entry)
+      }
+    })
 
     // if no source was set, it can only be resolved randomly
     if (!source) {
-      entry[propConfig.prop] = relateRandomly(propConfig, data);
+      entry[parseConfig.prop] = relateRandomly(parseConfig, data);
       if (i === 0) logger.update(2);
       return entry;
     }
@@ -116,9 +138,9 @@ const resolveForProp = (
 
     // if source and a relations mapping was set, respect the mapping
     if (mapping) {
-      entry[propConfig.prop] = relateByMapping(
+      entry[parseConfig.prop] = relateByMapping(
         entry,
-        propConfig,
+        parseConfig,
         mapping,
         data
       );
@@ -127,7 +149,7 @@ const resolveForProp = (
     }
 
     // las attempt to associate by value
-    entry[propConfig.prop] = relatebyValue(entry, propConfig, data);
+    entry[parseConfig.prop] = relatebyValue(entry, parseConfig, data);
     if (i === 0) logger.update(2);
     return entry;
   });

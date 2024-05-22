@@ -78,8 +78,6 @@ $.fn.aceEditor = function(defaultMode, options = {}) {
   }
 
   this.setValue = (value) => {
-
-    console.log("this.aceEditorEl", this.activeSession, this.session())
     this.session().setValue(value);
   }
 

@@ -1,0 +1,17 @@
+<div data-input-container="{{name}}" class="flex items-center py-3 pl-2 relative {{#if cols}}col-span-{{cols}}{{/if}} {{class}}">
+  <input id="{{default id name}}"
+         type="checkbox"
+         name="{{name}}"
+         value="{{default value null}}"
+         class="{{_input style="checkbox" rounded="false" invalid=invalid size="checkbox"}}"
+    {{#if autofocus}}autofocus{{/if}}
+    {{#if readonly}}readonly{{/if}}
+    {{#if required}}required{{/if}}
+    {{#if disabled}}disabled{{/if}}
+    {{#if required}}required{{/if}}
+    {{#or checked (eq value (value name))}}checked{{/or}}
+    {{{default attributes ""}}} />
+  <label for="{{default id name}}" class="{{_label spacing="left"}} grow">
+    {{label}}{{{block "label"}}}
+  </label>
+</div>

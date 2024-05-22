@@ -1,0 +1,32 @@
+<div class="flex flex-col">
+  {{{embed "_heading" size="h1" text=title}}}
+
+  <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
+    {{{embed "_text" text=price size="3xl" weight="extrabold" class=""}}}
+
+    {{#if trackRating}}
+      {{{embed "_rating" stars=4 rating=3.75}}}
+    {{/if}}
+  </div>
+
+  <div class="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-8">
+    {{#if type.trackFavorites}}
+      {{{embed "_button"
+         prefixIcon="favorite"
+         text="Add to favorites"
+         style="outline"
+      }}}
+    {{/if}}
+    {{{embed "_button"
+       prefixIcon="shopping_cart"
+       text="Add to cart"
+    }}}
+  </div>
+
+  {{#if description}}
+    <hr class="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
+    <div class="text-gray-500 dark:text-gray-400">
+      {{{description}}}
+    </div>
+  {{/if}}
+</div>

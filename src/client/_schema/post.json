@@ -1,9 +1,0 @@
-{
-  "size": 5,
-  "name": "posts",
-  "schema": {
-    "complete": "use:false",
-    "title": "lorem.sentence",
-    "post": "system.commonFileName:md"
-  }
-}

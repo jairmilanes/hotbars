@@ -45,7 +45,7 @@ export abstract class EnvConnector {
         "name": null
       },
       "updated_at": Date.now(),
-      "web_url": `http://127.0.0.1:${Config.get("port")}/`
+      "web_url": `http://localhost:${Config.get("port")}/`
     },
     development: undefined,
     test: undefined,

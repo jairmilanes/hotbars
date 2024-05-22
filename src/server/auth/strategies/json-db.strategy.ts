@@ -8,8 +8,6 @@ export abstract class JsonDbAuthStrategy extends LocalAuthStrategy {
   }
 
   protected get db() {
-    return DataManager.get("jsonDb").from(
-      Config.get<string>("auth.usersTable")
-    );
+    return DataManager.get("jsonDb").from("__users");
   }
 }

@@ -1,3 +1,5 @@
+import { Config, Server } from "./server/core"
+
 export * from "./server/app";
 export * from "./server/core/config";
 export * from "./server/core/server";
@@ -10,3 +12,6 @@ export * from "./server/auth/strategies/json-db.strategy";
 export * from "./server/controllers/abstract/controller.abstract";
 export * from "./server/services/mailer";
 export * from "./server/services/utils";
+
+export const getServer = () => Server
+export const getConfig = () => Config

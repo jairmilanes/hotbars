@@ -1,0 +1,25 @@
+{{#extend "_default" title=false scroll=true}}
+  {{#content "main"}}
+    {{#switch type.detailView}}
+      {{#case "post"}}
+        {{{embed "_views/detail/post" id=(concat "type-" type.detailView) name=type.detailView baseUrl="/_hotbars/type" collection=collection}}}
+      {{/case}}
+      {{#case "product"}}
+        {{{embed "_views/detail/product" id=(concat "type-" type.detailView) name=type.detailView baseUrl="/_hotbars/type" collection=collection}}}
+      {{/case}}
+      {{#case "profile"}}
+        {{{embed "_views/detail/profile" id=(concat "type-" type.detailView) name=type.detailView baseUrl="/_hotbars/type" collection=collection}}}
+      {{/case}}
+      {{#case "dashboard"}}
+        {{{embed "_views/detail/dashboard" id=(concat "type-" type.detailView) name=type.detailView baseUrl="/_hotbars/type" collection=collection}}}
+      {{/case}}
+      {{#case "gallery"}}
+        {{{embed "_views/detail/gallery" id=(concat "type-" type.detailView) name=type.detailView baseUrl="/_hotbars/type" collection=collection}}}
+      {{/case}}
+    {{/switch}}
+  {{/content}}
+  {{#content "scripts"}}
+    {{scripts "/app/type/view.js"}}
+  {{/content}}
+{{/extend}}
+

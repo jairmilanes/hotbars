@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LowdbSync } from "lowdb";
+import { LowSync } from "lowdb";
 import { eq, gt, gte, lt, lte, CollectionChain } from "lodash";
 import * as _ from "lodash";
 import { createLowDb } from "../../services/low-db-initializer";
@@ -16,17 +16,17 @@ const filters: { [key: string]: (value: any, other: any) => boolean } = {
 };
 
 export default class JsonDbAdaptor extends QueryBuilder {
-  _api: LowdbSync<JsonDb>;
+  _api: LowSync<JsonDb>;
 
-  constructor(lowDb?: LowdbSync<JsonDb>, collection?: string) {
+  constructor(lowDb?: LowSync<JsonDb>, collection?: string) {
     super(collection);
 
     if (!lowDb) {
       // Use LowDb from the enabled Json Server if porssible
       this._api = Server.get()
         ? Server.app._router?.stack.find((layer: any) => {
-            return layer?.handle._source === "jsonDb";
-          })?.db
+          return layer?.handle._source === "jsonDb";
+        })?.db
         : undefined;
 
       // Otherwise create a new instance
@@ -46,7 +46,7 @@ export default class JsonDbAdaptor extends QueryBuilder {
     return Promise.resolve(_.keys(this._api.getState()));
   }
 
-  hasCollection(name: string) {
+  async hasCollection(name: string) {
     const state = this._api.getState();
     return name in state;
   }
@@ -67,6 +67,10 @@ export default class JsonDbAdaptor extends QueryBuilder {
 
   from(collection: string): JsonDbAdaptor {
     return new JsonDbAdaptor(this._api, collection);
+  }
+
+  async set(name: string, data: any) {
+    this.db.set(name, data).value()
   }
 
   size(): Promise<number> {

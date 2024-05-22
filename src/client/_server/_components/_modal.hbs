@@ -1,0 +1,27 @@
+{{#block "_modal"}}
+  <div
+    id="{{id}}"
+    data-modal="{{id}}"
+    tabindex="-1"
+    role="dialog"
+    class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 p-6 md:inset-0 h-modal bg-gray-500/30 md:h-full justify-center items-center flex"
+  >
+    <div class="relative w-full max-w-{{default size "md"}} h-full md:h-auto">
+      <div class="relative bg-base-light rounded-lg shadow-lg dark:bg-body-pitch">
+        {{#if closable}}
+          {{{embed "_button"
+            id=""
+            style="link"
+            size="link"
+            icon="close"
+            class="absolute top-3 right-2.5"
+            attributes=(attr data-dismiss=id)
+          }}}
+        {{/if}}
+        <div data-modal-body="{{id}}" class="px-{{default paddingX 6}} py-{{default paddingY 6}} text-{{default textAlign "center"}}">
+          {{{block "body"}}}
+        </div>
+      </div>
+    </div>
+  </div>
+{{/block}}

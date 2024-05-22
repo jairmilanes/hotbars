@@ -1,0 +1,6 @@
+{{#embed "_user-simple"}}
+  {{#content "body"}}
+    {{{embed "_text" text=(concat "Updated " (dateFormat updatedAt "LL")) size="sm" margin=0 class="opacity-50"}}}
+    {{{embed "_text" text=(concat "" (dateFormat updatedAt "LT")) size="sm" margin=0 class="opacity-50"}}}
+  {{/content}}
+{{/embed}}

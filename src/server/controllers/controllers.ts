@@ -17,7 +17,7 @@ export class Controllers {
   private static controllers: UserControllers = {};
 
   static create() {
-    logger.debug(`%p%P Controllers`, 1, 1);
+    logger.debug(`Controllers`);
     EventManager.i.on(ServerEvent.CONTROLLERS_CHANGED, this.load.bind(this));
   }
 
@@ -102,7 +102,7 @@ export class Controllers {
     ContextConfig.init(req);
     const authenticated = req.isAuthenticated && req.isAuthenticated();
     const db = DataManager.get()
-    const settings = await db.from("settings").get("default")
+    const settings = await db.from("__settings").get("default")
 
     const { query, params, body} = req
 
@@ -190,7 +190,7 @@ export class Controllers {
     const config = ContextConfig.init(isDash);
 
     if (this.isClass(module[key])) {
-      logger.debug(`%p%P Class: %s`, 3, 0, name);
+      logger.silly(`%p%P Class: %s`, 3, 0, name);
       this.controllers[name.endsWith("_main") ? "_main" : name] = new module[key](config);
     } else {
       logger.debug(

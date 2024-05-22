@@ -1,0 +1,23 @@
+<div data-input-container="{{name}}" class="flex flex-col {{#if cols}}col-span-{{cols}}{{/if}}">
+  {{{embed "_input-label" }}}
+  <label class="grow w-full relative inline-flex items-center justify-start cursor-pointer pl-1 py-2">
+    <input type="checkbox"
+           class="sr-only peer"
+           id="{{default id name}}"
+           name="{{name}}"
+           value="{{default value null}}"
+      {{#if autofocus}}autofocus{{/if}}
+      {{#if readonly}}readonly{{/if}}
+      {{#or checked (eq value (value name))}}checked{{/or}}
+       data-auto-init="{{default autoInit true}}"
+      {{{default attributes ""}}}>
+    <div class="relative {{_input style="toggle" invalid=invalid size="checkbox" rounded=false}}">
+    </div>
+    <span class="hidden peer-checked:block ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+      {{default onText "On"}}
+    </span>
+    <span class="block peer-checked:hidden ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+      {{default offText "Off"}}
+    </span>
+  </label>
+</div>

@@ -1,0 +1,108 @@
+{{#block "_table"}}
+  <div id="{{id}}-container" class="flex flex-col relative {{#if rounded}}sm:rounded-lg{{/if}} h-full overflow-hidden {{class}}">
+    {{#if actions}}
+      <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+        <div class="relative md:container md:mx-auto">
+          {{#if searchable}}
+            <div class="w-full md:w-1/2">
+              {{#embed "_form" id=(concat id "-search") ajax=true gap="0" align="center"}}
+                {{#content "body"}}
+                  <label for="hb-search" class="sr-only">Search</label>
+                  <div class="relative w-full">
+                    <div class="absolute inset-y-0 z-[10] left-0 flex items-center pl-3 pointer-events-none">
+                      <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    {{{embed "_input" id="hb-search" name="search" placeholder="Search" class="m-0" inputClass="pl-10" size="sm"}}}
+                  </div>
+                {{/content}}
+                {{#content "submit"}}{{/content}}
+              {{/embed}}
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+
+    <div class="relative grow w-full {{#if maxHeight}}min-h-32 max-h-{{maxHeight}}{{/if}} overflow-auto">
+      <div class="relative md:container md:mx-auto {{#not compact}}pb-6{{/not}}">
+        <table id="{{id}}"
+             data-table="{{id}}"
+             data-baseUrl="{{baseUrl}}"
+             data-collection="{{collection}}"
+             data-headers="{{join headers ","}}"
+             data-ssr="{{ssr}}"
+             data-compact="{{compact}}"
+             class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
+            {{#if (isObject attributes)}}
+              {{attr attributes}}
+            {{/if}}
+            {{#if (isString attributes)}}
+              {{{attributes}}}
+            {{/if}}>
+          <thead class="sticky top-0 z-10 text-xs text-gray-700 uppercase bg-base-light dark:bg-base-dark dark:text-gray-400">
+          {{var "padY" (iIf compact 2 4)}}
+          <tr>
+            <th scope="col" class="py-{{var "padY"}} py-2 ps-6 pe-2">
+              <div class="flex items-center">
+                {{{embed "_input" id="checkbox-all" type="checkbox" size="sm" value="true" class="!py-0" attributes=(attr data-check=true)}}}
+              </div>
+            </th>
+            {{#each headers}}
+              <th scope="col" class="py-{{var "padY"}} pe-6">
+                {{this}}
+              </th>
+            {{/each}}
+            <th scope="col" class="py-{{var "padY"}} px-6"> </th>
+          </tr>
+          </thead>
+          <tbody id="{{concat id "-body"}}">
+          {{#each rows}}
+            {{{embed "_table-row" compact=../compact index=@index headers=../headers row=this}}}
+          {{/each}}
+          </tbody>
+
+        </table>
+        <div data-loader="true" class="hidden flex justify-center items-center absolute top-0 bottom-0 left-0 right-0">
+          {{{embed "_spinner" size="14" backdropColor="gray"}}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="relative py-4 px-6 xl:px-0 border-t dark:border-base-dark bg-base-light dark:bg-base-darker">
+    <div class="md:container md:mx-auto">
+      {{#if paging}}
+        {{{embed "_pagination"
+           id=(concat id "-paging")
+           total=total
+           page=page
+           pages=pages
+           next=next
+           prev=prev
+           from=from
+           to=to
+           type="numbers"
+           baseUrl=baseUrl}}}
+      {{/if}}
+    </div>
+
+    {{#if type.allowRemove}}
+      <div id="hb-delete-all" data-list-actions="{{name}}" class="hidden absolute top-0 bottom-0 right-0 left-0 flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 px-2 dark:bg-base-pitch py-4">
+        <div class="md:container md:mx-auto flex gap-4">
+          {{{embed "_confirm-button"
+             type="button"
+             dispatch="hb-delete-all"
+             text="Delete All"
+             color="red"
+             style="link"
+             size="link"
+             prefixIcon="delete_forever"
+             attributes=(attr data-type=name)
+          }}}
+          <div class="grow"></div>
+        </div>
+      </div>
+    {{/if}}
+  </div>
+{{/block}}

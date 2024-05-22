@@ -1,0 +1,90 @@
+<div id="hb-type-form" class="pt-4 h-full overflow-hidden">
+  {{clear "class"}}
+  {{#embed "_form"
+     id="type-form"
+     action="/_api/__types"
+     method="POST"
+     layout="col"
+     gap=0
+     ajax=true
+     validation=false
+     autoload=false
+     class="h-full"
+     formClass="h-full"
+     bodyClass="h-full overflow-hidden"
+     successMessage="Type saved successfully!"
+  }}
+    {{#content "body"}}
+      <div data-alerts-for="type-form"></div>
+      <div class="grow w-full grow flex flex-col overflow-hidden">
+        <div class="px-4 w-full">
+          <div class="flex">
+            {{{embed "_heading"
+               size="h3"
+               text=(iIf values.id (concat values.title " settings") "New data type")
+               suffix=(iIf values.id (iIf (eq values.single "true") "Single" "Collection") "")
+               class="grow"
+            }}}
+            {{#if values.id}}
+              <div class="">
+                {{{embed "_button"
+                  type="button"
+                  style="link"
+                  size="link"
+                  color="red"
+                  text="Delete type"
+                  title="Delete type"
+                  class="text-right"
+                  prefixIcon="delete"
+                  duration=3000
+                  attributes=(attr data-dispatch="hb-delete-type-confirm" data-id=values.id)
+                }}}
+              </div>
+            {{/if}}
+          </div>
+
+          {{{embed "_input" name="id" type="hidden"}}}
+          {{{embed "_input" name="name" type="hidden"}}}
+
+          <div class="flex flex-col gap-2">
+            {{#if values.id}}
+              {{{embed "_input" name="single" type="hidden"}}}
+            {{else}}
+              {{#embed "form/radio-group" layout="row"}}
+                {{#content "inputs"}}
+                  {{{embed "_input" name="single" type="radio" label="Single" checked=false value="true"}}}
+                  {{{embed "_input" name="single" type="radio" label="Collection" checked=true value="false"}}}
+                {{/content}}
+              {{/embed}}
+            {{/if}}
+
+            <div class="grid grid-cols-12 gap-4">
+              {{{embed "_input" name="title" type="text" label="Title" cols=8 placeholder="New type name" autofocus=true disabled=(iIf values.id "disabled" "")}}}
+              {{{embed "_input" name="iconName" type="text" label="Icon" cols=4 placeholder="Type icon" disabled=(iIf values.id "disabled" "") }}}
+            </div>
+          </div>
+        </div>
+        {{{embed "_modules/_view-config"}}}
+      </div>
+    {{/content}}
+    {{#content "submit"}}
+      <div id="hb-list-actions-container" class="hidden px-5 py-5 flex items-center w-full gap-6 bg-gray-200 dark:bg-gray-950">
+        <span class="grow"><strong>0</strong> selected</span>
+        {{{embed "_button" id="hb-create-group-btn" color="gray" type="button" text="List" prefixIcon="ad_group" style="link" size="lisk" attributes=(attr data-dispatch="hb-group-fields" data-type="list" data-selected=true)}}}
+        {{{embed "_button" id="hb-create-group-btn" color="gray" type="button" text="Group" prefixIcon="view_cozy" style="link" size="lisk" attributes=(attr data-dispatch="hb-group-fields" data-selected=true)}}}
+        {{{embed "_button" id="hb-move-all-btn" color="gray" type="button" text="Move" prefixIcon="expand" style="link" size="lisk" attributes=(attr data-dispatch="hb-init-field-move")}}}
+        {{{embed "_confirm-button" id="hb-remove-all-btn" color="red" type="button" text="Remove" prefixIcon="delete_forever" style="link" size="lisk" attributes=(attr data-dispatch="hb-delete-fields")}}}
+      </div>
+      <div id="hb-list-menu-container" class="flex gap-2 px-4 py-2 border-t border-gray-200 dark:border-gray-800">
+        {{{embed "_button" color="gray" style="outline" type="button" text="Field" prefixIcon="add" size="sm" attributes=(attr data-dispatch="hb-new-field")}}}
+        {{{embed "_button" color="gray" style="outline" type="button" text="Header" prefixIcon="add" size="sm" attributes=(attr data-dispatch="hb-new-header")}}}
+        {{{embed "_button" color="gray" style="outline" type="button" text="Group" prefixIcon="add" size="sm" attributes=(attr data-dispatch="hb-group-fields")}}}
+        {{{embed "_button" color="gray" style="outline" type="button" text="List" prefixIcon="add" size="sm" attributes=(attr data-dispatch="hb-group-fields" data-type="list")}}}
+        <div class="grow"></div>
+        {{{embed "_button" id="hb-cancel-type" color="gray" style="outline" icon="close" size="iconSm" attributes=(attr data-dismiss="hb-type-form")}}}
+        {{{embed "_button" id="hb-save-type" type="submit" text=(iIf values.id "Save type" "Create type") color="rose" suffixIcon="add_circle_outline" }}}
+        {{{embed "_button" color="gray" style="solid" type="button" text="Preview" prefixIcon="visibility" size="sm" attributes=(attr data-dispatch="hb-preview-type")}}}
+      </div>
+    {{/content}}
+  {{/embed}}
+</div>

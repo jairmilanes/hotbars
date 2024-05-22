@@ -1,0 +1,36 @@
+{{#extend "_default" title=(titleize title) paddingX=0 paddingY=0}}
+  {{#content "pageHeader"}}
+    <div class="flex items-center border-b border-base-light dark:border-base-dark">
+      {{#embed "_modules/_page-header" title=title description=description class="py-6 px-6"}}
+        {{#content "actions"}}
+          {{#if type.allowCreate}}
+            {{{embed "_button" text=(concat "New " title) class="shrink whitespace-nowrap" attributes=(attr data-dispatch="hb-new-entry" data-collection=collection)}}}
+          {{/if}}
+        {{/content}}
+      {{/embed}}
+    </div>
+  {{/content}}
+  {{#content "main"}}
+    <div data-collection="{{collection}}" class="flex flex-col overflow-hidden grow">
+      {{#switch type.listView}}
+        {{#case "table"}}
+          {{#if headers}}
+            {{{embed "_views/list/table" id=viewId name=type.listView baseUrl="/_hotbars/type" collection=collection headers=headers paging=true}}}
+          {{/if}}
+        {{/case}}
+        {{#case "post"}}
+          {{{embed "_views/list/post" id=viewId name=type.listView baseUrl="/_hotbars/type" collection=collection headers=headers paging=true}}}
+        {{/case}}
+        {{#case "grid"}}
+          {{{embed "_views/list/grid" id=viewId name=type.listView baseUrl="/_hotbars/type" collection=collection headers=headers paging=true}}}
+        {{/case}}
+        {{#case "product-grid"}}
+          {{{embed "_views/list/product-grid" id=viewId name=type.listView baseUrl="/_hotbars/type" collection=collection headers=headers paging=true}}}
+        {{/case}}
+      {{/switch}}
+    </div>
+  {{/content}}
+  {{#content "scripts"}}
+    {{scripts "/app/type/index.js"}}
+  {{/content}}
+{{/extend}}

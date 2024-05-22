@@ -1,0 +1,20 @@
+<div id="{{id}}" class="relative flex gap-2 items-center py-{{default paddingY 6}} px-{{default paddingX 6}} bg-base-bright dark:bg-gray-850 border border-base-light dark:border-base-dark rounded-lg {{class}}">
+  {{{embed "_avatar" image=(concat "https://ui-avatars.com/api/?name=" username) size=10}}}
+  <div class="grow flex flex-col gap-{{default gap 0}}">
+    <h4 class="font-bold">{{username}}</h4>
+    {{#if email}}
+      {{{embed "_text" size="sm" text=email class="opacity-50" }}}
+    {{/if}}
+    {{{block "body"}}}
+  </div>
+  {{#if closable}}
+    {{{embed "_button"
+      type="button"
+      style="link"
+      size="link"
+      icon="close"
+      class="absolute top-3 right-2.5"
+      attributes=(attr data-dismiss=id data-delay=200)
+    }}}
+  {{/if}}
+</div>

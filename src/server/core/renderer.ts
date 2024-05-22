@@ -4,10 +4,11 @@ import htmlPretify from "html-prettify"
 import * as htmlfy from 'htmlfy'
 import { logger } from "../../services";
 import {
+  Env,
   HandlebarsWax,
   InjectionData,
   SafeObject,
-  WatcherChange,
+  WatcherChange
 } from "../types";
 import { loadTemplate } from "../utils";
 import { HandlebarsException } from "../exceptions";
@@ -36,7 +37,7 @@ export class Renderer {
   ];
 
   static create(): void {
-    logger.info(`%p%P Renderer`, 1, 1);
+    logger.debug(`Renderer`);
     this.instance = new Renderer();
 
     const reconfigure = this.instance.configure.bind(this.instance);
@@ -44,6 +45,7 @@ export class Renderer {
     EventManager.i.on(ServerEvent.FILES_CHANGED, reconfigure);
     EventManager.i.on(ServerEvent.USER_RUNTIME_CHANGED, reconfigure);
     EventManager.i.on(ServerEvent.DASHBOARD_RUNTIME_CHANGED, reconfigure);
+    EventManager.i.on(ServerEvent.PRE_COMPILED_CHANGED, reconfigure);
 
     this.instance.configure();
   }
@@ -67,9 +69,9 @@ export class Renderer {
 
   configure(data?: WatcherChange): void {
     if (!data) {
-      logger.debug(`%p%P Configuring renderer...`, 3, 0);
+      logger.silly(`%p%P Configuring renderer...`, 1, 1);
     } else {
-      logger.debug(`%p%P Re-configuring renderer...`, 1, 1);
+      logger.silly(`%p%P Re-configuring renderer...`, 1, 1);
     }
 
     const { instance, error } = configureHandlebars();
@@ -99,7 +101,7 @@ export class Renderer {
 
     const html = this.compile(template, context)
 
-    if (Config.get("dev")) {
+    if (Config.is("env", Env.Local)) {
       return htmlfy.prettify(html || "", { strict: true, tab_size: 2})
     } else {
       return htmlfy.minify(html || "")
@@ -138,8 +140,11 @@ export class Renderer {
 
       logger.debug(`%p%P Page compiled.`, 1, 1);
 
-      if (Config.get("dev")) {
-        return htmlfy.prettify(html || "", { strict: true, tab_size: 2})
+      if (Config.is("env", Env.Local)) {
+        return html
+        // Using prettify causes json to render inline for some reason,
+        // keeping it off for now
+        // htmlfy.prettify(html || "", { strict: true, tab_size: 4, })
       } else {
         return htmlfy.minify(html || "")
       }

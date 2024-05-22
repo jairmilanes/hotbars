@@ -1,12 +1,11 @@
 function saveToSettings(data) {
-  return fetch("/_api/settings", {
+  return fetch("/_api/__settings", {
     method: "PATCH",
     body: JSON.stringify(data),
     headers: {
       "Content-Type": "application/json"
     }
-  })
-    .then(response => response.json())
+  }).then(response => response.json())
 }
 
 function getDarkMode() {

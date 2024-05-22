@@ -1,0 +1,17 @@
+{{#embed "form/text"
+         type="text"
+         class="relative"
+         inputClass=(concat "ps-10 " (iIf button "pe-28" ""))
+         prefixIcon="search"}}
+  {{#content "suffixIcon"}}
+    {{#if button}}
+      {{{embed "_button" type="button"
+               size="sm"
+               text=(default buttonText "Search")
+               prefixIcon=""
+               class="absolute right-[2px] top-[2px] bottom-[2px] left-auto min-w-16"
+               attributes=(attr data-dispatch="hb-search-action" data-id=(default id name))
+      }}}
+    {{/if}}
+  {{/content}}
+{{/embed}}

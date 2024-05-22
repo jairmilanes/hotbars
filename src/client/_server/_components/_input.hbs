@@ -1,0 +1,59 @@
+{{#if (eq type "dropzone")}}
+  {{{embed "form/dropzone"}}}
+{{else if  (eq type "alphanumeric")}}
+  {{{embed "form/alphanumeric"}}}
+{{else if  (eq type "alpha")}}
+  {{{embed "form/alpha"}}}
+{{else if  (eq type "date")}}
+  {{{embed "form/date"}}}
+{{else if (eq type "credit-card")}}
+  {{{embed "form/credit-card"}}}
+{{else if (eq type "zip")}}
+  {{{embed "form/zip"}}}
+{{else if (eq type "upload")}}
+  {{{embed "form/upload"}}}
+{{else if (eq type "autocomplete")}}
+  {{{embed "form/autocomplete"}}}
+{{else if (eq type "user")}}
+  {{{embed "form/user"}}}
+{{else if (eq type "one-to-one")}}
+  {{{embed "form/link"}}}
+{{else if (eq type "one-to-many")}}
+  {{{embed "form/links"}}}
+{{else if (eq type "file-queue")}}
+
+{{else if (eq type "select")}}
+  {{{embed "form/select"}}}
+{{else if (eq type "radio")}}
+  {{{embed "form/radio"}}}
+{{else if (eq type "checkbox")}}
+  {{{embed "form/checkbox"}}}
+{{else if (eq type "radioGroup")}}
+  {{{embed "form/radio-group"}}}
+{{else if (eq type "checkboxGroup")}}
+  {{{embed "form/checkbox-group"}}}
+{{else if (eq type "textarea")}}
+  {{{embed "form/textarea"}}}
+{{else if (eq type "rich")}}
+  {{{embed "form/rich-editor"}}}
+{{else if (eq type "toggle")}}
+  {{{embed "form/toggle"}}}
+{{else if (eq type "currency")}}
+  {{{embed "form/currency"}}}
+{{else if (eq type "search")}}
+  {{{embed "form/search"}}}
+{{else if (eq type "phonenumber")}}
+  {{{embed "form/phonenumber"}}}
+{{else if (eq type "cpf")}}
+  {{{embed "form/cpf"}}}
+{{else if (eq type "cnpj")}}
+  {{{embed "form/cnpj"}}}
+{{else if (eq type "cpf-cnpj")}}
+  {{{embed "form/cpfCnpj"}}}
+{{else if (eq type "time")}}
+  {{{embed "form/time"}}}
+{{else if (eq type "hidden")}}
+  <input type="hidden" name="{{name}}" value="{{default value (value (default name id))}}">
+{{else}}
+  {{{embed "form/text"}}}
+{{/if}}

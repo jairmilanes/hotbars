@@ -3,7 +3,7 @@ function keys(obj) {
 }
 
 function isObject(value) {
-  return typeof value === "object" && value !== null;
+  return value && typeof value === "object" && value !== null;
 }
 
 function isNil(value) {
@@ -83,7 +83,7 @@ function mutationObserver(attributes, callback) {
   });
 }
 
-function pushState(params = {}) {
+function createUrl(params = {}) {
   const url = new URL(window.location);
 
   Object.keys(params).forEach((key) => {
@@ -96,25 +96,21 @@ function pushState(params = {}) {
     }
   });
 
+  return url
+}
+
+function pushState(params = {}) {
+  const url = createUrl(params)
+
   window.history.replaceState(null, "", url.toString());
 }
 
 function stateChange(callback) {
-  const cb = (e) => callback(e.detail.searchParams);
+  const cb = (e) => callback(Object.fromEntries(e.detail.searchParams));
   $(window).on("pushstate replaceState", cb);
   return () => {
     $(window).off("pushstate replaceState", cb);
   };
-}
-
-function navigate(params = {}) {
-  const url = new URL(window.location);
-
-  Object.keys(params).forEach((key) => {
-    url.searchParams.set(key, params[key]);
-  });
-
-  window.location.assign(url.toString());
 }
 
 function formToObject() {
@@ -130,8 +126,13 @@ function formToObject() {
       if (fields.item(i).checked) {
         data[field.attr("name")] = field.val()
       }
-    } if (field.attr("type") === "file") {
-      data[field.attr("name")] = field.get(0).files
+    } else if (field.attr("type") === "file") {
+      const { files } = field.get(0)
+      if (!files?.length && field.data("file-id")) {
+        data[field.attr("name")] = field.data("file-id")
+      } else {
+        data[field.attr("name")] = files.length ? files : null
+      }
     } else {
       data[field.attr("name")] = field.val()
     }
@@ -140,9 +141,26 @@ function formToObject() {
   return data;
 }
 
-function render(template, context, mode) {
-  const { templates, partials } = Handlebars;
-  const tpl = templates[template] || partials[template];
+function template(tplOrName) {
+  const { partials } = Handlebars
+
+  if (partials[tplOrName]) {
+    return partials[tplOrName]
+  }
+
+  if (tplOrName.indexOf("{{") > -1) {
+    try {
+      return Handlebars.compile(tplOrName)
+    } catch(e) {
+      console.error(e)
+    }
+  }
+
+  throw new Error(`Could not find template "${tplOrName}" in partials.`)
+}
+
+function render(tplOrName, context, mode) {
+  let tpl = template(tplOrName);
 
   if (tpl) {
     if (mode === "append") {
@@ -154,17 +172,25 @@ function render(template, context, mode) {
     }
 
     this.html(tpl({...context}));
+  } else {
+    console.warn("Template ", tplOrName, "Not found")
   }
 
   return this;
 }
 
-async function renderRemote(template, context, mode) {
-  const params = new URLSearchParams(context)
+async function renderPartial(partial, context, mode) {
+  const response = await fetch(`/_partial`, {
+    method: "POST",
+    body: JSON.stringify({
+      partial,
+      context
+    }),
+    headers: {
+      "Content-type": "application/json"
+    }
+  })
 
-  params.set("partialId", template)
-
-  const response = await fetch(`/_partial?${params.toString()}`)
   const html = await response.text()
 
   if (mode === "append") {
@@ -221,30 +247,46 @@ const modals = {
 
     $("body").render(template, context, "append");
 
-    const modal = $(`#${context.id}`);
+    const modalId = `#${context.id}`
+    const modal = $(modalId);
 
-    $.dismiss(null, modal)
+    callback("opened", modal);
 
-    $("[data-dismiss]", modal).on("click",() => {
+    $.dismiss(null, modal, () => {
       if (typeof callback === "function") {
-        callback(modal);
+        callback("close", modal);
       }
-    });
+    })
+
+    modal.close = () => {
+      $.dismiss(modalId, {}, () => {
+        if (typeof callback === "function") {
+          callback("close", modal);
+        }
+      })
+    }
+
+    // modal.on("close", () => $.dismiss(modalId))
+
+    return modal
   },
   alert(context, callback) {
     if (!context.id) {
       throw new Error(`Must provide "context.id" for a modal to be created.`)
     }
 
-    $("body").render(context.template || "_alert-modal", context, "append");
+    $("body")
+      .render(context.template || "_alert-modal", context, "append");
 
     const modal = $(`#${context.id}`);
+
+    callback("opened", modal);
 
     $.dismiss(null, modal)
 
     $("[data-dismiss]", modal).on("click",() => {
       if (typeof callback === "function") {
-        callback(modal);
+        callback("closed", modal);
       }
     });
   },
@@ -257,17 +299,32 @@ const modals = {
 
     const modal = $(`#${context.id}`);
 
-    $.dismiss(null, modal)
+    callback("opened", modal);
+
+    $.dismiss(null, modal, () => {
+      callback("closed", modal);
+    })
 
     $("[data-modal-confirm]", modal).on("click", () => {
       if (typeof callback === "function") {
-        callback(modal);
+        callback("confirmed", modal);
       }
 
-      $.dismiss(context.id, modal)
+      $.dismiss(context.id, modal, () => {
+        callback("closed", modal);
+      })
     });
   },
 };
+
+const modalsInit = () => {
+  $("[data-modal]").on("click", (e) => {
+    const el = $(e.target)
+    $.modals.custom(el.data("modal"), {}, () => {
+      $(e.target)
+    });
+  })
+}
 
 const stickyHeader = (selector) => {
   const el = $(selector || "header.should-stick");
@@ -318,26 +375,75 @@ const scrollTop = () => {
 
 /**
  * Fades an element out and removes it from the view.
- * @param elementId
+ * @param {string|HTMLElement} element A element id or an element it self
  * @param context
+ * @param {!function} callback
  */
-const dismiss = (elementId, context) => {
-  const close = (el) => {
+const dismiss = (element, context, callback) => {
+  const close = (el, delay) => {
     el.swapClass("opacity-100", "opacity-0")
 
     setTimeout(() => {
       el.remove();
-    }, 600)
+
+      if (typeof callback === "function") {
+        callback()
+      }
+    }, delay || 600)
   }
 
-  if (!elementId) {
+  if (!element) {
     $(`button[data-dismiss]`, context || $("body"))
       .on("click", (e) => {
         e.preventDefault();
-        close($(`#${$(e.currentTarget).data("dismiss")}`))
+        const elId = $(e.currentTarget).data("dismiss")
+        const delay = parseInt($(e.currentTarget).data("delay") || "600", 10)
+        close($(`#${elId}`), delay)
       })
   } else {
-    close($(`#${elementId}`))
+
+    if (typeof element === "string") {
+
+      close($(element.charAt(0) !== "#" ? `#${element}` : element))
+    } else {
+      close($(element))
+    }
+  }
+}
+
+const toggleable = (element, context, callback) => {
+  const toggle = (target) => {
+    if (target.data("open")) {
+      target.get(0).style.height = 0
+      target.data("open", false)
+      target.removeClass("open")
+    } else {
+      target.get(0).style.height = target.data("height")
+      target.data("open", true)
+      target.addClass("open")
+    }
+  }
+
+  if (!element) {
+    $(`[data-toggleable]`, context || $("body"))
+      .each((i, el) => {
+        const target = $(`#${$(el).data("toggleable")}`)
+        const style = getComputedStyle(target.get(0))
+        target.get(0).style.height = style.height
+        target.data("height", style.height)
+        target.data("open", true)
+        target.addClass("open transition-[height] ease-in-out duration-300")
+      })
+      .on("click", (e) => {
+        e.preventDefault();
+        toggle($(`#${$(e.currentTarget).data("toggleable")}`))
+      })
+  } else {
+    if (typeof element === "string") {
+      toggle($(element.charAt(0) !== "#" ? `#${element}` : element))
+    } else {
+      toggle($(element))
+    }
   }
 }
 
@@ -369,52 +475,36 @@ function toggleEl(el) {
   }
 }
 
-function toggles(context) {
-  $("[hb-toggle],[data-toggle]", context || $("body")).on("click", (e) => {
-    const el = $(e.currentTarget)
-    const target = $(`#${el.attr("hb-toggle") || el.attr("data-toggle")}`)
-    toggleEl(target)
-  })
+function _swap(target, swapDuration) {
+  const source = $(this)
+
+  if (target) {
+    if (target.hasClass("hidden")) {
+      source.addClass("hidden")
+      target.removeClass("hidden")
+
+      if (swapDuration) {
+        setTimeout(() => {
+          source.removeClass("hidden")
+          target.addClass("hidden")
+        }, swapDuration)
+      }
+    } else {
+      source.removeClass("hidden")
+      target.addClass("hidden")
+
+      if (swapDuration) {
+        setTimeout(() => {
+          source.addClass("hidden")
+          target.removeClass("hidden")
+        }, swapDuration)
+      }
+    }
+  }
 }
 
-function swap(context) {
-  $("[hb-swap]", context || $("body")).each((i, el) => {
-    let timer = null;
-    $(el).on("click", (e) => {
-      const el = $(e.currentTarget)
-      if (!el) return;
-
-      const target = $(`#${el.attr("hb-swap")}`)
-      const swapEl = $(`#${el.attr("hb-swap-target")}`)
-      const swapDuration = el.attr("hb-swap-duration")
-
-      if ((swapEl || el) && target) {
-        if (target.hasClass("hidden")) {
-          (swapEl.length === 0 ? el : swapEl).addClass("hidden")
-          target.removeClass("hidden")
-
-          if (swapDuration) {
-            clearTimeout(timer)
-            timer = setTimeout(() => {
-              (swapEl.length === 0 ? el : swapEl).removeClass("hidden")
-              target.addClass("hidden")
-            }, parseInt(swapDuration, 10))
-          }
-        } else {
-          (swapEl.length === 0 ? el : swapEl).removeClass("hidden")
-          target.addClass("hidden")
-
-          if (swapDuration) {
-            clearTimeout(timer)
-            timer = setTimeout(() => {
-              (swapEl.length === 0 ? el : swapEl).addClass("hidden")
-              target.removeClass("hidden")
-            }, parseInt(swapDuration, 10))
-          }
-        }
-      }
-    })
-  })
+function swap(source, target, swapDuration) {
+  _swap.call(source, target, swapDuration)
 }
 
 function hide() {
@@ -534,7 +624,6 @@ function toggleElClass(el, className, callback) {
       }
     }
 
-    console.log(el, elem)
     on = elem.hasClass(className)
 
     if (typeof callback === "function") {
@@ -546,12 +635,12 @@ function toggleElClass(el, className, callback) {
 }
 
 function toast(type, message, timeout = 5000, position = "bottom-right") {
-  const { templates, partials } = Handlebars;
-  const tpl = templates["_toast"] || partials["_toast"];
-  const newContainer = $(`<div class="fixed z-50" data-toasts="true"></div>`)
-  let container = $('div[data-toasts]')
+  const tpl = template("_toast");
+  let container = $(`div[data-toasts="${position}"]`)
 
   if (!container.length) {
+    const newContainer = $(`<div class="fixed z-50" data-toasts="${position}"></div>`)
+
     if (position === "top-right" || position === "top-left") {
       newContainer.addClass(`top-10`)
     }
@@ -571,6 +660,8 @@ function toast(type, message, timeout = 5000, position = "bottom-right") {
     container = newContainer
     $("body").append(newContainer)
   }
+
+  console.log("MESSAHE", message)
 
   const newToast = $(tpl({ message, type, position: null }).trim())
 
@@ -611,16 +702,167 @@ function toQueryString(obj, prefix) {
   return str.join("&");
 }
 
+function click(callback) {
+  this.on("click", e => {
+    e.preventDefault()
+    if (typeof callback === "function") {
+      callback(e)
+    }
+  })
+}
+
+function dashCase(str) {
+  return str.toLowerCase().replace(/\s+/g, '-');
+
+}
+
+function capitalize(str) {
+  if (!(typeof str === "string")) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+
+function titleize(str) {
+  if (!(typeof str === "string")) return '';
+  const title = str.replace(/[- _]+/g, ' ');
+  const words = title.split(' ');
+  let len = words.length;
+  const res = [];
+  let i = 0;
+  while (len--) {
+    const word = words[i++];
+    res.push(capitalize(word));
+  }
+  return res.join(' ');
+}
+
+function camelCase(str) {
+  if (!(typeof str === "string")) return '';
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/\s+(.)/g, function(match, group1) {
+      return group1.toUpperCase();
+    });
+}
+
+function navigate(userUrl, params = {}) {
+  const url = new URL(userUrl, window.location);
+
+  if (params) {
+    Object.keys(params).forEach((key) => {
+      url.searchParams.set(key, params[key])
+    })
+  }
+
+  window.location.assign(url.toString());
+}
+function uniqueId(length = 5) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    id += characters[randomIndex];
+  }
+  return id;
+}
+
+const overwriteMerge =  (target, source, options) => {
+  const destination = target.slice()
+
+  const keys = destination.reduce((ac, i) => ({
+    ...ac,
+    [i.id]: true
+  }), {})
+
+  return source.reduce((arr, item, i) => {
+    if (!keys[item.id]) {
+      if (options.isMergeableObject(item)) {
+        arr.push(deepmerge(destination[i], item))
+      } else {
+        arr.push(options.cloneUnlessOtherwiseSpecified(item, options))
+      }
+    }
+    return arr
+  }, destination)
+}
+
+function merge(...objects) {
+  if (typeof deepmerge !== "function") {
+    throw new Error("Deepmerge utility is missing.")
+  }
+
+  return objects.reduce((rs, obj) => {
+    return deepmerge(rs, obj)
+  }, {})
+}
+
+function mergeById(...objects) {
+  if (typeof deepmerge !== "function") {
+    throw new Error("Deepmerge utility is missing.")
+  }
+
+  return objects.reduce((rs, obj) => {
+    return deepmerge(rs, obj, { arrayMerge: overwriteMerge })
+  }, {})
+}
+
+function sort(by, direction, list) {
+  let sorted = []
+
+  if (direction === 'asc') {
+    sorted = list.sort((a, b) => (a[by] > b[by]) ? 1 : ((b[by] > a[by]) ? -1 : 0));
+  } else if (direction === 'desc') {
+    sorted = list.sort((a, b) => (a[by] < b[by]) ? 1 : ((b[by] < a[by]) ? -1 : 0));
+  }
+
+  return sorted;
+}
+
+function shorten(str, desiredLength) {
+  if (str.length <= desiredLength) {
+    return str; // No need to shorten the string
+  }
+
+  const charsToRemove = str.length - desiredLength + 3; // Adding 3 for the ellipsis "..."
+  const startChars = Math.ceil(charsToRemove / 2);
+  const endChars = charsToRemove - startChars;
+
+  return str.slice(0, -endChars) + "..." + str.slice(startChars);
+}
+
+function bytesToSize(bytes, options) {
+  if (typeof bytes === "string") {
+    bytes = parseInt(bytes, 10)
+  }
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) return '0 Byte';
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 (function () {
 
+  console.log("EDDING EXTENSIONS")
+
   $.extend({
-    url: function () {
-      return new URL(window.location.href);
+    uniqueId,
+    mergeById,
+    url: function (userUrl, params) {
+      const newUrl =  new URL(userUrl, window.location)
+
+      if (params) {
+        Object.keys(params).forEach((key) => {
+          newUrl.searchParams.set(key, params[key])
+        })
+      }
+
+      return newUrl
     },
     query: function (key) {
       const q = new URL(window.location.href).searchParams;
       if (key) return q.get(key);
-      return q;
+      return Object.fromEntries(q);
     },
     searchParams: function(params) {
       const q = new URLSearchParams(params);
@@ -632,17 +874,34 @@ function toQueryString(obj, prefix) {
     stickyHeader,
     scrollTop,
     dismiss,
+    toggleable,
     swap,
     differ,
     modals,
     toast,
     toggle: toggleEl,
-    toQueryString
+    toQueryString,
+    template,
+    utils: {
+      dashCase,
+      camelCase,
+      capitalize,
+      titleize,
+      createUrl,
+      isObject,
+      sort,
+      merge,
+      mergeById,
+      shorten,
+      bytesToSize
+    }
   });
 
   $.fn.extend({
     hide,
     show,
+    click,
+    swap: _swap,
     button,
     initState,
     formToObject,
@@ -650,13 +909,11 @@ function toQueryString(obj, prefix) {
     scrollTop,
     toggleBeetweenClasses,
     render,
-    renderRemote,
+    renderPartial,
     mutate: mutationObserver,
     disable,
     toggleElClass,
   });
 
-  swap()
-  toggles()
-  dismiss()
+  toggleable()
 })();

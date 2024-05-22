@@ -1,0 +1,152 @@
+<div class="sticky top-0 flex w-full bg-base-light dark:bg-base-darker z-10 shadow-lg">
+  <div class="grow">
+    {{#if title}}
+      {{{embed "_heading"
+         size="h2"
+         text=title
+         class="px-4 pt-4"
+      }}}
+    {{/if}}
+  </div>
+  {{#if closable}}
+    {{{embed "_button"
+      type="button"
+      icon="close"
+      style="link"
+      size="link"
+      class="inline-flex items-center me-4"
+      attributes=(attr data-dispatch="hb-unload-preview")
+    }}}
+  {{/if}}
+</div>
+
+{{#if values.id}}
+  {{{embed "_input" name="id" type="hidden"}}}
+{{/if}}
+
+<div data-form-container="{{values.id}}" class="grow overflow-y-auto grid grid-cols-12 gap-6 w-full py-8 px-6">
+  <div id="hb-type-main" class="group hb-main grid grid-cols-12 items-start content-start col-span-8 gap-x-4 gap-y-6 {{iIf values.id "px-0" "px-4"}}">
+    {{#each fields}}
+      {{#and (eq placement "main") (not (eq name "id"))}}
+        {{#with ../values as | values |}}
+          {{#eq ../type "group"}}
+
+            {{#embed "form/form-group"
+               id=../name
+               title=../title
+               name=../name
+               paddingX=(iIf (eq ../behaviour "list") 0 4)
+               paddingY=(iIf (eq ../behaviour "list") 0 8)
+               attributes=(iIf (eq ../behaviour "list") (attr data-list-group=../name) (attr data-group=../name)) }}
+
+              {{#content "body"}}
+                {{#not (eq ../../behaviour "list")}}
+                  {{#each ../../children}}
+                    {{#eq type "header"}}
+                      {{{embed "_heading" size="h5" margin=0 text=title class="col-span-12 py-4 ps-4 border-b-2 border-gray-800"}}}
+                    {{else}}
+                      {{{embed "_input"
+                         autoload=true
+                         label=title
+                         name=(concat ../../../name "[" name "]")
+                         cols=columns
+                         items=options
+                         autoInit=false
+                         minLength=(get "constrainValue" (find "constrain" "min-length" constrains))
+                         maxLength=(get "constrainValue" (find "constrain" "max-length" constrains))
+                         min=(get "constrainValue" (find "constrain" "min" constrains))
+                         max=(get "constrainValue" (find "constrain" "max" constrains))
+                         required=required
+                         pattern=(get "constrainValue" (find "constrain" "pattern" constrains))
+                      }}}
+                    {{/eq}}
+                  {{/each}}
+                {{else}}
+                  {{{embed "_table"
+                     id=(concat ../../name "-table")
+                     ssr=false
+                     compact=true
+                     class="col-span-12"
+                     collection=../../../collection
+                     headers=(get ../../id ../../../headers)
+                     rows=(get ../../name values)
+                     attributes=(attr data-group=../../id)
+                     maxHeight=64
+                  }}}
+                {{/not}}
+              {{/content}}
+              {{#content "actions"}}
+                {{#eq ../../behaviour "list"}}
+                  <div class="grow"></div>
+                  {{{embed "_button"
+                     style="link"
+                     size="link"
+                     text="New entry"
+                     color="gray"
+                     class=""
+                     attributes=(attr data-dispatch="hb-add-to-group-list" data-groupid=../../id)
+                  }}}
+                {{/eq}}
+              {{/content}}
+            {{/embed}}
+          {{else eq ../type "header"}}
+            {{{embed "_heading"
+               size="h5"
+               margin=0
+               text=../title
+               class="col-span-12 py-4 ps-4 border-b-2 border-gray-800"
+            }}}
+          {{else}}
+            {{#with ../this}}
+              {{{embed "_input"
+                 autoload=true
+                 label=title
+                 cols=columns
+                 items=options
+                 autoInit=false
+                 minLength=(get "constrainValue" (find "constrain" "min-length" constrains))
+                 maxLength=(get "constrainValue" (find "constrain" "max-length" constrains))
+                 min=(get "constrainValue" (find "constrain" "min" constrains))
+                 max=(get "constrainValue" (find "constrain" "max" constrains))
+                 required=required
+                 pattern=(get "constrainValue" (find "constrain" "pattern" constrains))
+              }}}
+            {{/with}}
+          {{/eq}}
+        {{/with}}
+      {{/and}}
+    {{/each}}
+  </div>
+
+  <div id="hb-type-sidebar" class="group hb-sidebar col-span-4 flex flex-col gap-6">
+    <div id="hb-modules-placeholder" class="{{iIf values.id "" "flex flex-col gap-4"}}">
+      {{#if (not values.id)}}
+        <div
+          class="flex items-center justify-center border-[3px] border-dashed h-24 border-gray-800 rounded-lg text-gray-700">
+          Publishing
+        </div>
+        <div
+          class="flex items-center justify-center border-[3px] border-dashed h-24 border-gray-800 rounded-lg text-gray-700">
+          Categories
+        </div>
+      {{/if}}
+    </div>
+    {{#each fields}}
+      {{#if (eq placement "sidebar")}}
+        {{{embed "_input"
+           type=type
+           autoload=true
+           label=title
+           cols=columns
+           items=options
+           minLength=(get "constrainValue" (find "constrain" "min-length" constrains))
+           maxLength=(get "constrainValue" (find "constrain" "max-length" constrains))
+           min=(get "constrainValue" (find "constrain" "min" constrains))
+           max=(get "constrainValue" (find "constrain" "max" constrains))
+           required=required
+           pattern=(get "constrainValue" (find "constrain" "pattern" constrains))
+        }}}
+      {{/if}}
+    {{/each}}
+  </div>
+</div>

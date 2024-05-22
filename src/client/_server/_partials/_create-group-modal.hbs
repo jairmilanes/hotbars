@@ -1,0 +1,18 @@
+{{#embed "_modal" id=id title="Test" closable=true size="sm" textAlign="left"}}
+  {{#content "body"}}
+    {{{embed "_heading" size="h4" text=(iIf values.id (concat (iIf (eq type "list") "Edit list: " "Edit group: ") values.name) (iIf (eq type "list") "New list" "New group"))}}}
+    {{#embed "_form" id="hb-create-group-form" layout="grid" preventDefault=true ajax=false gap=2 wrap=true class=""}}
+      {{#content "body"}}
+        {{{embed "_input" name="id" type="hidden"}}}
+        {{{embed "_input" name="name" type="hidden"}}}
+        {{{embed "_input" name="order" type="hidden"}}}
+        {{{embed "_input" name="type" value="group" type="hidden"}}}
+        {{{embed "_input" name="placement" value="main" type="hidden"}}}
+        {{#eq type "list"}}
+          {{{embed "_input" name="behaviour" value="list" type="hidden"}}}
+        {{/eq}}
+        {{{embed "_input" name="title" type="text" size="sm" cols=12 placeholder="Name" label="Name"}}}
+      {{/content}}
+    {{/embed}}
+  {{/content}}
+{{/embed}}

@@ -1,0 +1,31 @@
+<div id="hb-collections" class="grow overflow-auto"></div>
+<div id="hb-data-items-footer" class="p-2 border-t text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+  <div id="hb-collection-form" class="hidden">
+    {{#embed "_form"
+             id="collection-form"
+             action="/_api/collections"
+             method="POST"
+             ajax=true
+             validation=false
+             layout="col"
+    }}
+      {{#content "body"}}
+        <div class="flex gap-4">
+          {{{embed "_input" name="single" type="radio" label="Multi entry" checked=true value="false"}}}
+          {{{embed "_input" name="single" type="radio" label="Single entry" checked=false value="true"}}}
+        </div>
+        {{{embed "_input" name="name" type="text" placeholder="New collection name" autofocus=true}}}
+      {{/content}}
+      {{#content "submit"}}
+        <div class="flex gap-2">
+          {{{embed "_button" id="hb-save-collection" type="submit" text="Create colection" width="full" color="rose" suffixIcon="add_circle_outline" class="grow"}}}
+          {{{embed "_button" id="hb-cancel-collection" color="gray" icon="close" attributes=(attr data-swap="hb-new-collection" data-swap-target="hb-collection-form")}}}
+        </div>
+      {{/content}}
+    {{/embed}}
+  </div>
+  {{{embed "_button" id="hb-new-collection" text="Create new" width="full" color="gray" suffixIcon="add_circle_outline" attributes=(attr data-swap="hb-collection-form")}}}
+</div>
+<div hb-loader="true" class="hidden flex justify-center items-center absolute top-0 bottom-0 left-0 right-0">
+  {{{embed "_spinner" size="14"}}}
+</div>

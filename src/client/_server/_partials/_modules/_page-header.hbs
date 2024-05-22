@@ -1,0 +1,16 @@
+<section class="container mx-auto grid grid-cols-1 {{class}}">
+  <div class="flex">
+    {{#or title}}
+      <div class="flex flex-col grow">
+        <div class="flex gap-1 items-center">
+          {{#if backBtn}}
+            {{{embed "_button" type="_button" icon="arrow_back_ios" style="link" size="link" iconSize="3xl" prefix="" text="" suffix="" class="" attributes=(attr data-dispatch="hb-nav-backward")}}}
+          {{/if}}
+          {{> "_heading" size="h4" prefix=prefix text=title suffix=suffix margin=0 class="grow"}}
+        </div>
+      </div>
+    {{/or}}
+    {{{block "actions"}}}
+  </div>
+  {{{block "hero"}}}
+</section>

@@ -1,0 +1,13 @@
+<section data-view-type="{{name}}" class="grow flex flex-col pt-4 relative overflow-hidden whitespace-nowrap bg-base-light dark:bg-base-pitch">
+  {{#if headers}}
+    {{{embed "_table"
+       id=id
+       baseUrl=baseUrl
+       collection=collection
+       headers=headers
+       paging=type.enablePagination
+       searchable=type.enableSearch
+      actions=true
+    }}}
+  {{/if}}
+</section>

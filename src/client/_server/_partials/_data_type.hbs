@@ -1,0 +1,22 @@
+{{#block "_data_type"}}
+  <h4
+    tabindex="-1"
+    data-list-item="{{id}}"
+    class="flex block hover:bg-base-lighter dark:hover:bg-base-darker border-b border-base-light dark:border-base-dark">
+    <a
+      href="/_hotbars/_data-types?type={{name}}"
+      data-id="{{id}}"
+      data-single="{{single}}"
+      class="flex grow py-4 px-4">
+      {{#eq single "true"}}
+        <span class="material-symbols-outlined mr-2 text-gray-500">data_object</span>
+      {{else}}
+        <span class="material-symbols-outlined mr-2 text-gray-500">list_alt</span>
+      {{/eq}}
+      <span class="grow">{{default title "(no name)"}}</span>
+    </a>
+
+    <div hb-actions="true" class="flex gap-2">
+    </div>
+  </h4>
+{{/block}}

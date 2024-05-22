@@ -1,0 +1,35 @@
+<div id="{{id}}-collapsable"
+     class="relative col-span-12 flex flex-col items-start h-64 gap-0 h-full overflow-hidden {{class}}"
+  {{#if (isObject attributes)}}
+    {{attr attributes}}
+  {{/if}}
+  {{#if (isString attributes)}}
+    {{{attributes}}}
+  {{/if}}
+>
+  {{{embed "_heading" size=(default headingSize "h5") margin=0 text=title class="w-full col-span-12 py-4 ps-4 border-b-1 border-gray-800"}}}
+
+  <div id="{{concat name "-collapse"}}" class="peer/{{name}} w-full grow open col-span-12 grid grid-cols-12 gap-0 overflow-hidden">
+    <div class="col-span-12 grid grid-cols-12 h-full overflow-hidden gap-4 px-{{default paddingX 4}} py-{{default paddingY 8}}">
+      {{{block "body"}}}
+    </div>
+  </div>
+  {{{embed "_button"
+           style="link"
+           size="link"
+           icon="expand_less"
+           iconSize="icon3xl"
+           color="gray"
+           class=(concat "peer-[.open]/" name ":block hidden absolute top-3 right-2.5 text-body-light hover:text-body-dark")
+           attributes=(attr data-toggleable=(concat name "-collapse"))
+  }}}
+  {{{embed "_button"
+           style="link"
+           size="link"
+           iconSize="icon3xl"
+           icon="expand_more"
+           color="gray"
+           class=(concat "peer-[.open]/" name ":hidden block absolute top-3 right-2.5 text-3xl text-body-light hover:text-body-dark")
+           attributes=(attr data-toggleable=(concat name "-collapse"))
+  }}}
+</div>

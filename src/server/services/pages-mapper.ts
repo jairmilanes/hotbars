@@ -3,41 +3,64 @@ import * as _ from "lodash";
 import { logger } from "../../services";
 import { SafeObject } from "../types";
 
+const parse = (name: string, path: string) => {
+  if (name.startsWith("[")) {
+    // Path is a param, check for closing tag
+    if (!name.endsWith("]")) {
+      logger.warn(
+        `%p%P Route ${path} is missing a closing tag "]", if not fixed it will not be dynamically interpreted.`,
+        4,
+        2
+      );
+      return `${name}]`
+    } else {
+      const paramName = name.replace(/\[|\]/g, "");
+      return `:${paramName}`
+    }
+  } else if (name !== "index") {
+    return name
+  }
+}
+
 const parsePath = (
   viewsPath: string,
   path: string,
   extname: string,
-  securePath: string
+  securePath: string,
+  prefix?: string
 ): { route: string; view: string } => {
   const pathParts: string[] = path.replace(`${viewsPath}/`, "").split("/");
   const routeParts: string[] = [];
   const viewParts: string[] = [];
 
   pathParts.forEach((part) => {
-    const name = part.replace(`.${extname}`, "");
+    let name = part.replace(`.${extname}`, "");
 
     if (part === securePath) {
-      return viewParts.push(name);
+      return viewParts.push(name)
     }
 
-    if (name.startsWith("[")) {
-      // Path is a param, check for closing tag
-      if (!name.endsWith("]")) {
-        logger.warn(
-          `%p%P Route ${path} is missing a closing tag "]", if not fixed it will not be dynamically interpreted.`,
-          4,
-          2
-        );
-        routeParts.push(`${name}]`);
+    let prefix = ""
+
+    if (name.startsWith("_")) {
+      prefix = name.substring(0, 1)
+      name = name.substring(1)
+    }
+
+    const parsed = parse(
+      name,
+      path
+    )
+
+    if (parsed) {
+      if (!parsed.startsWith(":")) {
+        routeParts.push(`${prefix}${parsed}`)
       } else {
-        const paramName = name.replace(/\[|\]/g, "");
-        routeParts.push(`:${paramName}`);
+        routeParts.push(parsed)
       }
-    } else if (name !== "index") {
-      routeParts.push(name);
     }
 
-    viewParts.push(name);
+    viewParts.push(`${prefix}${name}`)
   });
 
   return {
@@ -76,7 +99,7 @@ export const mapPages = (
   paths.forEach((entry, index) => {
     const { route, view } = parsePath(viewsPath, entry, extname, securePath);
 
-    pages[route] = view;
+      pages[route] = view;
 
     if (_.isFunction(callback)) {
       callback(route, view);

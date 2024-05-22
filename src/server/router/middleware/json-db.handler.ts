@@ -1,8 +1,11 @@
-import { set } from "lodash";
-import { Config, Server } from "../../core";
+import { merge } from "lodash"
+import { Config, EventManager, Server, ServerEvent } from "../../core";
 import { createJsonRouter } from "../../services";
-import { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { DataManager } from "../../data";
+import { RequestEnhanced, User } from "../../types";
+import { replaceRouter } from "../replace";
+import { split } from "../../../utils";
 
 const JSON_DB = "jsonDb";
 
@@ -13,6 +16,7 @@ const collections = async (req: Request, res: Response) => {
 
   for (let i = 0; i < collections.length; i++) {
     const result = await db.from(collections[i]).limit(2)
+
     results.push({
       id: collections[i],
       name: collections[i],
@@ -30,6 +34,8 @@ const createCollection = async (req: Request, res: Response) => {
 
   await DataManager.get(JSON_DB).createCollection(req.body.name, req.body.single === "true");
 
+  EventManager.i.emit(ServerEvent.ROUTES_CHANGED, {});
+
   res.json({ message: `Collection "${req.body.name}" created!`});
 };
 
@@ -40,19 +46,64 @@ const deleteCollection = async (req: Request, res: Response) => {
 
   await DataManager.get(JSON_DB).deleteCollection(req.params.name);
 
+  EventManager.i.emit(ServerEvent.ROUTES_CHANGED, {});
+
   res.json({ message: `Collection "${req.params.name}" deleted!`});
 };
 
+const metaMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  if (["PATCH", "POST", "PUT"].indexOf(req.method.toUpperCase()) > -1) {
+    const meta: any = {
+      status: "draft",
+      visibility: "public",
+    }
+
+    if (req.method.toUpperCase() === "POST") {
+      meta.createdAt = Date.now();
+      meta.updatedAt = Date.now();
+      meta.userId = (req.user as User | undefined)?.id;
+    }
+
+    if (req.method.toUpperCase() === "PATCH" || req.method.toUpperCase() === "PUT") {
+      const [collection, identifyer] = split(req.path, "/");
+      meta.updatedAt = Date.now();
+
+      if (!req.body?.meta?.userId) {
+        meta.userId = (req.user as User | undefined)?.id;
+      }
+
+      const entry = await DataManager.get()
+        .from(collection)
+        .get(identifyer)
+
+      res.locals.previousData = merge({}, entry)
+    }
+
+    req.body = merge({ meta }, req.body)
+  }
+
+  next()
+}
+
+const createRouter = () => {
+  const jsonRouter = createJsonRouter();
+  const customRouter = express.Router()
+
+  customRouter.get("/collections", collections);
+  customRouter.post("/collections", createCollection);
+  customRouter.delete("/collections/:name", deleteCollection);
+
+  return [customRouter, metaMiddleware, jsonRouter]
+}
+
+const reloadJsonServer = () => {
+  replaceRouter("jsonDb", createJsonRouter());
+}
+
 export const jsonDbHandler = () => {
+  EventManager.i.on(ServerEvent.ROUTES_CHANGED, reloadJsonServer)
+
   if (Config.enabled("jsonServer") && Config.get(JSON_DB)) {
-    const jsonRouter = createJsonRouter();
-
-    set(jsonRouter, "_source", "jsonDb");
-
-    jsonRouter.get("/collections", collections);
-    jsonRouter.post("/collections", createCollection);
-    jsonRouter.delete("/collections/:name", deleteCollection);
-
-    Server.app.use("/_api", jsonRouter);
+    Server.app.use("/_api", ...createRouter());
   }
 };

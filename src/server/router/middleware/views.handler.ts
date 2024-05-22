@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import express, { Request, Response } from "express";
 import { RequestHandler } from "express-serve-static-core";
 import { logger } from "../../../services";
-import { Config, DashboardConfig, EventManager, Server, ServerEvent } from "../../core";
+import { Config, EventManager, Server, ServerEvent } from "../../core";
 import { mapPages } from "../../services";
 import { Controllers } from "../../controllers";
 import { AutoRouteConfig, Env } from "../../types";

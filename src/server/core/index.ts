@@ -8,3 +8,4 @@ export * from "./event-manager";
 export * from "./context-config";
 export * from "./env-manager";
 export * from "./versioning";
+export * from "./cache";

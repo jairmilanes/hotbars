@@ -39,9 +39,9 @@ const getStatus = async (req: Request, res: Response) => {
   }
 }
 
-const deployCode = (req: Request, res: Response) => {
+/* const deployCode = (req: Request, res: Response) => {
 
-}
+} */
 
 const reloadEnvs = async (req: Request, res: Response) => {
   if (enabled(res)) {
@@ -91,7 +91,7 @@ export const deploymentHandler = () => {
   const router = express.Router()
 
   router.get("/status", getStatus)
-  router.get("/deploy", deployCode)
+  // router.get("/deploy", deployCode)
   router.post("/env/:envId/sync", syncEnv)
   router.post("/env/:envId/notify", notifyEnv)
   router.post("/env/:envId/push", notifyEnv)

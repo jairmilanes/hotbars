@@ -1,0 +1,16 @@
+{{#embed "_modal" id=id closable=true}}
+  {{#content "body"}}
+    <span class="material-symbols-outlined mx-auto mb-4 text-gray-400 dark:text-gray-200 {{_icon size="7xl"}} {{_color (default iconColor "white") 600}}">info</span>
+    {{{embed "_heading" size="h4" text=message align="center" margin=2}}}
+    {{#if description}}
+      <p class="text-center mb-6">{{description}}</p>
+    {{/if}}
+    {{{embed "_button"
+       id=""
+       type="button"
+       color="gray"
+       text=(default confirmText "Ok, got it!")
+       attributes=(attr data-dismiss=id)
+    }}}
+  {{/content}}
+{{/embed}}

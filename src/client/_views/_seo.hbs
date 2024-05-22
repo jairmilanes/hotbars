@@ -18,11 +18,11 @@
       <ul id="hb-pages-list" class="w-full grid grid-cols-12 gap-4">
         {{#filter routes "pages" property="source"}}
           {{#filter routes "/" property="path"}}
-            {{{embed "pages/seo/page-list-item" }}}
+            {{{embed "_pages/seo/page-list-item" }}}
           {{/filter}}
           {{#each (sort routes)}}
             {{#not (eq this.path "/")}}
-              {{{embed "pages/seo/page-list-item" }}}
+              {{{embed "_pages/seo/page-list-item" }}}
             {{/not}}
           {{/each}}
         {{/filter}}
@@ -30,6 +30,6 @@
     </section>
   {{/content}}
   {{#content "scripts"}}
-    {{scripts "/public/hotbars/seo.js"}}
+    {{scripts "/app/seo.js"}}
   {{/content}}
 {{/extend}}

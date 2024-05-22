@@ -1,0 +1,34 @@
+{{var "hidden" (iIf (value name) "hidden" "")}}
+{{#embed "form/text"
+   type="file"
+   size="checkbox"
+   name=name
+   value=""
+   accept=(get "type-upload-accept" this)
+   class="flex flex-col"
+   inputClass=(var "hidden")
+   attributes=(attr
+     data-file-id=(get "id" (value name))
+     data-max-size=(get "type-upload-max-size" this)
+     data-auto-init=(default autoInit true)
+   )
+}}
+  {{#content "prefixCustom"}}
+    <div data-upload-preview="{{../name}}" class="relative overflow-hidden rounded-lg mb-4 {{#if (value ../name)}}{{else}}hidden{{/if}}">
+      {{#if (eq (get "type-upload-accept-type" ../this) "image")}}
+        <img src="{{get "url" (value ../name)}}" alt="" class="w-full h-auto" />
+        <p class="text-sm opacity-75">{{get "fileName" (value ../name)}}</p>
+      {{else}}
+        <p>{{get "fileName" (value ../name)}}</p>
+      {{/if}}
+      {{{embed "_button"
+         id=(concat ../name "-close")
+         type="button"
+         style="link"
+         size="link"
+         icon="close"
+         class="absolute top-3 right-3 left-auto bottom-auto"
+      }}}
+    </div>
+  {{/content}}
+{{/embed}}

@@ -43,7 +43,6 @@ if ("WebSocket" in window) {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log("HOT Reloading", data);
 
       if (data === "close") {
         return window.close();

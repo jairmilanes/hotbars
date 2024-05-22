@@ -1,0 +1,20 @@
+{{#gt count 0}}
+  <li class="border-b border-base-light dark:border-base-darker">
+    {{{embed "_button"
+             size="link"
+             style="link"
+             text=text
+             width="full"
+             class="py-2 px-4"
+             attributes=(attr data-dispatch="hb-autocomplete-select" data-id=id data-target=name)
+    }}}
+  </li>
+{{else}}
+  <div class="absolute top-0 right-0 left-0 bottom-0 flex flex-col items-center justify-center">
+    <div class="flex flex-col items-center justify-center">
+      <span class="material-symbols-outlined text-3xl text-base-lighter dark:text-base-darker">info</span>
+      <p class="text-base-lighter dark:text-base-dark">No results found.</p>
+    </div>
+  </div>
+{{/gt}}
+

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import glob from "glob";
 import * as _ from "lodash";
 import { logger } from "../services";
@@ -11,6 +11,7 @@ import { GeneratedData, SchemaConfig, SchemasPropsMap } from "./types";
 import { parseOneToOne, parseOneToMany } from "./relations";
 import { initHooks } from "./hooks";
 import { parseAllProps } from "./prop-parser";
+import { readJson, readJsonSync } from "fs-extra";
 
 const loadSchema = (path: string): SchemaConfig | undefined => {
   const schemaConfig: SchemaConfig | undefined = loadFile(path);
@@ -43,7 +44,7 @@ export const generateData = (schemasList: SchemaConfig[]): GeneratedData => {
 
       props[schemaConfig.name] = parseAllProps(schemaConfig);
 
-      logger.debug(`%p%P props: %o`, 1, 1, _.keys(props[schemaConfig.name]));
+      logger.debug(`%p%P Required values %o`, 1, 1, _.keys(props[schemaConfig.name]));
 
       const records = {
         ...data,
@@ -96,19 +97,22 @@ export const generateData = (schemasList: SchemaConfig[]): GeneratedData => {
   return hooks.afterAll ? hooks.afterAll(data, schemasList, props) : data;
 };
 
-export const generateDb = (): void => {
+export const generateDb = (schemaName?: string, overwrite = false): void => {
   const schemaDir = Config.relGlobPath("jsonSchema");
-  const paths = glob.sync(schemaDir);
+  const paths = glob
+    .sync(schemaDir)
+    .filter((path) =>
+      !schemaName || (schemaName && path.endsWith(`${schemaName}.json`))
+    );
 
   logger.log("Begining schema mapping...");
   logger.debug("%p%P Source path %s", 1, 1, schemaDir);
-  logger.debug("%p%P %O", 1, 1, paths);
 
   const data = generateData(
     _.map(
       _.filter(paths, (p) => !_.endsWith(p, "hooks.js")),
       (path, i) => {
-        logger.info("%p %s %s", 1, i, path);
+        logger.silly("%p %s %s", 1, i, path);
         return loadSchema(path) as SchemaConfig;
       }
     )
@@ -120,10 +124,29 @@ export const generateDb = (): void => {
   logger.info("Saving results to %s", joinPath(dbDirectory, jsonDb));
 
   if (!existsSync(dirname(dbDirectory))) {
+    logger.info("-- Create dir", dirname(dbDirectory))
     mkdirSync(dirname(dbDirectory));
   }
 
-  writeFileSync(joinPath(dbDirectory, jsonDb), JSON.stringify(data, null, 4));
+  if (overwrite) {
+    logger.info("Overwriting", joinPath(dbDirectory, jsonDb))
+    writeFileSync(joinPath(dbDirectory, jsonDb), JSON.stringify(data, null, 4));
+  } else {
+    logger.info("Merging", joinPath(dbDirectory, jsonDb))
+    const currentData: any = readJsonSync(joinPath(dbDirectory, jsonDb))
+
+    // logger.info("-- Current data", Object.keys(currentData))
+
+    const tables = Object.keys(data)
+
+    // logger.info("-- NEW data", Object.keys(data))
+
+    for( let i = 0; i < tables.length; i++) {
+      currentData[tables[i]] = data[tables[i]]
+    }
+
+    writeFileSync(joinPath(dbDirectory, jsonDb), JSON.stringify(currentData, null, 4));
+  }
 
   logger.log("Fake data generated successfully!");
 };

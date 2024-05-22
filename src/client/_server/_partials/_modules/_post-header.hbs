@@ -1,0 +1,23 @@
+<header class="mb-4 lg:mb-6 not-format">
+  {{#if page.user}}
+  <address class="flex items-center mb-6 not-italic">
+    <div class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
+      <img class="mr-4 w-16 h-16 rounded-full" src="{{page.user.avatar.url}}" alt="{{page.user.firstName}} {{page.user.lastName}}">
+      <div>
+        <a href="{{concat "/_hotbars/profile/" page.user.id}}" rel="author" class="text-xl font-bold text-gray-900 dark:text-white">
+          {{page.user.firstName}} {{user.lastName}}
+        </a>
+        <!--<p class="text-base text-gray-500 dark:text-gray-400">Graphic Designer, educator & CEO Flowbite</p>-->
+        {{#if page.updatedAt}}
+          <p class="text-base text-gray-500 dark:text-gray-400">
+            <time pubdate datetime="2022-02-08" title="February 8th, 2022">
+              {{page.date}}
+            </time>
+          </p>
+        {{/if}}
+      </div>
+    </div>
+  </address>
+  {{/if}}
+  {{{embed "_heading" size="h1" text=page.title size=(default page.headeSize "3xl") class="mb-4 font-extrabold leading-tight"}}}
+</header>

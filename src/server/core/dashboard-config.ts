@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import {
   AuthConfig,
-  BaseOptions,
+  BaseOptions, CacheConfig,
   CliOptions,
   Env,
   LanguageConfig,
@@ -17,6 +17,7 @@ export class DashboardConfig
 {
   debug = false;
   env: Env = Env.Local;
+  dev = false;
   base = "/_hotbars";
   encoding = "utf-8" as BufferEncoding;
   extname = "hbs";
@@ -24,23 +25,51 @@ export class DashboardConfig
   source = ".";
   language: LanguageConfig = {
     enabled: false,
-    languages: ["en"],
-    default: "en",
+    options: [
+      {
+        name: "English",
+        code: "en",
+        date: {
+          format: "LLL"
+        },
+        currency: {
+          sign: "$",
+          code: "USD"
+        }
+      }
+    ],
+    default: {
+      name: "English",
+      code: "en",
+      date: {
+        format: "LLL"
+      },
+      currency: {
+        sign: "$",
+        code: "USD"
+      }
+    }
   };
-  data = "_data";
-  helpers = "_helpers";
-  lib = "_lib";
-  layouts = "_layouts";
-  partials = "_partials";
+  app = "_app";
+  data = "_server/_data";
+  helpers = "_server/_helpers";
+  controllers = "_server/_controllers";
+  layouts = "_server/_layouts";
+  default_views = "_server/_default_views";
+  lib = "_server/_lib";
+  partials = "_server/_partials";
+  shared = "_server/_components";
   precompile = "_precompile";
-  shared = "_shared";
   views = "_views";
-  controllers = "_controllers";
   styleMode: StylesType = "scss";
   styles = "_styles";
   scripts = "scripts";
   public = "_public";
-  default_views = "_default_views";
+  cache: CacheConfig = {
+    enabled: true,
+    type: "file",
+    expire: 8600
+  };
   auth: AuthConfig = {
     enabled: true,
     path: "auth",
@@ -54,8 +83,8 @@ export class DashboardConfig
     rememberMe: 604800000,
     terms: undefined,
     views: {
-      signInRedirect: "_hotbars/_index",
-      signUpRedirect: "_hotbars/_index",
+      signInRedirect: "_hotbars/",
+      signUpRedirect: "_hotbars/",
       signIn: "_hotbars/_sign-in",
       signUp: "_hotbars/_sign-up",
       signUpPending: "_hotbars/_sign-up-pending",
@@ -93,10 +122,13 @@ export class DashboardConfig
 
     this.root = resolvePath(__dirname, "..", "..", "client");
     this.env = (argv.env as Env) || Env.Local;
+    this.dev = argv.dev || false;
 
-    if (this.language.default) {
-      this.set("currentLanguage", this.language.default);
-    }
+    _.set(
+      this.customProps,
+      "currentLanguage",
+      this.language.default
+    );
 
     ["data", "partials", "layouts", "templates"].forEach((name) =>
       _.set(
@@ -106,7 +138,7 @@ export class DashboardConfig
       )
     );
 
-    if (this.env === Env.Local) {
+    if (this.dev) {
       this.watch = [
         this.fullGlobPath("controllers"),
         this.fullGlobPath("data"),
@@ -115,6 +147,7 @@ export class DashboardConfig
         this.fullGlobPath("layouts"),
         this.fullGlobPath("partials"),
         this.fullGlobPath("shared"),
+        this.fullGlobPath("precompile"),
         this.fullGlobPath("views"),
         this.fullGlobPath("public"),
         this.fullGlobPath("default_views"),
@@ -125,7 +158,9 @@ export class DashboardConfig
       ]
     }
 
-    this.ignore = [this.fullPath("public", "bundles")];
+    this.ignore = [
+      this.fullPath("public", "bundles")
+    ];
   }
 
   static create(argv: CliOptions): Readonly<DashboardConfig> {

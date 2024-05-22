@@ -1,0 +1,13 @@
+<div id="hb-data-item-editor" class="flex flex-col h-full w-full ">
+  <div class="flex items-center p-2 border-t text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+    <h4 id="hb-editor-title" class="grow opacity-[75%]"></h4>
+    {{{embed "_button" id="hb-close-editor" class=null style="link" color="gray-300" size="icon" icon="close"}}}
+  </div>
+  <div id="hb-editor-container" class="grow"></div>
+  <div class="p-2 border-t text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+    {{{embed "_button" id="hb-save-item" class=null type="button" text="Save" width="full" color="rose" }}}
+  </div>
+</div>
+<div hb-loader="true" class="hidden flex justify-center items-center absolute top-0 bottom-0 left-0 right-0">
+  {{{embed "_spinner" size="14"}}}
+</div>

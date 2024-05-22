@@ -1,14 +1,9 @@
-import { RecordKey } from "@faker-js/faker/modules/helpers/unique";
-import { faker } from "@faker-js/faker/locale/pt_BR";
+
+// import { faker } from "@faker-js/faker/locale/pt_BR";
 import { hashSync } from "bcryptjs";
 import { SafeAny } from "../server/types";
 
-export type UniqueCompareCallback = (
-  store: Record<RecordKey, RecordKey>,
-  key: RecordKey
-) => 0 | -1;
-
-export type CompareCallbacks = { [prop: string]: UniqueCompareCallback };
+export type UniqueMethod = (fn: ((...args: any[]) => any) | false, args?: any[], options?: Record<string, any>) => any
 
 export interface RalationMapping {
   [tableName: string]: {
@@ -27,7 +22,7 @@ export interface PropConfig {
   prop: string;
   module?: string;
   method: string;
-  unique?: typeof faker.helpers.unique;
+  unique?: UniqueMethod;
   hash?: typeof hashSync;
   args: any[];
   relation?: PropRelation;

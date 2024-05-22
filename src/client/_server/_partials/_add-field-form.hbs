@@ -1,0 +1,118 @@
+{{{embed "_heading" size="h4" text=(iIf values.id (concat "Edit field: " values.name) "New field")}}}
+{{#embed "_form" id="hb-add-field-form" title="New field" validation=true layout="grid" gap=4 wrap=true preventDefault=true class=""}}
+  {{#content "body"}}
+    {{clear "id"}}
+    {{{embed "_input" name="id" type="hidden"}}}
+    {{{embed "_input" name="name" type="hidden"}}}
+    {{{embed "_input" name="order" type="hidden"}}}
+    {{{embed "_input" name="groupName" type="hidden"}}}
+    {{{embed "_input" name="title" type="text" size="sm" required=true cols=4 placeholder="Name" label="Name" hint="Don't use underlines or dashes eg: My field"}}}
+    {{{embed "_input" name="type" type="select" size="sm" required=true cols=3 placeholder="Type" label="Type" items=fieldTypes }}}
+    {{{embed "_input" name="placement" type="select" required=true size="sm" cols=3 placeholder="Placement" label="Placement" items=positions }}}
+    {{{embed "_input" name="columns" type="select" size="sm" cols=2 placeholder="Width" disabled=(iIf (eq values.placement "sidebar") "disabled" null) label="Width" items=columns }}}
+    {{{embed "_input" name="placeholder" type="text" required=null size="sm" cols=6 placeholder="A field placeholder" label="Placeholder"}}}
+    {{{embed "_input" name="defaultValue" type="text"required=null label="Default value" size="sm" cols=6 placeholder="Default value"}}}
+    {{{embed "_input" name="hint" type="text" size="sm"required=null cols=12 placeholder="Hint about this field" label="Hint"}}}
+
+    <div class="col-span-12 pt-4">
+      <h5>Options</h5>
+    </div>
+
+    {{{embed "_input" name="type-zip-format" required=null type="select" label="Format" size="sm" cols=12 items=zipFormats class=(iIf (eq values.type "zip") "" "hidden")}}}
+    {{{embed "_input" name="type-zip-pattern" type="hidden" value=otherFormats.zip.pattern }}}
+    {{{embed "_input" name="type-credit-card-pattern" type="hidden" value=otherFormats.creditCard.pattern }}}
+    {{{embed "_input" name="type-credit-card-format" type="hidden" value=otherFormats.creditCard.format }}}
+    {{{embed "_input" name="type-alpha-pattern" type="hidden" value=otherFormats.alpha.pattern }}}
+    {{{embed "_input" name="type-alphanumeric-pattern" type="hidden" value=otherFormats.alphanumeric.pattern }}}
+    {{{embed "_input" name="type-cpf-format" type="hidden" value=otherFormats.cpf.format }}}
+    {{{embed "_input" name="type-cpf-pattern" type="hidden" value=otherFormats.cpf.pattern}}}
+    {{{embed "_input" name="type-cnpj-format" type="hidden" value=otherFormats.cnpj.format}}}
+    {{{embed "_input" name="type-cnpj-pattern" type="hidden" value=otherFormats.cnpj.pattern}}}
+    {{{embed "_input" name="type-cpf-cnpj-format" type="hidden" value=otherFormats.cpfCnpj.format}}}
+    {{{embed "_input" name="type-cpf-cnpj-pattern" type="hidden" value=otherFormats.cpfCnpj.pattern}}}
+
+    {{{embed "_input" name="type-phonenumber-format" required=null type="select" label="Format" size="sm" cols=12 items=phoneFormats class=(iIf (eq values.type "phonenumber") "" "hidden")}}}
+    {{{embed "_input" name="type-phonenumber-pattern" type="hidden"}}}
+
+    {{{embed "_input" name="type-one-to-one-table" required=true type="select" label="Table" size="sm" cols=4 items=collections class=(iIf (eq values.type "one-to-one") "" "hidden") placeholder="Table name"}}}
+    {{{embed "_input" name="type-one-to-one-prop" disabled=true type="text" label="Property" size="sm" value="id" cols=4 items=properties class=(iIf (eq values.type "one-to-one") "" "hidden") placeholder="Property name"}}}
+    {{{embed "_input" name="type-one-to-one-display" type="select" label="Display property" size="sm" cols=4 items=properties class=(iIf (eq values.type "one-to-one") "" "hidden") placeholder="Display property"}}}
+
+    {{{embed "_input" name="type-one-to-many-table" required=true type="select" label="Table" size="sm" cols=4 items=collections class=(iIf (eq values.type "one-to-many") "" "hidden") placeholder="Table name"}}}
+    {{{embed "_input" name="type-one-to-many-prop" disabled=true type="text" label="Property" size="sm" value="id" cols=4 items=properties class=(iIf (eq values.type "one-to-many") "" "hidden") placeholder="Property name"}}}
+    {{{embed "_input" name="type-one-to-many-display" type="select" label="Display property" size="sm" cols=4 items=properties class=(iIf (eq values.type "one-to-many") "" "hidden") placeholder="Display property"}}}
+
+    {{{embed "_input" name="type-autocomplete-table" required=true type="select" label="Table" size="sm" cols=4 items=collections class=(iIf (eq values.type "autocomplete") "" "hidden") placeholder="Table name"}}}
+    {{{embed "_input" name="type-autocomplete-prop" required=true type="select" label="Property" size="sm" cols=4 items=properties class=(iIf (eq values.type "autocomplete") "" "hidden") placeholder="Property name"}}}
+    {{{embed "_input" name="type-autocomplete-display" type="select" label="Display property" size="sm" cols=4 items=properties class=(iIf (eq values.type "autocomplete") "" "hidden") placeholder="Display property"}}}
+
+    {{{embed "_input" name="type-dropzone-max-input" required=true type="number" label="Max files" size="sm" cols=6 class=(iIf (eq values.type "dropzone") "" "hidden") placeholder="Max number of files" class="grow"}}}
+    {{{embed "_input" name="type-dropzone-max-size" required=true type="number" label="Max file size" size="sm" cols=6 class=(iIf (eq values.type "dropzone") "" "hidden") placeholder="Max file size" class="grow"}}}
+    {{{embed "_input" name="type-dropzone-filename" required=true type="text" label="Filename" hint="Use {{time}}" size="sm" cols=6 class=(iIf (eq values.type "dropzone") "" "hidden") placeholder="my-folder"}}}
+    {{{embed "_input" name="type-dropzone-accept-type" required=true type="select" items=mimeTypes label="File types" size="sm" cols=6 class=(iIf (eq values.type "dropzone") "" "hidden") placeholder="Max file size" class="grow"}}}
+    {{{embed "_input" name="type-dropzone-accept" required=true type="text" label="File extensions" pattern="^\s*(?:\s*[^,\s]+(?:\s+[^,\s]+)*\s*(?:,\s*\s*[^,\s]+(?:\s+[^,\s]+)*\s*)*)?\s*$" hint="Customize the list of extensions as needed by removing or adding new ones." size="sm" cols=12 class=(iIf (eq values.type "dropzone") "" "hidden") placeholder=".jpg,.png,..." class="grow"}}}
+
+    {{{embed "_input" name="type-upload-max-size" required=true type="number" label="Max file size" size="sm" cols=6 class=(iIf (eq values.type "upload") "" "hidden") placeholder="Max file size" class="grow"}}}
+    {{{embed "_input" name="type-upload-folder" required=true type="text" label="Folder" hint="Files uploaded through this field will be stored in /public/uploads/{{folder}}." size="sm" cols=6 class=(iIf (eq values.type "upload") "" "hidden") placeholder="my-folder"}}}
+    {{{embed "_input" name="type-upload-filename" required=true type="text" label="Filename" hint="Use {{time}}" size="sm" cols=6 class=(iIf (eq values.type "upload") "" "hidden") placeholder="my-folder"}}}
+    {{{embed "_input" name="type-upload-accept-type" required=true type="select" items=mimeTypes label="File types" size="sm" cols=6 class=(iIf (eq values.type "upload") "" "hidden") placeholder="Max file size" class="grow"}}}
+    {{{embed "_input" name="type-upload-accept" required=true type="text" label="File extensions" pattern="^\s*(?:\s*[^,\s]+(?:\s+[^,\s]+)*\s*(?:,\s*\s*[^,\s]+(?:\s+[^,\s]+)*\s*)*)?\s*$" hint="Customize the list of extensions as needed by removing or adding new ones." size="sm" cols=12 class=(iIf (eq values.type "upload") "" "hidden") placeholder=".jpg,.png,..." class="grow"}}}
+
+    {{{embed "_input" name="type-select-options" required=true type="text" label="Values" size="sm" cols=12 class=(iIf (eq values.type "select") "" "hidden") placeholder="Add values separated by comma." class="grow"}}}
+
+    {{{embed "_input" name="type-checkbox-options" required=true type="text" label="Values" size="sm" cols=12 class=(iIf (eq values.type "checkbox") "" "hidden") placeholder="Add values separated by comma." class="grow"}}}
+
+    {{{embed "_input" name="type-radio-options" required=true type="text" label="Values" size="sm" cols=12 class=(iIf (eq values.type "checkbox") "" "hidden") placeholder="Add values separated by comma." class="grow"}}}
+
+    {{{embed "_input" name="type-date-format" required=null type="select" label="Format" size="sm" cols=12 items=dateFormats class=(iIf (eq values.type "date") "" "hidden")}}}
+    {{{embed "_input" name="type-date-pattern" type="hidden"}}}
+    {{{embed "_input" name="type-date-mask" type="hidden"}}}
+
+    {{{embed "_input" name="type-date-from" required=null type="date" label="From" size="sm" cols=6 class=(iIf (eq values.type "date") "" "hidden") placeholder="Date from" class="grow"}}}
+    {{{embed "_input" name="type-date-to" required=null type="date" label="To" size="sm" cols=6 class=(iIf (eq values.type "date") "" "hidden") placeholder="Date to" class="grow"}}}
+    {{{embed "_input" name="type-time-from" required=null type="time" label="From" size="sm" cols=6 class=(iIf (eq values.type "time") "" "hidden") placeholder="Time from" class="grow"}}}
+    {{{embed "_input" name="type-time-to" required=null type="time" label="To" size="sm" cols=6 class=(iIf (eq values.type "time") "" "hidden") placeholder="Time to" class="grow"}}}
+
+    {{{embed "_input" name="required" type="checkbox" size="sm" cols=3 label="Required" value="true" }}}
+    {{{embed "_input" name="readOnly" type="checkbox" size="sm" cols=3 label="Read only" value="true" }}}
+    {{{embed "_input" name="searchable" type="checkbox" size="sm" cols=3 label="Searchable" value="true" }}}
+    {{{embed "_input" name="sortable" type="checkbox" size="sm" cols=3 label="Sortable" value="true" }}}
+
+    <div id="hb-validation-form" class="col-span-12 pt-4 {{#eq (length validations) 0}}hidden{{/eq}}">
+      <h5>Constrains</h5>
+    </div>
+
+    <div id="hb-validations-list" class="col-span-12 flex flex-col {{#eq (length validations) 0}}hidden{{/eq}}">
+      {{#each values.constrains}}
+        {{embed "_validation-item" id=id constrain=constrain constrainValue=constrainValue}}
+      {{/each}}
+    </div>
+
+    <div id="hb-validation-form" class="col-span-12 flex gap-4 pb-4 {{#eq (length validations) 0}}hidden{{/eq}}">
+      {{{embed "_input" name="validate" type="select" size="sm" value="min" class="grow" items=validations}}}
+      {{{embed "_input" name="validate-equal-to" type="text" size="sm" placeholder="Field name" class=(iIf (eq values.validate "equal-to") "" "hidden") attributes=(attr data-allowed="text")}}}
+      {{{embed "_input" name="validate-pattern" type="text" size="sm" placeholder="[0-9]{3}" class=(iIf (eq values.validate "pattern") "" "hidden") attributes=(attr data-allowed="text")}}}
+      {{{embed "_input" name="validate-min" type="number" size="sm" placeholder="10" class=(iIf (eq values.validate "min") "" "hidden") attributes=(attr data-allowed="number,float,currency")}}}
+      {{{embed "_input" name="validate-max" type="number" size="sm" placeholder="10" class=(iIf (eq values.validate "max") "" "hidden") attributes=(attr data-allowed="number,float,currency")}}}
+      {{{embed "_input" name="validate-min-length" type="number" size="sm" placeholder="10" class=(iIf (eq values.validate "min-length") "" "hidden") attributes=(attr data-allowed="text,textarea")}}}
+      {{{embed "_input" name="validate-max-length" type="number" size="sm" placeholder="10" class=(iIf (eq values.validate "max-length") "" "hidden") attributes=(attr data-allowed="text,textarea")}}}
+      {{{embed "_input" name="validate-in" type="text" size="sm" placeholder="value, value 2..." class=(iIf (eq values.validate "in") "" "hidden") attributes=(attr data-allowed="text,number")}}}
+      {{{embed "_input" name="validate-not-in" type="text" size="sm" placeholder="value, value 2..." class=(iIf (eq values.validate "not-in") "" "hidden") attributes=(attr data-allowed="text,number")}}}
+      {{{embed "_button" id="hb-add-validation" type="button" suffixIcon="add" size="sm"
+         attributes=(
+           attr data-dispatch="hb-add-validation"
+         )
+      }}}
+    </div>
+  {{/content}}
+  {{#content "submit"}}
+    <div class="col-span-12">
+      {{{embed "_button"
+               type="submit"
+               text=(iIf values.id "Save field" "Add field")
+               suffixIcon=(iIf values.id "check" "add")
+               size="sm"
+               class="w-full"}}}
+    </div>
+  {{/content}}
+{{/embed}}

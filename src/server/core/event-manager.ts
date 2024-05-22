@@ -13,6 +13,7 @@ export enum ServerEvent {
   VIEWS_CHANGED = "hotbars/views-changed",
   AUTH_HANDLERS_CHANGED = "hotbars/auth-handlers-changed",
   CONTROLLERS_CHANGED = "hotbars/controllers-changed",
+  SCRIPT_CHANGED = "hotbars/script-changed",
   FILES_CHANGED = "hotbars/files-changed",
   EMAIL_FILES_CHANGED = "hotbars/email-files-changed",
 
@@ -23,7 +24,7 @@ export class EventManager {
   private static instance: EventEmitter;
 
   static create() {
-    logger.info(`%p%P Event Manager`, 1, 1);
+    logger.debug(`Event Manager`);
     this.instance = new EventEmitter();
   }
 

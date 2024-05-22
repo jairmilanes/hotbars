@@ -1,0 +1,29 @@
+{{#if (eq type "separator")}}
+  <li class="separator border-t border-gray-700 h-[1px] !m-0"></li>
+{{else if (eq type "placeholder")}}
+  <li  class="placeholder border-t border-gray-700">
+    <ul id="{{data.id}}" {{#forIn data}} data-{{@key}}="{{this}}"{{/forIn}}>
+
+    </ul>
+  </li>
+{{else}}
+  <li class="item group-[.open]:pl-4 relative" {{#if id}}data-list-item="{{id}}"{{/if}}>
+    <a
+      href="{{path}}"
+      title="Go to {{title}}"
+      data-title="{{title}}"
+      data-path="{{replace path '/' ''}}"
+      data-tooltip-target="{{pathcase title}}"
+      data-tooltip-placement="right"
+      class="flex items-center justify-center py-2 pl-0 group-[.open]:pl-2 hover:bg-gray-300 dark:hover:bg-gray-800 text-color"
+      aria-current="page"
+    >
+      <span class="group-[.open]:mr-2 material-symbols-outlined">{{icon}}</span>
+      <span class="grow hidden group-[.open]:flex">{{title}}</span>
+    </a>
+    <span id="{{pathcase title}}" class="group-[.open]:hidden left-[100%] absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+              {{title}}
+      <div class="tooltip-arrow" data-popper-arrow></div>
+    </span>
+  </li>
+{{/if}}

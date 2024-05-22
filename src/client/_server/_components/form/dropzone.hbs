@@ -1,0 +1,50 @@
+<div data-input-container="{{name}}" class="flex flex-col justify-center w-full {{#if cols}}col-span-{{cols}}{{/if}} {{class}}">
+  {{{embed "_input-label" }}}
+  <div class="dark:bg-base-pitch border border-base-light dark:border-base-dark rounded-lg overflow-hidden">
+    <label for="dropzone-{{name}}" data-input="true" class="flex flex-col justify-center items-center w-full h-{{default height 32}}">
+      <div class="flex flex-col justify-center items-center pt-5 pb-6">
+        <div data-view-inactive="true" class="text-center">
+          <span class="material-symbols-outlined mb-1 w-10 text-4xl">cloud_upload</span>
+          <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+            <span class="font-semibold">Click to upload</span> or drag and drop
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">{{hint}}</p>
+        </div>
+        <div data-view-active="true" class="hidden text-center">
+          <span class="material-symbols-outlined mb-1 w-10 text-4xl text-green-500">cloud_done</span>
+          <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+            <span class="font-semibold" data-count="true"></span> out of <span class="font-semibold" data-total="true"></span><br/>files selected
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">{{hint}}</p>
+        </div>
+        <div data-view-error="true" class="hidden text-center">
+          <span class="material-symbols-outlined mb-1 w-10 text-4xl text-red-500">priority_high</span>
+          <p class="mb-2 text-sm text-red-400 dark:text-red-300">
+            <span class="font-bold"><span class="font-semibold" data-total="true"></span> files limit reached.</span><br/>Remove files to proceed.
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">{{hint}}</p>
+        </div>
+      </div>
+      <input id="dropzone-{{name}}"
+             name="{{name}}"
+             type="file"
+             class="hidden"
+             multiple
+             accept="{{get "type-dropzone-accept" this}}"
+             data-dropzone="{{name}}"
+             data-type="{{get "type-dropzone-accept-type" this}}"
+             data-auto="{{default autoload "false"}}"
+             data-max-input="{{get "type-dropzone-max-input" this}}"
+             data-max-size="{{get "type-dropzone-max-size" this}}"
+             data-auto-init="{{default autoInit true}}"
+      />
+    </label>
+    <ul id="drozone-file-list" class="{{#eq (length (value name)) 0}}hidden{{/eq}} block m-0 p-0 w-full max-h-80 overflow-y-auto p-4 border-t border-base-dark {{#eq (get "type-dropzone-accept-type" this) "image"}}grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4{{/eq}}">
+      {{#each (value name)}}
+          {{{embed "_dropzone-img-file" name=fileName previewUrl=url type=mime id=id}}}
+      {{/each}}
+    </ul>
+  </div>
+  {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+  {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
+</div>

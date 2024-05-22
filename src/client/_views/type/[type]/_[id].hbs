@@ -1,0 +1,57 @@
+{{#extend "_type" title=title scroll=false backBtn=true}}
+  {{#content "styles"}}
+    {{styles "/public/libs/quill.dark.css"}}
+    {{scripts "https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"}}
+  {{/content}}
+  {{#content "main"}}
+    <section class="h-full overflow-hidden relative container mx-auto grow flex flex-col dark:bg-base-pitch">
+      {{#embed "_form"
+         id=formId
+         title=""
+         action=(concat "/_api/" collection)
+         method="PATCH"
+         contentType="multipart/form-data"
+         ajax=true
+         validation=true
+         alignActions="end"
+         submitWidth="auto"
+         submitText="Create"
+         attributes=(attr data-collection=collection)
+         gap=0
+         class="h-full"
+         formClass="h-full"
+         bodyClass="h-full overflow-hidden"
+         successMessage="Record saved successfully!"
+      }}
+        {{#content "body"}}
+          {{clear "title"}}
+          {{{embed "_data-type-form-view"}}}
+        {{/content}}
+        {{#content "submit"}}
+        {{/content}}
+      {{/embed}}
+
+      <div id="hb-type-modules" class="absolute right-10 flex flex-col gap-4 pt-10">
+        {{#if type.trackUser}}
+          <div id="hb-user-module">
+            {{{embed "_modules/_user" username=user.username updatedAt=values.meta.updatedAt}}}
+          </div>
+        {{/if}}
+        {{#if type.trackStatus}}
+          <div id="hb-publish-module">
+            {{{embed "_modules/_publish" collection=collection id=values.id}}}
+          </div>
+        {{/if}}
+        {{#if type.trackCategories}}
+          <div id="hb-category-module">
+            {{{embed "_modules/_category" collection=collection id=values.id}}}
+          </div>
+        {{/if}}
+      </div>
+    </section>
+  {{/content}}
+  {{#content "scripts"}}
+    {{scripts "/app/type/type.js"}}
+  {{/content}}
+{{/extend}}
+

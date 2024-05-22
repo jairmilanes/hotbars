@@ -1,0 +1,182 @@
+{{{embed "_tabs"
+         id="hbs-view-config-content"
+         targets=(JSONparse '[{"id": "hbs-fields-content", "text": "Fields"}, {"id": "hbs-settings-content", "text": "Settings"}, {"id": "hbs-editView-content", "text": "Edit view"}, {"id": "hbs-listView-content", "text": "List view"}, {"id": "hbs-detailView-content", "text": "Details view"}]')
+         class="px-4 pt-4"
+}}}
+<div id="hbs-view-config-content" class="flex flex-col grow overflow-auto dark:bg-base-pitch">
+  <div id="hbs-fields-content" class="flex flex-col w-full grow overflow-hidden border-t border-base-dark">
+    <div class="grid grid-cols-12 gap-2 items-center w-full px-4 py-2 bg-base-light dark:bg-base-pitch border-b border-base-dark">
+      <div class="col-span-1">
+        {{{embed "_input" type="checkbox" name="check-all" value="true" cols=1 attributes=(attr data-dispatch="hb-select-all")}}}
+      </div>
+      <div class="col-span-3 text-gray-500 dark:text-gray-500">Name</div>
+      <div class="col-span-2 text-gray-500 dark:text-gray-500">Type</div>
+      <div class="col-span-2 text-gray-500 dark:text-gray-500">Attributes</div>
+      <div class="col-span-2 text-gray-500 dark:text-gray-500">Placement</div>
+      <div class="col-span-2 text-gray-500 dark:text-gray-500">Actions</div>
+    </div>
+    <div id="hb-fields-container" data-name="hb-fields-container" class="grow flex flex-col w-full overflow-y-auto"></div>
+  </div>
+
+  <div id="hbs-settings-content" class="hidden border-t border-base-dark pb-6">
+    <div class="grid grid-cols-12">
+      <div class="px-6 py-6 col-span-12 grid grid-cols-12 gap-x-4 gap-y-6">
+        {{{embed "_heading" size="h4" text="Basics" class="col-span-12" margin=4}}}
+        {{{embed "_input" type="toggle" name="trackUser" cols=3 label="Track user" value="true"}}}
+        {{{embed "_input" type="toggle" name="trackCategories" cols=3 label="Track categories" value="true"}}}
+        {{{embed "_input" type="toggle" name="trackStatus" cols=3 label="Track status" value="true"}}}
+        {{{embed "_input" type="toggle" name="trackFavorites" cols=3 label="Favorites" value="true"}}}
+        {{{embed "_input" type="toggle" name="trackRatings" cols=3 label="Ratings" value="true"}}}
+        {{{embed "_input" type="number" name="itemsPerPage" cols=3 label="Results per page"}}}
+        {{{embed "_input" type="select" name="sortDirection" cols=3 items=(JSONparse '[{"label": "Asc", "value": "asc"},{"label": "Desc", "value": "desc"}]') label="Default sort direction"  }}}
+      </div>
+      <div class="px-6 py-6 col-span-12 grid grid-cols-12 gap-x-4 gap-y-6 border-t border-base-light dark:border-base-dark">
+        {{{embed "_heading" size="h4" text="Features" class="col-span-12" margin=4}}}
+        {{{embed "_input" type="toggle" name="enableSearch" cols=4 label="Enable search" value="true"}}}
+        {{{embed "_input" type="toggle" name="enableSelection" cols=4 label="Enable selection" value="true"}}}
+        {{{embed "_input" type="toggle" name="enablePagination" cols=4 label="Enable pagination" value="true"}}}
+      </div>
+      <div class="px-6 pt-6 col-span-12 grid grid-cols-12 border-t border-base-light dark:border-base-dark">
+        {{{embed "_heading" size="h4" text="Permissions"  class="col-span-12" margin=4}}}
+        {{#embed "form/checkbox-group" layout="col" gap=6 cols=6}}
+          {{#content "inputs"}}
+            {{{embed "_input" name="allowCreate" type="checkbox" label="Allow users to create new records?" value="true"}}}
+            {{{embed "_input" name="allowEdit" type="checkbox" label="Allow users to edit records?" value="true"}}}
+            {{{embed "_input" name="allowRemove" type="checkbox" label="Allow users to remove records?" value="true"}}}
+            {{{embed "_input" name="allowView" type="checkbox" label="Allow users to view records?" value="true"}}}
+          {{/content}}
+        {{/embed}}
+      </div>
+    </div>
+  </div>
+
+  <div id="hbs-listView-content" class="hidden border-t border-base-dark pt-4 pb-6">
+    <div class="flex flex-col">
+      <div class="grid grid-cols-12 px-4 pb-6 border-b border-base-dark">
+        {{{embed "_input" name="listView" type="select" label="View type" cols=12 placeholder="View type" items=listViewTypes }}}
+      </div>
+
+      <div id="table-view-settings" class="w-full {{iIf (eq values.listView "table") "" "hidden"}} py-6 px-4">
+        <p class="pb-6 text-base-mid">Use the form below to select which fields will be used as table headers.</p>
+        <div class="grid grid-cols-12 gap-4">
+          {{{embed "_input" name="view-table-add-header" items=columns type="select" cols=10}}}
+          <div class="col-span-2 h-full flex flex-col justify-end flex-wrap">
+            {{{embed "_button" id="view-table-add-column" icon="add" size="lg"}}}
+          </div>
+        </div>
+        <div data-headers="view-table-add-header" class="flex pt-4"></div>
+      </div>
+
+      <div id="post-view-settings" class="grid grid-cols-12 w-full {{iIf (eq values.listView "post") "" "hidden"}}">
+        <div class="col-span-12 grid grid-cols-12 gap-4 py-6 px-4 border-b border-base-dark">
+          {{{embed "_heading" text="Layout options" size="h6" class="text-base-mid font-normal col-span-12"}}}
+          {{{embed "_input" name="view-post-layout" label="Choose your preffered layout" items=listViewLayouts required=true type="select" cols=4  }}}
+          {{{embed "_input" name="view-post-column-size" items=columnSizes required=true type="select" cols=4 label="Column size"  }}}
+        </div>
+
+        <div class="col-span-12 grid grid-cols-12 gap-4 py-6 px-4">
+          {{{embed "_heading" text="Columns Association" size="h6" class="text-base-mid font-normal col-span-12"}}}
+          {{{embed "_input" name="view-post-title-column" items=columns required=true type="select" cols=4 label="Post title"  }}}
+          {{{embed "_input" name="view-post-exerpt-column" items=columns required=true type="select" cols=4 label="Post exerpt"  }}}
+          {{{embed "_input" name="view-post-date-column" items=columns required=true type="select" cols=4 label="Post date"  }}}
+          {{{embed "_input" name="view-post-user-column" items=columns required=true type="select" cols=4 label="Post user"  }}}
+          {{{embed "_input" name="view-post-image-column" items=columns required=true type="select" cols=4 label="Post image"  }}}
+        </div>
+      </div>
+
+      <div id="grid-view-settings" class="grid grid-cols-12 w-full {{iIf (eq values.listView "grid") "" "hidden"}}">
+        <div class="col-span-12 grid grid-cols-12 gap-4 py-6 px-4 border-b border-base-dark">
+          {{{embed "_heading" text="Layout options" size="h6" class="text-base-mid font-normal col-span-12"}}}
+          {{{embed "_input" name="view-grid-column-size" items=columnSizes required=true type="select" cols=4 label="Column size"  }}}
+        </div>
+
+        <div class="col-span-12 grid grid-cols-12 gap-4 py-6 px-4">
+          {{{embed "_heading" text="Columns Association" size="h6" class="text-base-mid font-normal col-span-12"}}}
+          {{{embed "_input" name="view-grid-title-column" items=columns required=true type="select" cols=4 label="Title column"  }}}
+          {{{embed "_input" name="view-grid-date-column" items=columns required=true type="select" cols=4 label="Date column"  }}}
+          {{{embed "_input" name="view-grid-user-column" items=columns type="select" cols=4 label="Tile user"  }}}
+          {{{embed "_input" name="view-grid-image-column" items=columns type="select" cols=4 label="Tile image"  }}}
+          {{{embed "_input" name="view-grid-price-column" items=columns type="select" cols=4 label="Tile price"  }}}
+          {{{embed "_input" name="view-grid-rating-column" items=columns type="select" cols=4 label="Tile rating"  }}}
+          {{{embed "_input" name="view-grid-status-column" items=columns type="select" cols=4 label="Tile status"  }}}
+        </div>
+      </div>
+
+      <div id="product-grid-view-settings" class="grid grid-cols-12 w-full {{iIf (eq values.listView "product-grid") "" "hidden"}}">
+        <div class="col-span-12 grid grid-cols-12 gap-4 py-6 px-4">
+          {{{embed "_heading" text="Columns Association" size="h6" class="text-base-mid font-normal col-span-12"}}}
+          {{{embed "_input" name="view-product-grid-title-column" items=columns required=true type="select" cols=3 label="Product title"  }}}
+          {{{embed "_input" name="view-product-grid-rating-column" items=columns required=true type="select" cols=3 label="Product rating"  }}}
+          {{{embed "_input" name="view-product-grid-price-column" items=columns required=true type="select" cols=3 label="Product price"  }}}
+          {{{embed "_input" name="view-product-grid-image-column" items=columns required=true type="select" cols=3 label="Product image"  }}}
+          {{{embed "_input" name="view-product-grid-brand-column" items=columns required=true type="select" cols=3 label="Product brand"  }}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hbs-detailView-content" class="hidden border-t border-base-dark pt-4 pb-6">
+    <div class="flex flex-col">
+      <div class="grid grid-cols-12 px-4 pb-6 border-b border-base-dark">
+        {{{embed "_input" name="detailView" type="select" label="View type" cols=12 placeholder="View type" items=detailViewTypes }}}
+      </div>
+
+      <div id="post-detail-settings" class="grid grid-cols-12 w-full {{iIf (eq values.detailView "post") "" "hidden"}}">
+        <div class="col-span-12 grid grid-cols-12 gap-4 py-6 px-4">
+          {{{embed "_heading" text="Columns Association" size="h6" class="text-base-mid font-normal col-span-12"}}}
+          {{{embed "_input" name="details-post-title-column" required="required" type="select" items=columns cols=3 label="Post title"}}}
+          {{{embed "_input" name="details-post-date-column" required="required" type="select" items=columns cols=3 label="Post date"}}}
+          {{{embed "_input" name="details-post-user-column" required="required" type="select" items=columns cols=3 label="Post user"}}}
+          {{{embed "_input" name="details-post-content-column" required="required" type="select" items=columns cols=3 label="Post content"}}}
+        </div>
+      </div>
+
+      <div id="gallery-detail-settings" class="grid grid-cols-12 w-full {{iIf (eq values.detailView "gallery") "" "hidden"}}">
+        <div class="col-span-12 grid grid-cols-12 gap-4 py-6 px-4">
+          {{{embed "_heading" text="Columns Association" size="h6" class="text-base-mid font-normal col-span-12"}}}
+          {{{embed "_input" name="details-gallery-title-column" required="required" type="select" items=columns cols=3 label="Image url"}}}
+          {{{embed "_input" name="details-gallery-user-column" required="required" type="select" items=columns cols=3 label="User"}}}
+          {{{embed "_input" name="details-gallery-caption-column" required="required" type="select" items=columns cols=3 label="Caption"}}}
+        </div>
+      </div>
+
+      <div id="question-detail-settings" class="grid grid-cols-12 w-full {{iIf (eq values.detailView "gallery") "" "hidden"}}">
+        <div class="col-span-12 grid grid-cols-12 gap-4 py-6 px-4">
+          {{{embed "_heading" text="Columns Association" size="h6" class="text-base-mid font-normal col-span-12"}}}
+          {{{embed "_input" name="details-question-title-column" required="required" type="select" items=columns cols=3 label="Image url"}}}
+          {{{embed "_input" name="details-question-user-column" required="required" type="select" items=columns cols=3 label="User"}}}
+          {{{embed "_input" name="details-question-caption-column" required="required" type="select" items=columns cols=3 label="Caption"}}}
+        </div>
+      </div>
+
+      <div id="product-detail-settings" class="grid grid-cols-12 gap-4 w-full {{iIf (eq values.detailView "product") "" "hidden"}}">
+        <div class="col-span-12 grid grid-cols-12 gap-4 py-6 px-4">
+          {{{embed "_heading" text="Columns Association" size="h6" class="text-base-mid font-normal col-span-12"}}}
+          {{{embed "_input" name="details-product-title-column" required="required" type="select" items=columns cols=3 label="Product title"  }}}
+          {{{embed "_input" name="details-product-rating-column" required="required" type="select" items=columns cols=3 label="Product rating"  }}}
+          {{{embed "_input" name="details-product-image-column" required="required" type="select" items=columns cols=3 label="Product image"  }}}
+          {{{embed "_input" name="details-product-price-column" required="required" type="select" items=columns cols=3 label="Product price"  }}}
+          {{{embed "_input" name="details-product-manufacturer-column" required="required" type="select" items=columns cols=3 label="Product manufacturer"  }}}
+          {{{embed "_input" name="details-product-description-column" required="required" type="select" items=columns cols=3 label="Post description"  }}}
+          {{{embed "_input" name="details-product-user-column" required="required" type="select" items=columns cols=3 label="Product user"  }}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hbs-editView-content" class="hidden border-t border-base-dark px-4 pt-4 pb-6">
+    <div class="grid grid-cols-12 gap-4 pt-4">
+      {{{embed "_input" name="details-form-readonly" required="required" type="toggle" value="true" items=columns cols=12 label="Display as read only?" class=(iIf (eq values.detailView "post") "" "hidden") }}}
+    </div>
+  </div>
+</div>
+
+{{{{raw}}}}
+<script type="text/x-handlebars-template" id="view-table-row">
+  <div class="relative border border-base-light dark:border-base-dark py-2 ps-6 pe-8 bg-base-light dark:bg-base-darker">
+    <div class="">{{title}}</div>
+    {{{embed "_button" type="" icon="close" style="link" size="link" iconSize="sm" class="remove absolute top-1 right-1"}}}
+  </div>
+</script>
+{{{{/raw}}}}
+

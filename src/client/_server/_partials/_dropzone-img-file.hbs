@@ -1,0 +1,19 @@
+<li data-list-item="{{id}}"
+  class="relative group-[.hb-sidebar]:gap-0 cursor-pointer"
+  data-name="{{name}}"
+  data-type="{{type}}"
+  data-previewUrl="{{previewUrl}}"
+  data-extension="{{extension}}">
+  <figure class="overflow-hidden relative rounded-lg">
+    <img class="h-auto max-w-full"
+         src="{{previewUrl}}"
+         alt="File {{name}}"
+         title="File {{name}}">
+      <figcaption class="overflow-hidden whitespace-nowrap text-ellipsis absolute bottom-0 left-0 right-0 top-auto text-xs p-1 bg-gray-500/50">
+        {{name}}
+      </figcaption>
+  </figure>
+  <div class="ml-2 self-start absolute top-1 right-1">
+    {{{embed "_button" type="button" style="link" size="link" icon="close" class="remove" attributes=(attr data-filename=name)}}}
+  </div>
+</li>

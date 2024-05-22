@@ -10,3 +10,4 @@ export * from "./mailer";
 export * from "./browserify-compiler";
 export * from "./utils"
 export * from "./deployment"
+export * from "./hooks"

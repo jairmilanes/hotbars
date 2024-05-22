@@ -1,0 +1,23 @@
+{{var "realId" (default id (random 1 10000))}}
+<div id="{{var "realId"}}" class="{{_alert level=level spacing=spacing style=style}}" role="alert">
+  <div class="grow flex {{#eq layout "col"}}flex-col{{/eq}} gap-2">
+    {{#if icon}}
+      <span class="material-symbols-outlined text-center leading-none {{_icon size=(default iconSize "4xl")}} text-{{_color textColor 500}}">{{icon}}</span>
+    {{/if}}
+    <div class="grow flex flex-col {{#eq layout "col"}}items-center justify-center{{else}}items-start justify-center{{/eq}}">
+      {{#if title}}<h2 class="{{_alertTitle size=(default titleSize "lg")}} text-base-dark">{{title}}</h2>{{/if}}
+      {{#if message}}<p class="{{_alertText}}">{{message}}</p>{{/if}}
+    </div>
+  </div>
+  {{#if closable}}
+    {{{embed "_button"
+        id=""
+        icon="close"
+        style="link"
+        size="iconSm"
+        iconSize=6
+        color=(default level "success")
+        attributes=(attr data-dismiss=(var "realId"))
+    }}}
+  {{/if}}
+</div>

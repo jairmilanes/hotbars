@@ -36,7 +36,7 @@ export abstract class QueryBuilder {
 
   abstract collections(): Promise<string[]>;
 
-  abstract hasCollection(name: string): boolean;
+  abstract hasCollection(name: string): Promise<boolean>;
 
   abstract createCollection(name: string, single?: boolean): Promise<void>;
 
@@ -45,6 +45,8 @@ export abstract class QueryBuilder {
   abstract from(collection: string): QueryBuilder;
 
   abstract size(): Promise<number>;
+
+  abstract set(name: string, data: any): Promise<void>;
 
   select(...fdls: string[]) {
     this.fields = fdls;

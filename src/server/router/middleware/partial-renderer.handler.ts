@@ -26,22 +26,29 @@ async function loadPartial({ key, path }: TemplateConfig, paths: TemplateConfig[
   return;
 }
 
+async function findAndLoadPartial(req: Request) {
+
+  const paths: TemplateConfig[] = [
+    { key: "partials", path: Config.fullPath("partials", req.body.partial as string, `.${Config.get("extname")}`) },
+    { key: "precompile", path: Config.fullPath("precompile", req.body.partial as string, `.${Config.get("extname")}`) },
+    { key: "shared", path: Config.fullPath("shared", req.body.partial as string, `.${Config.get("extname")}`) },
+    { key: "partials", path: DashboardConfig.fullPath("partials", req.body.partial as string, `.${Config.get("extname")}`) },
+    { key: "precompile", path: DashboardConfig.fullPath("precompile", req.body.partial as string, `.${Config.get("extname")}`) },
+    { key: "shared", path: DashboardConfig.fullPath("shared", req.body.partial as string, `.${Config.get("extname")}`) },
+  ]
+
+  return loadPartial(paths.shift() as TemplateConfig, paths, req.body.context)
+}
+
+
 export const partialsHandler = () => {
-  Server.app.get("/_partial", async (req: Request, res: Response) => {
+
+  Server.app.post("/_partial", async (req: Request, res: Response) => {
     ContextConfig.init(req);
 
-    if (!req.query.partialId) return res.status(400).send("Partial id is missing.")
+    if (!req.body.partial || !req.body.context) return res.status(400).send("Partial id and or context is missing.")
 
-    const paths: TemplateConfig[] = [
-      { key: "partials", path: Config.fullPath("partials", req.query.partialId as string, `.${Config.get("extname")}`) },
-      { key: "precompile", path: Config.fullPath("precompile", req.query.partialId as string, `.${Config.get("extname")}`) },
-      { key: "shared", path: Config.fullPath("shared", req.query.partialId as string, `.${Config.get("extname")}`) },
-      { key: "partials", path: DashboardConfig.fullPath("partials", req.query.partialId as string, `.${Config.get("extname")}`) },
-      { key: "precompile", path: DashboardConfig.fullPath("precompile", req.query.partialId as string, `.${Config.get("extname")}`) },
-      { key: "shared", path: DashboardConfig.fullPath("shared", req.query.partialId as string, `.${Config.get("extname")}`) },
-    ]
-
-    const html = await loadPartial(paths.shift() as TemplateConfig, paths, req.query)
+    const html = await findAndLoadPartial(req)
 
     if (html) {
       logger.info("%p%P Partial found!", 3, 1)

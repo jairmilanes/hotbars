@@ -3,6 +3,7 @@ import { set, has } from "lodash"
 import { Env } from "../../types";
 import { logger } from "../../../services";
 import { App, EnvConnector, Envs, Status } from "./connector";
+import { Cache } from "../../core";
 
 
 export class HerokuApi extends EnvConnector {
@@ -19,36 +20,36 @@ export class HerokuApi extends EnvConnector {
   }
 
   async load() {
-    logger.debug("%p%P Environments", 1, 1)
-
     if (this.loaded) {
       logger.debug("%p%P environments already loaded.", 3, 0)
       return;
     }
 
     try {
-      const apps = await this.api.get("/apps", { cache: undefined })
+      logger.debug("%p%P Apps:", 1, 1)
 
-      logger.debug("%p%P %s apps found:", 3, 0, apps.length)
+      const apps = await this.getApps()
 
       apps.map((app: App) => {
         if ([this.env(Env.Dev), this.env(Env.Test), this.env(Env.Prod)].indexOf(app.name) > -1) {
-          logger.debug(`%p%P App "%s" found!`, 5, 1, app.name.substring(3))
+          logger.debug(`%p%P "%s"`, 3, 0, app.name.substring(3))
           this.envs[app.name.substring(3) as keyof Envs] = app
         }
       })
 
+      logger.silly("%p%P Dynos:", 1, 1)
       await this.getDynos(Env.Dev)
       await this.getDynos(Env.Test)
       await this.getDynos(Env.Prod)
+      logger.silly("%p%P Webhooks:", 1, 1)
       await this.getHooks(Env.Dev)
       await this.getHooks(Env.Test)
       await this.getHooks(Env.Prod)
 
-      logger.debug("%p%P Environments loaded!", 3, 1)
+      logger.debug("%p%P Environments loaded!", 1, 1)
       return this.envs
     } catch(e) {
-      logger.error("%p%P Heroku error", 3, 0)
+      logger.error("%p%P Heroku error", 1, 1)
       logger.error(e)
     }
   }
@@ -128,16 +129,23 @@ export class HerokuApi extends EnvConnector {
 
     if (this.envs[envName]) {
       try {
-        hooks = await this.api.get(`/apps/${this.env(envName)}/webhooks`)
-        logger.debug(hooks)
-        hooks = hooks.filter((hook: any) => hook.include.indexOf("api:app") > -1)
+        hooks = await Cache.get(`${envName}Webhooks`)
 
-        logger.debug("%p%P %s Webhooks %o", 3, 0, envName, hooks)
+        if (!hooks || !hooks.legnth)  {
+          hooks = await this.api.get(`/apps/${this.env(envName)}/webhooks`)
+          hooks = hooks.filter((hook: any) => hook.include.indexOf("api:app") > -1)
+
+          await Cache.set(`${envName}Webhooks`, hooks)
+        }
+
+        if (hooks.length) {
+          logger.silly("%p%P %s", 3, 0, envName)
+        }
       } catch(e) {
         const err = e as any
 
         if (err.statusCode === 404) {
-          logger.error(`%p%P %s webhook %s`, 3, 0, envName, err.body.message)
+          logger.silly(`%p%P %s (%s)`, 3, 0, envName, err.body.message)
         } else {
           logger.error(err)
         }
@@ -154,13 +162,22 @@ export class HerokuApi extends EnvConnector {
 
     if (this.envs[envName]) {
       try {
-        dynos = await this.api.get(`/apps/${this.env(envName)}/dynos`);
-        logger.debug("%p%P %s Dynos %o", 3, 0, envName, dynos)
+        dynos = await Cache.get(`${envName}Dynos`)
+
+        if (!dynos) {
+          dynos = await this.api.get(`/apps/${this.env(envName)}/dynos`);
+
+          await Cache.set(`${envName}Dynos`, dynos)
+        }
+
+        if (dynos.length) {
+          logger.silly("%p%P %s (%s)", 3, 0, envName, dynos.length)
+        }
       } catch(e) {
         const err = e as any
 
         if (err.statusCode === 404) {
-          logger.error(`%p%P %s dynos %s`, 3, 0, envName, err.body.message)
+          logger.silly(`%p%P %s %s`, 3, 0, envName, err.body.message)
         } else {
           logger.error(err)
         }
@@ -178,6 +195,22 @@ export class HerokuApi extends EnvConnector {
       loaded: this.loaded,
       messages: this.messages
     } as Status;
+  }
+
+  async getApps() {
+    const cache = await Cache.get("herokyApp")
+
+    if (cache) {
+      logger.debug("%p%P From cache: %o", 3, 0, cache.map((app: any) => `${app.name} (${app.web_url})`))
+      return cache
+    }
+
+    const apps = await this.api.get("/apps")
+
+    logger.debug("%p%P From api: %o", 3, 0, apps.map((app: any) => `${app.name} (${app.web_url})`))
+    await Cache.set("herokyApp", apps)
+
+    return apps
   }
 
   deploy() {

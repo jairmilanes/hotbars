@@ -1,0 +1,34 @@
+<div data-list-item="{{id}}" class="relative col-span-4 bg-white dark:bg-base-darker shadow-md rounded-xl duration-200 hover:scale-[1.02] hover:shadow-xl">
+  <a href="#">
+    {{#if image}}
+      <img src="{{image.url}}" alt="Product" class="h-auto w-full object-cover rounded-t-xl" />
+    {{/if}}
+    {{#if (get "view-product-grid-image-column" type)}}
+      <div class="rounded-t-lg overflow-hidden">
+        <img alt="Product" src="{{get "url" (get (get "view-product-grid-image-column" type) row)}}" class="w-full h-auto" />
+      </div>
+    {{/if}}
+    <div class="px-4 py-3 pb-8">
+      <span class="text-gray-400 mr-3 uppercase text-xs">{{manufacturer}}</span>
+      {{{embed "_text" size="sm" text=(get (get "view-product-grid-brand-column" type) row) class="m-0 cursor-auto text-base-mid dark:text-base-mid"}}}
+      {{{embed "_text" text=(get (get "view-product-grid-title-column" type) row) size="md" class="m-0 font-semibold cursor-auto"}}}
+
+      <div class="flex items-center pt-4">
+        ${{{embed "_text" text=(get (get "view-product-grid-price-column" type) row) size="lg" class="m-0 font-semibold truncate capitalize"}}}
+        <del class="ps-4 text-sm">
+          ${{get (get "view-product-grid-price-column" type) row}}
+        </del>
+      </div>
+    </div>
+  </a>
+  {{#if type.enableSelection}}
+    <div class="absolute left-2 top-3 right-auto bottom-auto">
+      {{{embed "_input" type="checkbox" name=(concat id "-check") size="sm" value="true" class="!p-0" attributes=(attr data-id=id)}}}
+    </div>
+  {{/if}}
+  <div class="flex gap-4 absolute top-auto left-auto bottom-4 right-4">
+    {{#each actions}}
+      {{{embed type style="link" size="link" attributes=(attrData attr)}}}
+    {{/each}}
+  </div>
+</div>

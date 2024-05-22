@@ -1,0 +1,7 @@
+{{{embed "form/text"
+         type="text"
+         pattern=(get "type-cnpj-pattern" this)
+         prefixIcon="badge"
+         placeholder=(get "type-cnpj-format" this)
+         attributes=(attr data-input-type="cnpj" data-mask=(get "type-cnpj-format" this))
+}}}

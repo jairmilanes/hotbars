@@ -1,0 +1,28 @@
+<div data-list-item="{{id}}" class="relative col-span-{{default (get "view-grid-column-size" type) 4}} flex flex-col grow-0 hover:shadow-lg hover:bg-base-lighter dark:bg-base-darker hover:dark:bg-base-dark hover:outline has-[:checked]:outline has-[:checked]:outline-primary-500 duration-200 hover:scale-[1.02] hover:outline-8 hover:outline-offset-0 outline-base-dark cursor-pointer rounded-lg">
+  {{#if type.enableSelection}}
+    <div class="absolute left-2 top-3 right-auto bottom-auto">
+      {{{embed "_input" type="checkbox" name=(concat id "-check") size="sm" value="true" class="!p-0" attributes=(attr data-id=id)}}}
+    </div>
+  {{/if}}
+  {{#if (get "view-grid-image-column" type)}}
+    <div class="rounded-t-lg overflow-hidden">
+      <img src="{{get "url" (get (get "view-grid-image-column" type) row)}}" class="w-full h-auto" />
+    </div>
+  {{/if}}
+  <div class="flex flex-col pb-8">
+    <div class="flex flex-col px-4 py-4">
+      <div class="">
+        {{var "user" (get (get "view-grid-user-column" type) row)}}
+        {{{embed "_text" size="sm" text=(get (get "view-grid-date-column" type) row) class="m-0"}}}
+        {{{embed "_heading" size="h4" text=(get (get "view-grid-title-column" type) row) margin=0}}}
+        {{{embed "_text" text=(concat "By " (get "firstName" (var "user")) " " (get "lastName" (var "user"))) class="opacity-75" }}}
+        {{{embed "_text" text=(get (get "view-grid-status-column" type) row) class="" }}}
+      </div>
+    </div>
+    <div class="flex gap-4 absolute top-auto left-auto bottom-4 right-4">
+      {{#each actions}}
+        {{{embed type style="link" size="link" attributes=(attrData attr)}}}
+      {{/each}}
+    </div>
+  </div>
+</div>

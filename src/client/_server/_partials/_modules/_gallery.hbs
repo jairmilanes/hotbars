@@ -1,0 +1,46 @@
+<div data-gallery="{{id}}"
+     data-height="{{height}}"
+     data-width="{{width}}"
+     data-thumbnails="{{thumbnails}}"
+     data-pagination="{{pagination}}"
+     data-auto-init="{{default autoInit true}}"
+     class="relative max-w-full mx-auto">
+  {{#if gallery}}
+    <div class="splide" data-slider="{{id}}">
+      <div class="splide__track">
+        <ul class="splide__list">
+          {{#each gallery}}
+            <li class="splide__slide">
+              <img src="{{url}}" alt="{{alt}}" class="w-full h-full object-cover" />
+            </li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    {{#if thumbnails}}
+      <div class="splide px-10 py-4" data-thumbs="{{id}}">
+        <div class="splide__arrows splide__arrows--ltr">
+          <button class="splide__arrow splide__arrow--prev focus:ring-3 focus:ring-{{_color (default color "accent") 400}}" type="button" aria-label="Go to last slide" aria-controls="splide01-track">
+            <svg xmlns="http://www.w3.org/2000/svg" class="fill-{{_color (default color "primary") 600}} hover:fill-{{_color (default color "primary") 400}}" viewBox="0 0 40 40" width="40" height="40" focusable="false">
+              <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+            </svg>
+          </button>
+          <button class="splide__arrow splide__arrow--next focus:ring-3 focus:ring-{{_color (default color "accent") 400}}" type="button" aria-label="Next slide" aria-controls="splide01-track">
+            <svg xmlns="http://www.w3.org/2000/svg" class="fill-{{_color (default color "primary") 600}} hover:fill-{{_color (default color "primary") 400}}" viewBox="0 0 40 40" width="40" height="40" focusable="false">
+              <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="splide__track">
+          <ul class="splide__list h-auto">
+            {{#each gallery}}
+              <li class="splide__slide [&.is-active]:border-3 [&.is-active]:border-{{_color (default color "primary") 600}}">
+                <img src="{{url}}" alt="{{alt}}" class="w-full h-full object-cover" />
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    {{/if}}
+  {{/if}}
+</div>

@@ -1,0 +1,40 @@
+<{{default size "h2"}} class="font-bold
+{{#if (eq size "h1")}}
+  text-4xl mb-{{default margin "8"}}
+{{else if (eq size "h2")}}
+text-3xl mb-{{default margin "7"}}
+{{else if (eq size "h3")}}
+  text-2xl mb-{{default margin "6"}}
+{{else if (eq size "h4")}}
+  text-xl mb-{{default margin "5"}}
+{{else if (eq size "h5")}}
+  text-lg mb-{{default margin "4"}}
+{{else if (eq size "h6")}}
+  text-md mb-{{default margin "3"}}
+{{/if}}
+{{#or this.prefix this.suffix}}
+  flex flex-col
+{{/or}}
+text-{{default align "left"}}
+{{class}}">
+  {{#block "prefix"}}
+    {{#if prefix}}
+      <span class="block text-base w-full font-normal">{{this.prefix}}</span>
+    {{/if}}
+  {{/block}}
+  <span class="{{#or this.prefix this.suffix}}block w-full{{/or}}">
+    {{#if prefixIcon}}
+      <span class="material-symbols-outlined text-{{default iconSize "xl"}}">{{prefixIcon}}</span>
+    {{/if}}
+    {{text}}
+    {{#if suffixIcon}}
+      <span class="material-symbols-outlined text-{{default iconSize "xl"}}">{{suffixIcon}}</span>
+    {{/if}}
+  </span>
+  {{#block "suffix"}}
+    {{#if suffix}}
+      <span class="block text-base w-full font-normal opacity-50">{{suffix}}</span>
+    {{/if}}
+  {{/block}}
+</{{size}}>
+

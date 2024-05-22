@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import urlrewrite from "express-urlrewrite";
 import { logger } from "../../../services";
 import { Config, Server } from "../../core";
@@ -39,10 +39,7 @@ const renderMail = async (req: Request, res: Response) => {
   }
 };
 
-const verifySettingsHandler = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+const verifySettingsHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     await Mailer.verify();
 
@@ -59,17 +56,12 @@ const verifySettingsHandler = async (
   }
 };
 
-const renderTemplateHandler = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+const renderTemplateHandler = async (req: Request, res: Response): Promise<void> => {
   const { template, ...context } = req.body;
   try {
-    logger.warn("RENDERING!")
     const html = await Mailer.template(template, context);
     res.send(html);
   } catch (e) {
-    logger.error("ERROR RENDERING!")
     logger.warn("Error while generating the %s template. %O", e);
 
     res.status(400)
@@ -77,14 +69,13 @@ const renderTemplateHandler = async (
         message: `Error generating template "${template}"`,
       });
   }
-  logger.error("WTF!")
 };
 
 const sendEmailHandler = async (req: Request, res: Response) => {
   const { to, subject, template, text, html, context } = req.body; //, context
 
   try {
-    logger.warn("Sending message to %s", to);
+    logger.info("Sending message to %s", to);
 
     if (text) {
       await Mailer.send(to, subject, text);
@@ -106,19 +97,24 @@ const sendEmailHandler = async (req: Request, res: Response) => {
   }
 };
 
-
 export const smtpMailHandlers = () => {
   if (!Config.enabled("mailer")) {
     return;
   }
 
-  FakeSMPTServer.router.get("/verify", verifySettingsHandler);
-  FakeSMPTServer.router.post("/template", renderTemplateHandler);
-  FakeSMPTServer.router.post("/send", sendEmailHandler);
+  const customRouter = express.Router()
+
+  customRouter.get("/verify", verifySettingsHandler)
+  customRouter.post("/template", renderTemplateHandler)
+  customRouter.post("/send", sendEmailHandler)
+
   // Render a single email
-  FakeSMPTServer.router.get("/render/:id", renderMail);
+  customRouter.get("/render/:id", renderMail)
+
   // Rewrite to mails to reduce repetitiveness
-  Server.app.use(urlrewrite("/_mail*", "/_mail/mails$1"));
+  // FakeSMPTServer.router.use(urlrewrite("*", "/mails$1"))
   // Server.app.use(urlrewrite("/_mail/*", "/_mail/mails/$1"));
-  Server.app.use("/_mail", FakeSMPTServer.router);
+
+  Server.app.use("/_mail", customRouter, FakeSMPTServer.router)
 };
+

@@ -1,0 +1,74 @@
+const clb = require("../../_lib/clb");
+
+module.exports._body = clb({
+  /* This can be anything `classnames` accepts. */
+  defaults: {
+    level: "success",
+  },
+  base: "flex p-4 text-%level-800 bg-%level-200 border-%level-500 transition-opacity duration-[600ms] opacity-100",
+  defaultVariants: {
+    style: "default",
+    spacing: "md",
+  },
+  variants: {
+    style: {
+      default: "",
+      rounded: "rounded-lg",
+      bordered: "border-t-4",
+    },
+    spacing: {
+      sm: "mb-2",
+      md: "mb-5",
+      lg: "mb-9",
+    },
+  },
+});
+
+module.exports._text = clb({
+  defaults: {},
+  base: "",
+  defaultVariants: {
+    size: "md",
+  },
+  size: {
+    sm: "text-sm font-medium",
+    md: "text-md font-medium",
+    lg: "text-lg font-medium",
+  },
+  icon: {
+    true: "ml-3",
+  },
+});
+
+module.exports._title = clb({
+  defaults: {},
+  base: "block",
+  defaultVariants: {
+    size: "md",
+  },
+  variants: {
+    size: {
+      sm: "text-md font-medium",
+      md: "text-lg font-medium",
+      lg: "text-xl font-medium",
+    },
+  },
+});
+
+module.exports._close = clb({
+  defaults: {
+    color: "gray",
+    bg: "gray",
+  },
+  /* This can be anything `classnames` accepts. */
+  base: "ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 p-1.5 inline-flex h-8 w-8",
+  defaultVariants: {
+    theme: "light",
+  },
+  variants: {
+    theme: {
+      dark: "bg-%bg-800 hover:bg-%bg-700",
+      light: "text-%color-500 bg-%bg-200 hover:bg-%bg-100",
+    },
+  },
+});

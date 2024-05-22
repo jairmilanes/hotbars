@@ -1,0 +1,27 @@
+{{var "row" row}}
+{{var "padY" (iIf compact 2 4)}}
+<tr data-list-item="{{row.id}}" class="bg-lighter {{#not last}}border-b{{/not}} dark:bg-base-darker dark:border-base-dark hover:dark:bg-base-pitch">
+  <td class="w-{{var "padY"}} py-2 ps-6 pe-2 ">
+    <div class="flex items-center">
+      {{{embed "_input" type="checkbox" size="sm" value="true" class="!py-0" attributes=(attr data-check=true)}}}
+    </div>
+  </td>
+  {{#each headers}}
+    {{#if ../first}}
+      <th scope="row" class="{{this}} py-{{var "padY"}} px-6 font-medium text-body-light whitespace-nowrap dark:text-body-dark">
+        {{prop (var "row") this}}
+      </th>
+    {{else}}
+      <td class="py-{{var "padY"}} pe-6 {{#eq @key 0}}font-bold{{/eq}}">
+        {{default (prop (var "row") this) "(Empty)"}}
+      </td>
+    {{/if}}
+  {{/each}}
+  {{#if actions}}
+    <td class="py-{{var "padY"}} px-6 flex gap-2 justify-end">
+      {{#each actions}}
+        {{{embed type style="link" size="link" attributes=(attrData attr)}}}
+      {{/each}}
+    </td>
+  {{/if}}
+</tr>

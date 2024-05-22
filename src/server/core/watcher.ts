@@ -27,10 +27,8 @@ export class Watcher {
     return new Promise((resolve) => {
       const watchables = this.config.get<string[]>("watch");
 
-      logger.info("%sStarting watcher...", this.pfx());
-
       watchables.forEach((path) => {
-        logger.debug(`%p%P %s`, 1, 1, path);
+        logger.silly(`%p%P %s`, 1, 1, path);
       });
 
       this.watcher = chokidar
@@ -40,10 +38,7 @@ export class Watcher {
         .on(WatcherEvent.AddDir, this.changeType(WatcherEvent.AddDir))
         .on(WatcherEvent.Unlink, this.changeType(WatcherEvent.Unlink))
         .on(WatcherEvent.UnlinkDir, this.changeType(WatcherEvent.UnlinkDir))
-        .once(WatcherEvent.Ready, () => {
-          logger.debug(`%p %sWatcher listening`, 2, this.pfx());
-          resolve();
-        })
+        .once(WatcherEvent.Ready, resolve)
         .on(WatcherEvent.Error, (err) => {
           logger.error(`%p %sWatcher error: %O`, 2, this.pfx(), err);
         });
@@ -175,6 +170,11 @@ export class Watcher {
 
     if (changePath.indexOf(this.config.relPath("precompile")) > -1) {
       return WatcherChangeType.PreCompiled;
+    }
+
+    if (changePath.indexOf(this.config.relPath("public")) > -1
+        && changePath.indexOf("bundles") === -1) {
+      return WatcherChangeType.Script;
     }
 
     if (

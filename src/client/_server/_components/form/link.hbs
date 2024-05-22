@@ -1,0 +1,26 @@
+{{#embed "form/text"
+   type="text"
+   inputClass="ps-10 pe-28"
+   prefixIcon="search"
+   autocomplete="off"
+   name=(concat name "-autocomplete")
+   attributes=(attr
+     data-link-autocomplete=name
+     data-table=(get "type-one-to-one-table" this)
+     data-prop="id"
+     data-display-prop=(get "type-one-to-one-display" this)
+     data-auto-init=(default autoInit true)
+   )
+}}
+  {{#content "suffixIcon"}}
+    {{{embed "_button" type="button" style="link" size="link" iconSize="2xl" icon="close" prefixIcon="" class="hidden" attributes=(attr data-autocomplete-clear=../name)}}}
+  {{/content}}
+  {{#content "suffixCustom"}}
+    {{{embed "_input" type="hidden" name=name}}}
+    <div data-autocomplete-display="{{default id name}}" class="hidden"></div>
+    <ul data-autocomplete-list="{{default id name}}" class="hidden block absolute top-[100%] left-0 right-0 min-h-32 z-10 rounded-b-lg bg-base-light dark:bg-base-pitch"></ul>
+    <div data-loader="true" class="hidden flex justify-center items-center absolute top-[100%] left-0 right-0 min-h-32">
+      {{{embed "_spinner" size="14" backdropColor="gray"}}}
+    </div>
+  {{/content}}
+{{/embed}}

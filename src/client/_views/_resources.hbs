@@ -16,20 +16,20 @@
           </div>
         </div>
         <div class="col-span-7 rounded-r-xl flex flex-col bg-white dark:bg-gray-800 mb-6 flex flex-col h-full grow overflow-hidden">
-          {{{embed "pages/resources/header" name=name color=color bg=bg}}}
+          {{{embed "_pages/resources/header" name=name color=color bg=bg}}}
 
           <div id="{{prefix "resource-content"}}" class="relative text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-l border-t border-slate-200 dark:border-slate-700 h-full grow flex flex-col overflow-hidden">
             <div id="{{prefix "body-content"}}" class="hidden relative grow shrink-0" role="tabpanel">
-              {{{embed "pages/resources/editor" id="json-editor"}}}
-              {{{embed "pages/resources/editor" id="plain-editor"}}}
-              {{{embed "pages/resources/multipart"}}}
-              {{{embed "pages/resources/binary"}}}
+              {{{embed "_pages/resources/editor" id="json-editor"}}}
+              {{{embed "_pages/resources/editor" id="plain-editor"}}}
+              {{{embed "_pages/resources/multipart"}}}
+              {{{embed "_pages/resources/binary"}}}
             </div>
 
-            {{{embed "pages/resources/headers" name=name color=color bg=bg}}}
-            {{{embed "pages/resources/content" name=name color=color bg=bg}}}
-            {{{embed "pages/resources/preview" name=name color=color bg=bg}}}
-            {{{embed "pages/resources/empty" name=name color=color bg=bg}}}
+            {{{embed "_pages/resources/headers" name=name color=color bg=bg}}}
+            {{{embed "_pages/resources/content" name=name color=color bg=bg}}}
+            {{{embed "_pages/resources/preview" name=name color=color bg=bg}}}
+            {{{embed "_pages/resources/empty" name=name color=color bg=bg}}}
 
             <div hb-loader="true" class="hidden flex justify-center items-center absolute top-0 bottom-0 left-0 right-0">
               {{#embed "_spinner" size="14"}}{{/embed}}
@@ -47,6 +47,6 @@
   {{#content "scripts"}}
     {{scripts "https://cdn.jsdelivr.net/npm/ace-builds@1.12.5/src-noconflict/ace[.min].js,
                /public/libs/prism.js,
-               /public/hotbars/resources.js"}}
+               /app/resources.js"}}
   {{/content}}
 {{/extend}}

@@ -1,58 +1,143 @@
 
-$.fn.dropzone = function() {
-  const input = this.find(`input[type="file"]`)
-  const maxCount = this.data("max-size") || 1
-  const multiple = input.attr("multiple") || 1
-  const list = this.find('ul').list("_dropzone-file")
-  const label = this.find("label")
-  const feedback = this.find(`[hb-feedback-invalid="true"]`)
+const labelStates = (name) => {
+  switch(name) {
+    case "active":
+      return `active bg-base-light hover:bg-base-bright dark:bg-base-pitch dark:hover:bg-base-darker cursor-pointer`
+    case "disabled":
+      return `disabled border-gray-100 dark:border-gray-800 cursor-not-allowed`
+    case "inactive":
+      return 'inactive border-base-light hover:border-base-lighter dark:border-base-darker dark:hover:border-base-dark bg-base-light hover:bg-base-bright dark:bg-base-pitch dark:hover:bg-base-darker cursor-pointer'
+    case "hidden":
+      return `hidden`
+    default:
+      return ["active", "disabled", "inactive", "hidden"]
+  }
+}
 
+const listStates = (name) => {
+  switch(name) {
+    case "visible":
+      return ``
+    case "hidden":
+      return `hidden`
+    default:
+      return ["visible", "hidden"]
+  }
+}
+
+$.fn.dropzone = function() {
+  const id = this.attr("id")
+  const input = this
+  const container = input.parents(`div[data-input-container]`)
+  const name = input.attr("name") || input.attr("id")
+  const maxCount =  parseInt(input.data("max-input") || "1", 10)
+  const maxSize =  parseInt(input.data("max-size") || "2000000", 10)
+  const type =  input.data("type")
+  const list = container.find('ul').list(
+    type === "image" ? "_dropzone-img-file" : "_dropzone-file"
+  )
+  const label = container.find(`label[data-input="true"]`)
+  const count = $("span[data-count]", container)
+  const total = $("span[data-total]", container)
+
+  label.initState(labelStates)
+  list.initState(listStates)
+
+  const toggleViews = (view) => {
+    ["active", "inactive", "error"].forEach((type) => {
+      if (type === view) {
+        $(`div[data-view-${type}]`, container).show()
+      } else {
+        $(`div[data-view-${type}]`, container).hide()
+      }
+    })
+  }
 
   list.on("hb-list-changed", (e) => {
     if (e.___td.count === 0) {
-      label.show()
-      label.swapClass("border-green-600", "border-gray-300")
-      label.swapClass("dark:border-green-600", "dark:border-gray-600")
+      toggleViews("inactive")
+      label.setState("inactive")
+      list.setState("hidden")
+      input.prop("disabled", "")
+    } else if (e.___td.count < maxCount) {
+      toggleViews("active")
+      label.setState("active")
+      list.setState("visible")
+      input.prop("disabled", "")
+    } else if(e.___td.count === maxCount) {
+      toggleViews("active")
+      label.setState("disabled")
+      list.setState("visible")
+      input.prop("disabled", "disabled")
+    } else {
+      toggleViews("error")
+      label.setState("disabled")
+      list.setState("visible")
+      input.prop("disabled", "disabled")
     }
+
+    count.text(e.___td.count)
+    total.text(maxCount)
+
+    input.trigger("change", { bypassList: true })
   })
 
   input.on("change", (e) => {
     const { files } = e.target
-    list.reset()
+
+    if (e?.___td?.bypassList) return;
 
     if (files.length) {
-      if (multiple && files.length > maxCount) {
-        feedback.html(`Maximum allowed files is ${maxCount}.`)
-        return;
-      }
-
-      label.swapClass("border-gray-300", "border-green-600")
-      label.swapClass("dark:border-gray-600", "dark:border-green-600")
-
       for (let i = 0; i < files.length; i++) {
-        list.appendItem({
-          id: files[i].name,
-          name: files[i].name,
-          size: files[i].size
-        })
-      }
+        const exists = list.getItem(files[i].name)
 
-      if (files.length >= maxCount) {
-        label.hide()
+        if (!exists) {
+          const file = {
+            name: files[i].name,
+            size: files[i].size,
+            type: files[i].type,
+            file: files[i]
+          }
+
+          if (type === "image") {
+            file.previewUrl = URL.createObjectURL(files[i])
+          }
+
+          list.appendItem(file)
+        }
       }
-    } else {
-      label.swapClass("border-green-600", "border-gray-300")
-      label.swapClass("dark:border-green-600", "dark:border-gray-600")
     }
+
+    input.val("")
+
+    input.trigger("hb-changed", {
+      name: name,
+      files: list.all()
+    })
   })
+
+  this.getFiles = () => {
+    return list.all()
+  }
+
+  toggleViews("inactive")
+
+  label.setState("inactive")
+  list.loadStatic()
 
   return this;
 }
 
-$(() => {
-  $(`[data-dropzone]`).each(
+$.dropzone = function(context) {
+  $(`input[data-dropzone]`, context).each(
     (i, el) => {
       $(el).dropzone()
     }
+  )
+}
+
+$(() => {
+  $(`input[data-dropzone][data-auto-init="true"]`).each(
+    (i, el) => $(el).dropzone()
   )
 })

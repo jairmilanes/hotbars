@@ -30,7 +30,7 @@ export class LocalAuthStrategy extends StrategyAbstract {
   }
 
   protected get db() {
-    return DataManager.get().from(Config.get<string>("auth.usersTable"));
+    return DataManager.get().from("__users");
   }
 
   createStrategy() {
@@ -54,8 +54,6 @@ export class LocalAuthStrategy extends StrategyAbstract {
         ? "auth.emailColumn"
         : "auth.usernameColumn";
 
-    logger.info("Auth column", column, emailOrUsername);
-
     const record = await this.db
       .eq(ContextConfig.get<string>(column), emailOrUsername)
       .single();
@@ -68,9 +66,9 @@ export class LocalAuthStrategy extends StrategyAbstract {
    */
   async createUser(data: Record<string, any>): Promise<User|never> {
     const profile = {
-      username: _.get(data, ContextConfig.get("auth.usernameColumn")),
-      email: _.get(data, ContextConfig.get("auth.emailColumn")),
-      password: _.get(data, ContextConfig.get("auth.passwordColumn")),
+      username: _.get(data, ContextConfig.get<string>("auth.usernameColumn")),
+      email: _.get(data, ContextConfig.get<string>("auth.emailColumn")),
+      password: _.get(data, ContextConfig.get<string>("auth.passwordColumn")),
     };
 
     // Hash password

@@ -1,0 +1,19 @@
+{{#extend "_blank" title="Component" paddingX=0 paddingY=0 scroll=true}}
+  {{#content "main"}}
+    <div id="test-container" class="container p-8 grow flex flex-col items-center justify-center">
+      {{{embed partialName title=../title }}}
+    </div>
+  {{/content}}
+
+  {{#content "styles"}}
+    {{#if modules}}
+      {{styles (concat "/_dependencies?type=styles&deps=" modules)}}
+    {{/if}}
+  {{/content}}
+
+  {{#content "scripts"}}
+    {{#if modules}}
+      {{scripts (concat "/_dependencies?type=scripts&deps=" modules)}}
+    {{/if}}
+  {{/content}}
+{{/extend}}

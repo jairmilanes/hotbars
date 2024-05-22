@@ -12,7 +12,7 @@ export abstract class ConfigManager {
 
   protected static instance: Readonly<ConfigManager>;
 
-  static get<P>(key?: string) {
+  static get<P>(key?: string): P {
     return this.instance.get<P>(key);
   }
 

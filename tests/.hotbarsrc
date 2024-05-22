@@ -10,6 +10,32 @@
   },
   "language": {
     "enabled": true,
-    "languages": ["en", "pt-br"]
+    "languages": ["en", "pt-br"],
+    "options": [
+      {
+        "name": "English",
+        "code": "en",
+        "currency": {
+          "sign": "$",
+          "code": "USD"
+        }
+      },
+      {
+        "name": "Portuguese (Brazil)",
+        "code": "pt-br",
+        "currency": {
+          "sign": "R$",
+          "code": "BRL"
+        }
+      }
+    ],
+    "defaultOption": {
+      "name": "English",
+      "code": "en",
+      "currency": {
+        "sign": "$",
+        "code": "USD"
+      }
+    }
   }
 }

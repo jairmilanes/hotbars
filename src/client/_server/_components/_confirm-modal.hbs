@@ -1,0 +1,22 @@
+{{#embed "_modal" id=id closable=true textAlign="center"}}
+  {{#content "body"}}
+    <span class="material-symbols-outlined mx-auto mb-4 text-gray-400 dark:text-gray-200 text-8xl">check_circle</span>
+    {{{embed "_heading" size="h4" text=message class="text-center"}}}
+    {{#if description}}
+      {{{embed "_text" text=description class="text-body-light dark:text-body-dark"}}}
+    {{/if}}
+    <div class="flex items-center justify-center gap-4 py-4">
+      {{{embed "_button"
+               type="button"
+               text=(default confirmText "Yes, I'm sure")
+               attributes=(attr data-modal-confirm=id)
+      }}}
+      {{{embed "_button"
+               type="button"
+               color="gray"
+               text=(default cancelText "No, cancel")
+               attributes=(attr data-dismiss=id)
+      }}}
+    </div>
+  {{/content}}
+{{/embed}}

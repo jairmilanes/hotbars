@@ -12,16 +12,11 @@ async function meta(req: Request, res: Response) {
   const changes = await Versioning.changes();
 
   return res.json({
-    branch: Versioning.get().branch,
+    branchSummary: Versioning.get().git,
     status,
     messages: Versioning.get().messages,
     changes
   })
-}
-
-function changes(req: Request, res: Response) {
-  /* const response = await api().changes();
-  return res.json(response) */
 }
 
 async function push(req: Request, res: Response) {
@@ -29,10 +24,6 @@ async function push(req: Request, res: Response) {
   /* await api().push(req.body?.message || "Hotbars: Push"); */
 
   return res.json(response)
-}
-
-function pull(req: Request, res: Response) {
-
 }
 
 export function githugHandler() {

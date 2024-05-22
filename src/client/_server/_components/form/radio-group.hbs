@@ -1,0 +1,28 @@
+<div class="block relative {{#if cols}}col-span-{{cols}}{{/if}} {{class}}">
+  <div class="flex flex-col">
+    {{{embed "_input-label" }}}
+    <div class="
+    {{#or (eq (default layout "col") "col") (eq (default layout "col") "row")}}
+      flex {{#eq (default layout "col") "col"}}flex-col{{/eq}}
+      items-{{default align "start"}} justify-{{default align "start"}}
+    {{/or}}
+      {{#eq layout "grid"}}
+      grid grid-cols-{{default cols 12}}
+      {{/eq}}
+      {{#or (eq (default layout "col") "row") (eq (default layout "col") "grid")}}
+        gap-{{default gap 4}}
+      {{/or}}
+    ">
+      {{#if (isArray items)}}
+        {{#each items}}
+          {{{embed "form/radio"}}}
+        {{/each}}
+      {{/if}}
+      {{#if (content "inputs")}}
+        {{{block "inputs"}}}
+      {{/if}}
+    </div>
+    {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+    {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
+  </div>
+</div>

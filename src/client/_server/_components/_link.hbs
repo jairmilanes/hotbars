@@ -1,0 +1,33 @@
+{{#block "_link"}}
+  <a
+    href="{{url}}"
+    class="inline-flex font-{{default weight "medium"}} text-{{default color "primary"}}-600 hover:underline dark:text-{{default color "primary"}}-500 {{class}}"
+    title="{{title}}"
+    target="{{target}}"
+    {{#if (isObject attributes)}}
+      {{{attrObj attributes}}}
+    {{/if}}
+    {{#if (isString attributes)}}
+      {{{attributes}}}
+    {{/if}}
+  >
+    {{prefix}}
+    {{#if prefixIcon}}
+      <span class="mr-2">
+        {{{embed "_icon" name=prefixIcon size=iconSize class=""}}}
+      </span>
+    {{/if}}
+    {{#if icon}}
+      {{{embed "_icon" name=icon size=iconSize class=""}}}
+    {{/if}}
+    {{#block "text"}}
+      {{text}}
+    {{/block}}
+    {{#if suffixIcon}}
+      <span class="ml-2">
+        {{{embed "_icon" name=suffixIcon size=iconSize class=""}}}
+      </span>
+    {{/if}}
+    {{suffix}}
+  </a>
+{{/block}}

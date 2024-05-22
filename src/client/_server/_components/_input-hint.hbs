@@ -1,0 +1,8 @@
+<div hb-feedback-{{#if invalid}}invalid{{else}}valid{{/if}}="true"
+     id="{{append id "-hint"}}"
+     class="hidden pt-1 text-right text-sm"
+>
+  <label class="text-sm text-{{#if invalid}}red{{else}}green{{/if}}-600 dark:text-{{#if invalid}}red{{else}}green{{/if}}-500">
+    {{hint}}
+  </label>
+</div>

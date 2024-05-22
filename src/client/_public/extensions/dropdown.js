@@ -4,14 +4,14 @@ function keys(obj) {
 
 const defaults = selector => ({
   selector,
-  target: $(`#${selector.attr("hb-toggle-slide")}`),
+  target: $(`#${selector.attr("data-toggle-slide")}`),
   direction: selector.attr("hb-slide-direction") || "top",
   start: selector.attr("hb-slide-start") || "4rem",
   end: selector.attr("hb-slide-end") || "2rem",
   duration: selector.attr("hb-slide-duration") || "300"
 })
 
-const selectorStates = () => {
+const selectorStates = (name) => {
   switch(name) {
     case "active":
       return ``
@@ -29,15 +29,15 @@ const states = (el) => {
     switch(name) {
       case "init":
         target.removeClass(`opacity-100 ${direction}-100`)
-        return `${direction}-[${start}] opacity-0 transition-all duration-${duration} z-[1] focus:ring-0 focus:outline-none`
+        return `init ${direction}-[${start}] opacity-0 transition-all duration-${duration} z-[1] focus:ring-0 focus:outline-none`
       case "hidden":
         return `hidden z-[-1] ${direction}-[${end}] opacity-0`
       case "closed":
-        return `z-[-1] ${direction}-[${end}] opacity-0`
+        return `closed z-[-1] ${direction}-[${end}] opacity-0`
       case "prepare":
-        return `z-[999] ${direction}-[${end}] opacity-0`
+        return `prepare z-[999] ${direction}-[${end}] opacity-0`
       case "open":
-        return `z-[999] ${direction}-[${start}] opacity-100`
+        return `open z-[999] ${direction}-[${start}] opacity-100`
       default:
         return ["init", "hidden", "closed", "prepare", "open"];
     }
@@ -75,7 +75,7 @@ const handleFocusOut = (config) => {
 }
 
 $.dropdown = function(context) {
-  const dropdowns = $("[hb-toggle-slide]", context || $("body"))
+  const dropdowns = $("[data-toggle-slide]", context || $("body"))
 
   dropdowns.attr("tabindex", "-1")
 

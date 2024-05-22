@@ -1,3 +1,4 @@
+import {expect, jest, test} from '@jest/globals';
 import { loadData } from "#server/utils";
 import { Config } from "#server/core";
 import { CliOptions } from "#server/types";
@@ -30,6 +31,8 @@ describe("Utils", () => {
     });
 
     test("should load data if language is disabled", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       Config.enabled = jest.fn().mockImplementationOnce(() => {
         return false;
       });

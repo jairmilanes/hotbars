@@ -1,0 +1,42 @@
+{{#block "_toast"}}
+  {{var "realId" (append "toast-" (stringify (random 1000 50000)))}}
+  <div
+    id="{{var "realId"}}"
+    class="group relative overflow-hidden hb-toast flex items-center py-4 ps-4 pe-12 mb-4 w-full min-w-72 max-w-96 text-gray-500 bg-white rounded-lg shadow-lg dark:text-gray-400 dark:bg-black z-100
+      {{#if position}}fixed{{/if}}
+      {{~#eq position "top-right"}} top-20 right-20{{/eq~}}
+      {{~#eq position "top-left"}} top-20 left-20{{/eq~}}
+      {{~#eq position "bottom-right"}} bottom-20 right-20{{/eq~}}
+      {{~#eq position "bottom-left"}} bottom-20 left-20{{/eq~}}"
+    data-position="{{position}}"
+    role="alert">
+    <div class="hb-toast-backdrop z-0 transition-[width] absolute top-0 left-0 right-auto bottom-0 bg-gray-50 dark:bg-{{type}}-800 opacity-25"></div>
+    <div class="inline-flex z-10 text-{{type}}-600 flex-shrink-0 justify-center items-center w-8 h-8">
+      {{#if (eq type "success")}}
+        {{{embed "_icon" name="done" size="3xl"}}}
+        <span class="sr-only">Check icon</span>
+      {{/if}}
+      {{#if (eq type "info")}}
+        {{{embed "_icon" name="info" size="3xl"}}}
+        <span class="sr-only">Info icon</span>
+      {{/if}}
+      {{#if (eq type "warn")}}
+        {{{embed "_icon" name="warning" size="3xl"}}}
+        <span class="sr-only">Warning icon</span>
+      {{/if}}
+      {{#if (eq type "error")}}
+        {{{embed "_icon" name="error" size="3xl"}}}
+        <span class="sr-only">Error icon</span>
+      {{/if}}
+    </div>
+    <div class="z-10 ml-1 font-normal grow">{{message}}</div>
+    {{{embed "_button"
+       icon="close"
+       iconSize="md"
+       style="link"
+       size="link"
+       class="z-10 absolute top-1 right-1 left-auto bottom-auto hidden group-hover:block"
+       attributes=(attr data-dismiss=(var "realId"))
+    }}}
+  </div>
+{{/block}}

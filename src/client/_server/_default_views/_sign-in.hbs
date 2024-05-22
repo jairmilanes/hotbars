@@ -1,0 +1,102 @@
+{{#extend "_auth" title="Sign In" scroll=true}}
+  {{#content "main"}}
+    <section>
+      <div
+        class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
+      >
+        {{{embed "_auth-header"}}}
+
+        {{#embed "_card" title="" titleSize="h3" size="sm" padding="md" bodyLayout="column"}}
+          {{#content "body"}}
+            {{#eq (get "action" query) "confirmed"}}
+              {{#embed "_alert-message" message="Your account has been confirmed!" level="info"}}{{/embed}}
+            {{/eq}}
+
+            {{#embed "_form"
+              id="_sign-in-form"
+              class="space-y-2"
+              action=(append auth.signIn '/local')
+              method="POST"
+              submitText=(i "auth.signIn")
+              messages=messages
+              validation=true
+              align="stretch"
+              gap=2
+            }}
+              {{#content "body"}}
+                {{{embed
+                  "_input"
+                  id=null
+                  label=(i "auth.yourEmailOrUsername")
+                  name="username"
+                  required=true
+                  minLength=3
+                  maxLength=30
+                }}}
+                {{{embed
+                  "_input"
+                  id=null
+                  type="password"
+                  name="password"
+                  label=(i "auth.yourPassword")
+                  required=true
+                }}}
+
+                <div class="flex-col items-center justify-between">
+                  {{{embed
+                    "_input"
+                    id=null
+                    type="checkbox"
+                    value="rememberMe"
+                    label=(i "auth.rememberMe")
+                    name="rememberMe"
+                  }}}
+                </div>
+              {{/content}}
+
+              {{#content "after"}}
+                <div class="text-center">
+                  {{{embed
+                    "_link"
+                    url=auth.passwordRecovery
+                    text=(i "auth.forgotPassword")
+                  }}}
+                </div>
+              {{/content}}
+            {{/embed}}
+          {{/content}}
+        {{/embed}}
+
+        <p class="text-sm mt-8 font-light text-gray-500 dark:text-gray-400">
+          {{{embed
+            "_link"
+            prefix=(i "auth.dontHaveAnAccount")
+            url=auth.signUp
+            text=(i "auth.signUp")
+          }}}
+        </p>
+      </div>
+    </section>
+  {{/content}}
+  {{#content "scripts"}}
+    <script>
+      $(() => {
+        const constrains = {
+          username: {
+            presence: { allowEmpty: false },
+            type: "string"
+          },
+          password: {
+            presence: { allowEmpty: false },
+            type: "string"
+          }
+        };
+
+        $("#_sign-in-form").form(
+          constrains,
+          (formData) => (formData)
+        )
+      })
+    </script>
+  {{/content}}
+{{/extend}}

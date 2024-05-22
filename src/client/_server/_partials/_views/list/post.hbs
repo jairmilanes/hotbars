@@ -1,0 +1,113 @@
+{{var "layout" (get "view-post-layout" type)}}
+{{var "isCol" (eq (var "layout") "col")}}
+
+<div data-view-type="{{name}}" class="grow overflow-hidden antialiased format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+  {{#embed "_form"
+     id=(concat id "-form")
+     action=(concat baseUrl "/" collection)
+     contentType=""
+     ajax=false
+     submit="change"
+     width="full"
+     gap=0
+     silent=true
+     class="h-full overflow-hidden"
+     bodyClass="h-full"
+     preventDefault=true
+     attributes=(attr data-page-form=(concat id "-form"))
+  }}
+    {{#content "body"}}
+
+      <div class="pt-4 px-6 pb-4 w-full xl:px-0 border-b border-base-light dark:border-base-dark">
+        <div class="md:container md:mx-auto flex gap-6">
+
+          {{#if type.enableSearch}}
+            {{{embed "_input"
+               type="search"
+               name="q"
+               placeholder="Search"
+               size="sm"
+            }}}
+          {{/if}}
+
+          {{{embed "_input"
+             cols=3
+             size="sm"
+             type="select"
+             name="_sort"
+             placeholder="Order by"
+             label="Order by"
+             layout="row"
+             gap=4
+             items=orderable
+          }}}
+
+          {{{embed "_input"
+             cols=3
+             size="sm"
+             type="select"
+             name="_order"
+             placeholder="Sort"
+             label="Sort"
+             layout="row"
+             gap=4
+             value=type.sortDirection
+             items=(JSONparse '[{"label": "Ascending", "value": "asc"},{"label": "Descending", "value": "desc"}]')
+          }}}
+          <div class="grow"></div>
+          {{#if type.enableSelection}}
+            {{{embed "_input"
+                     id=null
+                     type="checkbox"
+                     name=(concat name "-check-all")
+                     value="true"
+                     class="!py-0"
+                     label="Select all"
+                     attributes=(attr data-dispatch="hb-select-all" data-ignore-change=true)
+            }}}
+          {{/if}}
+        </div>
+      </div>
+
+      <ul id="{{id}}" data-collection="{{collction}}" class="md:container md:mx-auto flex flex-col px-6 xl:px-0 py-6 grow overflow-auto bg-base-light dark:bg-base-pitch {{#if (var "isCol")}}gap-12{{else}}gap-6{{/if}}" data-collection="{{collection}}">
+        {{#each records}}{{/each}}
+      </ul>
+
+      <div class="relative py-4 px-6 w-full xl:px-0 border-t dark:border-base-dark">
+        <div class="md:container md:mx-auto">
+          {{#if type.enablePagination}}
+            {{{embed "_pagination"
+                     id="type-post-paging"
+                     total=paging.total
+                     page=paging.current
+                     pages=paging.pages
+                     next=paging.next
+                     prev=paging.prev
+                     from=paging.from
+                     to=paging.to
+                     type="numbers"
+                     behaviour="form"
+                     baseUrl=baseUrl}}}
+          {{/if}}
+        </div>
+        {{#if type.allowRemove}}
+          <div data-list-actions="{{name}}" class="hidden absolute bottom-0 top-0 right-0 left-0 px-6 flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 dark:bg-base-pitch py-4">
+            <div class="md:container md:mx-auto flex gap-4">
+              {{{embed "_confirm-button"
+                       type="button"
+                       dispatch="hb-delete-all"
+                       text="Delete All"
+                       color="red"
+                       style="link"
+                       size="link"
+                       attributes=(attr data-type=name)
+              }}}
+              <div class="grow"></div>
+            </div>
+          </div>
+        {{/if}}
+      </div>
+    {{/content}}
+    {{#content "submit"}}{{/content}}
+  {{/embed}}
+</div>

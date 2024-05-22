@@ -11,8 +11,17 @@
     "skipLibCheck": false,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "typeRoots": ["src/fake/types", "src/server/types", "node_modules/@types"],
+    "typeRoots": [
+      "src/fake/types",
+      "src/server/types",
+      "tests/types",
+      "node_modules/@types"
+    ],
+    "types": [
+      "cypress", "@testing-library/cypress"
+    ],
     "paths": {
+      "#client/*": ["./src/client/*"],
       "#server": ["./src/server"],
       "#server/*": ["./src/server/*"],
       "#fake": ["./src/fake"],
@@ -21,5 +30,5 @@
   },
   "files": ["./src/modules.d.ts"],
   "include": ["**/*"],
-  "exclude": ["src/client", "node_modules", "dist", "scripts"]
+  "exclude": ["src/client", "node_modules", "dist", "scripts", "cypress"]
 }

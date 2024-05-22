@@ -20,7 +20,7 @@ export class AuthManager {
       return;
     }
 
-    logger.debug(`%p%P Auth Manager`, 1, 1);
+    logger.debug(`Auth Manager`);
 
     EventManager.i.on(
       ServerEvent.AUTH_HANDLERS_CHANGED,
@@ -39,7 +39,7 @@ export class AuthManager {
       return;
     }
 
-    logger.debug("%p%P Authentication enabled", 1, 1);
+    logger.debug("%p%P Authentication strategies", 1, 1);
 
     await this.loadStrategies();
 
@@ -50,8 +50,6 @@ export class AuthManager {
     if (!this.enabled()) {
       return;
     }
-
-    logger.debug("%p%P Auth strategies", 1, 1);
 
     // Add local as default loaded strategy
     const local = new LocalAuthStrategy();
@@ -68,25 +66,19 @@ export class AuthManager {
 
     const authPath = Config.fullGlobPath("auth.path", ".js")
 
-    logger.debug(`%p%P Loading from "%s"`, 3, 0, authPath);
+    logger.silly(`%p%P From "%s"`, 3, 0, authPath);
 
     const strategies = glob.sync(authPath);
-
-    logger.debug(`%p%P %o`, 3, 0, strategies)
 
     for (let i = 0; i < (strategies || []).length; i++) {
       const module = await import(strategies[i]);
       const authModule = new module.default() as StrategyAbstract;
 
-      logger.debug(`%p%P %o`, 3, 0, authModule)
-
       this.strategies[authModule.name] = authModule;
-
-      logger.debug(`%p%P %s`, 3, 0, Server.url)
 
       passport.use(this.strategies[authModule.name].createStrategy());
 
-      logger.debug(`%p%P Registered "%s" from "%s"`, 3, 0, authModule.name, strategies[i]);
+      logger.silly(`%p%P Registered "%s" (%s)`, 5, 1, authModule.name, strategies[i]);
     }
 
     if (data) {
@@ -115,7 +107,7 @@ export class AuthManager {
   private static serialize() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     passport.serializeUser(function (user: any, cb) {
-      logger.debug("%P Auth:Serialize session user %o", 2, user);
+      logger.debug("%P Serializing user %s session %s %s %s", 2, user.username, user.id, user.email);
       process.nextTick(function () {
         if (user.provider) {
           // const {} = user as Profile;
@@ -128,15 +120,13 @@ export class AuthManager {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     passport.deserializeUser(function (userId: any, cb) {
-      logger.debug("%P Auth:Deserialize session user %s", 2, userId);
+      logger.debug("%P Deserializing user (%s) session ", 2, userId);
       process.nextTick(function () {
-        const usersDb = DataManager.get().from(
-          Config.get<string>("auth.usersTable")
-        );
+        const usersDb = DataManager.get().from("__users");
         return usersDb
           .get(userId)
           .then((user) => {
-            logger.debug("%P User reloaded %o", 2, user);
+            logger.debug("%P User %s reloaded %s %s", 2, user.username, user.id, user.email);
             cb(null, user);
           })
           .catch(cb);

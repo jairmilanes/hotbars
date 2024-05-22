@@ -1,0 +1,1 @@
+declare module "#client/_helpers/style"

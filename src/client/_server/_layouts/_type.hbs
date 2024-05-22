@@ -1,0 +1,36 @@
+{{#extend "_blank" title=title scroll=false}}
+  {{#content "blankMain"}}
+    {{{embed "_side-menu"}}}
+    <div class="grow flex flex-col overflow-hidden">
+      {{> "_header"}}
+      <main class="h-auto grow px-0 pb-0 flex-auto flex flex-col {{#if scroll}}overflow-y-scroll{{else}}overflow-hidden{{/if}}">
+        {{#embed "_modules/_page-header"
+           prefix=titlePrefix
+           title=title
+           suffix=titleSuffix
+           backBtn=backBtn
+           class="py-6 px-6 xl:px-0"
+        }}
+          {{#content "actions"}}
+            {{#each headerActions}}
+              {{{embed type style="link" size="link" attributes=(attrData attr)}}}
+            {{/each}}
+          {{/content}}
+        {{/embed}}
+        {{{embed "_hr"}}}
+        {{clear "title"}}
+        {{{block "main"}}}
+      </main>
+      {{{embed "_hr"}}}
+      <div class="px-6 py-2 flex items-center w-full gap-2 bg-base-light dark:bg-base-darker">
+        <span class="grow"></span>
+        {{#each footerActions}}
+          {{{embed component attributes=(attrData attr)}}}
+        {{/each}}
+      </div>
+    </div>
+  {{/content}}
+  {{#content "blankScripts"}}
+    {{{block "scripts"}}}
+  {{/content}}
+{{/extend}}

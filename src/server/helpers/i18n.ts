@@ -35,7 +35,11 @@ export const i18n = function (
 
   const opts = util.options(this, locals, options);
   const context = Object.assign({}, this, opts);
-  const lang = context.language || context.lang;
+  let lang = context.language || context.lang;
+
+  if (typeof lang === "object" && lang !== null) {
+    lang = lang.code
+  }
 
   const parts = prop.split(".").filter(Boolean);
 

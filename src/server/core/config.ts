@@ -5,7 +5,7 @@ import { joinPath, slash } from "../utils";
 import {
   AuthConfig,
   AutoRouteConfig,
-  Browser,
+  Browser, CacheConfig,
   CliOptions,
   CorsConfig, DeploymentConfig,
   Env,
@@ -39,7 +39,7 @@ export class Config extends ConfigManager implements Options {
   verbose = false;
   activeData = false;
   logToFile = true;
-  configName = `${moduleName}rc`;
+  configName = `.${moduleName}rc`;
   bootstrapName = `${moduleName}.bootstrap`;
   routesConfigName = `${moduleName}.routes`;
   encoding = "utf-8" as BufferEncoding;
@@ -49,6 +49,7 @@ export class Config extends ConfigManager implements Options {
   source = "src";
   jsonSchema = "schema";
   jsonDb = undefined;
+  app = "app";
   data = "data";
   helpers = "helpers";
   layouts = "layouts";
@@ -66,6 +67,11 @@ export class Config extends ConfigManager implements Options {
   ignore: string[] = [];
   serverUrl = "";
   ignorePattern?: RegExp;
+  cache: CacheConfig = {
+    enabled: true,
+    type: "file",
+    expire: 8600
+  };
   deployment: DeploymentConfig = {
     enabled: false,
     service: "heroku",
@@ -73,8 +79,30 @@ export class Config extends ConfigManager implements Options {
   }
   language: LanguageConfig = {
     enabled: false,
-    languages: ["en"],
-    default: "en",
+    options: [
+      {
+        name: "English",
+        code: "en",
+        date: {
+          format: "LLL"
+        },
+        currency: {
+          sign: "$",
+          code: "USD"
+        }
+      }
+    ],
+    default: {
+      name: "English",
+      code: "en",
+      date: {
+        format: "LLL"
+      },
+      currency: {
+        sign: "$",
+        code: "USD"
+      }
+    }
   };
   mailer: MailerConfig = {
     enabled: false,
@@ -109,9 +137,9 @@ export class Config extends ConfigManager implements Options {
   };
   uploads: UploadsConfig = {
     enabled: false,
-    path: "uploads/",
+    path: "uploads",
     limit: 10,
-    maxFileSize: 1048576,
+    maxFileSize: 4e+6,
     types: [],
   };
   cors: CorsConfig = {
@@ -129,7 +157,7 @@ export class Config extends ConfigManager implements Options {
     enabled: false,
     path: "auth",
     securePath: "secure",
-    usersTable: "users",
+    usersTable: "__users",
     usernameColumn: "username",
     emailColumn: "email",
     passwordColumn: "password",
@@ -193,7 +221,7 @@ export class Config extends ConfigManager implements Options {
       credentials: !local,
     };
 
-    _.merge(this, options, { cors });
+    _.merge(this, options, { cors, dev: false });
 
     if (this.auth.https && !this.auth.session.cookie?.secure) {
       _.set(this.auth, "session.cookie.secure", true);
@@ -219,29 +247,31 @@ export class Config extends ConfigManager implements Options {
       )
     );
 
-    this.set("currentLanguage", this.language.default);
+    _.set(
+      this.customProps,
+      "currentLanguage",
+      this.language.default
+    );
 
-    if (local) {
-      this.watch = [
-        this.relPath("routesConfigName", ".js"),
-        this.relPath("routesConfigName", ".cjs"),
-        this.relGlobPath("data"),
-        this.relGlobPath("helpers"),
-        this.relGlobPath("layouts"),
-        this.relGlobPath("partials"),
-        this.relGlobPath("precompile"),
-        this.relGlobPath("shared"),
-        this.relGlobPath("views"),
-        this.relGlobPath("controllers"),
-        this.relPath("mailer.source"),
-        this.relGlobPath("styles"),
-        this.relGlobPath("public", this.scripts, ".js"),
-        this.relGlobPath("public", this.styles, ".css"),
-      ];
+    this.watch = [
+      this.fullGlobPath("routesConfigName", ".js"),
+      this.fullGlobPath("routesConfigName", ".cjs"),
+      this.fullGlobPath("data"),
+      this.fullGlobPath("helpers"),
+      this.fullGlobPath("layouts"),
+      this.fullGlobPath("partials"),
+      this.fullGlobPath("precompile"),
+      this.fullGlobPath("shared"),
+      this.fullGlobPath("views"),
+      this.fullGlobPath("controllers"),
+      this.fullGlobPath("mailer.source"),
+      this.fullGlobPath("styles"),
+      this.fullGlobPath("public", this.scripts, ".js"),
+      this.fullGlobPath("public", this.styles, ".css"),
+    ];
 
-      if (this.auth.enabled) {
-        this.watch.push(this.relGlobPath("auth.path"));
-      }
+    if (this.auth.enabled) {
+      this.watch.push(this.fullGlobPath("auth.path"));
     }
 
     if (this.ignorePattern) {
@@ -253,8 +283,6 @@ export class Config extends ConfigManager implements Options {
         return joinPath(this.root, relativePath);
       });
     }
-
-
   }
 
   static create(argv?: CliOptions): Readonly<Config> {
@@ -267,7 +295,7 @@ export class Config extends ConfigManager implements Options {
 
   static addToWatch(path: string) {
     this.instance.watch.push(
-      joinPath(...[this.instance.source, path])
+      joinPath(this.instance.root, this.instance.source, path)
     )
   }
 }

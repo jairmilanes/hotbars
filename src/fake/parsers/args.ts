@@ -30,9 +30,8 @@ const getValue = (arg: any, record: Record<string, any>): any => {
 
 export const parseArgs = (params: FlowParams) => {
   const { entry, config } = params;
+  logger.silly(`%p%P args: %o`, 5, 1, config.args);
   const parsed = config.args.map((arg) => getValue(arg, entry));
-
-  logger.debug(`%p%P args %o`, 5, 1, parsed);
-
+  logger.silly(`%p%P parsed: %o`, 5, 1, parsed);
   return _.set(params, "config.args", parsed);
 };

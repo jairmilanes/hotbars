@@ -16,7 +16,8 @@ import {
   PreRenderer,
   DashboardConfig,
   EnvManager,
-  Versioning
+  Versioning,
+  Cache
 } from "./core";
 import { Router } from "./router";
 import { AuthManager } from "./auth";
@@ -24,11 +25,13 @@ import { DataManager } from "./data";
 import { Controllers } from "./controllers";
 import { FakeSMPTServer } from "./smtp";
 
-export class App {
-  readonly watcher?: Watcher;
-  readonly dashboardWatcher?: Watcher;
+import "./hooks"
 
-  readonly router: Router;
+export class App {
+  static instance: App;
+  private watcher?: Watcher;
+  private dashboardWatcher?: Watcher;
+  private router?: Router;
 
   closing = false;
 
@@ -36,10 +39,14 @@ export class App {
     logger.log(`Initializing ${Config.get("env")} server:`);
 
     if (Config.enabled("language")) {
-      logger.info("%p%P Languages enabled", 1, 1);
-      logger.debug(`%p%P defaults to "%s"`, 3, 0, Config.get("currentLanguage"));
+      logger.debug("Default language (%s)", Config.get("currentLanguage"));
     }
+  }
 
+  static async create() {
+    this.instance = new App()
+
+    await Cache.create();
     EventManager.create();
     Controllers.create();
     Renderer.create();
@@ -52,27 +59,29 @@ export class App {
     Versioning.create();
     EnvManager.create(Config.get("deployment.service"));
 
-    if (Config.is("env", Env.Dev)) {
-      this.watcher = new Watcher(Config.get());
-    }
+    if (Config.is("env", Env.Local)) {
+      this.instance.watcher = new Watcher(Config.get());
 
-    if (DashboardConfig.get("dev")) {
-      this.dashboardWatcher = new Watcher(DashboardConfig.get());
+      if (DashboardConfig.get("dev")) {
+        this.instance.dashboardWatcher = new Watcher(DashboardConfig.get());
+      }
     }
 
     Server.create();
 
-    this.router = new Router();
+    this.instance.router = new Router();
+
+    return this.instance
   }
 
   async start(): Promise<void> {
-    logger.info(`Botstraping:`);
+    logger.info(`Botstraping...`);
 
     await BootstrapData.run();
     await Controllers.load();
     await AuthManager.load();
     await Versioning.load();
-    await EnvManager.get()?.load();
+    await EnvManager.load();
 
     if (Config.get("jsonDb")) {
       await DataManager.create("jsonDb");
@@ -80,7 +89,9 @@ export class App {
 
     SassCompiler.compile();
 
-    if (Config.get("dev")) {
+    logger.info(`Runtime`);
+
+    if (DashboardConfig.get("dev")) {
       // compile dashboard runtime
       await BrowserifyCompiler.compileDashboardRuntime();
     }
@@ -89,11 +100,18 @@ export class App {
 
     // EventManager.i.emit(ServerEvent.INIT);
 
-    this.router.configure();
+    this.router?.configure();
 
-    if (Config.is("env", Env.Dev)) {
+    if (Config.is("env", Env.Local)) {
+      logger.silly("Watching files");
+
       await this.watcher?.start();
-      await this.dashboardWatcher?.start();
+
+      if (DashboardConfig.get("dev")) {
+        await this.dashboardWatcher?.start();
+      }
+
+      logger.debug(`Watcher listening`);
 
       // SMTP Server only works in dev
       if (Config.enabled("smtpServer")) {
@@ -105,7 +123,7 @@ export class App {
 
     logger.log(`Server listening at %s`, Server.url);
 
-    if (Config.is("env", Env.Dev)) {
+    if (Config.is("env", Env.Local)) {
       await this.launch();
     }
   }

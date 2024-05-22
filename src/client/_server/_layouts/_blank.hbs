@@ -1,0 +1,33 @@
+<html lang="{{default config.language.default "en"}}" class="{{settings.theme}}">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  />
+  <title>Hotbars: {{default title "User Api"}}</title>
+
+  {{> hotbarsHead}}
+
+  {{styles "https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css"}}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  {{{block "styles"}}}
+
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@1.5.5/dist/flowbite.js"></script>
+
+  {{scripts "https://cdn.tailwindcss.com?plugins=forms"}}
+  {{{embed "_tailwind-config"}}}
+
+  {{styles "/public/styles/main.css"}}
+</head>
+<body class="text-slate-800 dark:text-slate-50 bg-gray-100 dark:bg-gray-900 flex {{#eq layout "col"}}flex-col{{/eq}} {{#if scroll}}overflow-y-scroll{{else}}overflow-hidden{{/if}} h-full">
+  {{{block "blankMain"}}}
+
+  {{> hotbarsFooter}}
+  {{scripts "https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite[.min].js,
+               /public/common.js,
+               /public/hotbars.js"}}
+  {{{block "blankScripts"}}}
+</body>
+</html>

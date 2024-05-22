@@ -28,18 +28,13 @@ class IndexedDb {
 
   createStore(name, options, callback) {
     return new Promise((resolve, reject) => {
-      console.log("Creatying DB", name, options)
       const store = this._db
         .createObjectStore(name, {
           keyPath: options.key,
           autoIncrement: options.autoIncrement || false
         })
 
-      console.log("---store", store)
-
       store.transaction.oncomplete = (event) => {
-        console.log("Create Store:OnComplete", event)
-
         if (typeof callback === "function") {
           callback(store, this._db)
         }
@@ -77,7 +72,6 @@ class IndexedDb {
       request.onerror = this.handleError("Get", reject)
 
       request.onsuccess = (event) => {
-        console.log("Get:OnSuccess", event)
         const data = event.target.result;
         resolve(data)
       }
@@ -224,13 +218,12 @@ class IndexedDb {
     const cache = $.indexDb(
       table,
       async (instance) => {
-        console.log("DB CREATED!")
         const store = await instance.createStore("cache", { key: "_cache" })
 
         store.createIndex("key", "key", { unique: true })
 
         store.transaction.oncomplete = (event) => {
-          console.info("Cache DB Created!")
+          // console.info("Cache DB Created!")
         }
       })
 

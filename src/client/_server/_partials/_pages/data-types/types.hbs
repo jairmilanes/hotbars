@@ -1,0 +1,13 @@
+<div id="hb-types" class="grow w-full overflow-auto">
+  {{#each types}}
+    {{{embed "_data_type"}}}
+  {{/each}}
+</div>
+<div id="hb-data-items-footer" class="py-2 border-t border-base-light dark:border-base-dark">
+  <div class="px-4">
+    {{{embed "_button" id="hb-new-type" type="button" text="Create new" style="outline" color="gray" width="full" rounded="md" suffixIcon="add" attributes=(attr data-dispatch="hb-create-type")}}}
+  </div>
+</div>
+<div hb-loader="true" class="hidden flex justify-center items-center absolute top-0 bottom-0 left-0 right-0">
+  {{{embed "_spinner" size="14"}}}
+</div>

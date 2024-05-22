@@ -1,0 +1,8 @@
+code[class*="language-"] .block,
+pre[class*="language-"] .block {
+    display: inline-block;
+}
+
+input[type=time]::-webkit-calendar-picker-indicator {
+    background: none;
+}

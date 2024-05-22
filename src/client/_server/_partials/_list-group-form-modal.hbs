@@ -1,0 +1,28 @@
+{{#embed "_modal" id=id title=title closable=true size="lg" textAlign="left"}}
+  {{#content "body"}}
+    {{{embed "_heading" size="h5" margin=0 text=title class="col-span-12 pb-4 border-b-2 border-gray-800"}}}
+      {{#embed "_form"
+               id="hb-list-group-form"
+               preventDefault=true
+               method=(iIf values.id "PATCH" "POST")
+               alignActions="end"
+               submitWidth="auto"
+               submitText=(iIf values.id "Save" "Create")}}
+        {{#content "body"}}
+          {{#if values.id}}
+            {{{embed "_input" type="hidden" name="id" value=values.id}}}
+          {{/if}}
+          <div class="col-span-12 grid grid-cols-12 gap-4 pt-4">
+            {{#each ../children}}
+              {{#eq type "header"}}
+                {{{embed "_heading" size="h5" margin=0 text=title class="col-span-12 py-4 ps-4 border-b-2 border-gray-800"}}}
+              {{else}}
+                {{{embed "_input" id=id autoload=true name=name required=required disabled=disabled cols=columns placeholder=defaultValue
+                         readonly=readOnly label=title type=type items=options}}}
+              {{/eq}}
+            {{/each}}
+          </div>
+        {{/content}}
+      {{/embed}}
+  {{/content}}
+{{/embed}}

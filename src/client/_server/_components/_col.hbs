@@ -1,0 +1,9 @@
+{{#block "_col"}}
+    <div class="relative flex flex-col col-span-{{cols}} flex-1 py-0 {{class}}">
+      {{#if partial}}
+        {{{embed partial}}}
+      {{else}}
+        {{{block "content"}}}
+      {{/if}}
+    </div>
+{{/block}}

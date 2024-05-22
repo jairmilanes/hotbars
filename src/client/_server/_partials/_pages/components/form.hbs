@@ -1,0 +1,55 @@
+{{#embed "_pages/components/section" id=id title="Form Grid"}}
+  {{#content "body"}}
+    {{#embed "_form" id="grid-form" layout="grid"}}
+      {{#content "body"}}
+        {{{embed "_col" cols=6 partial="_input" type="text" name="text-input" label="Text input" placeholder="Type a text"}}}
+        {{{embed "_col" cols=6 partial="_input" type="number" name="number-input" label="Number input" placeholder="Type a number"}}}
+
+        {{{embed "_col" cols=6 partial="_input" type="email" name="email-input" label="Text input" placeholder="Type an email"}}}
+        {{{embed "_col" cols=6 partial="_input" type="password" name="password-input" label="Password input" placeholder="Type a password"}}}
+
+        {{{embed "_col" cols=12 partial="_input" type="select" name="select-test" value="option-3" items=(data "selectOptions") label="Text label 2" placeholder="Text input 2"}}}
+
+        {{#embed "form/radio-group" cols=12 label="Choose" layout="col"}}
+          {{#content "inputs"}}
+            {{{embed "_input" type="radio" name="radio-test"  value="false" label="Radio input" checked=true}}}
+            {{{embed "_input" type="radio" name="radio-test" value="true" label="Radio input"}}}
+          {{/content}}
+        {{/embed}}
+
+        {{#embed "form/checkbox-group" cols=12 label="Pick" layout="col"}}
+          {{#content "inputs"}}
+            {{{embed "_input" type="checkbox" name="checkbox-test" value="false" label="Checkbox input" checked=true}}}
+            {{{embed "_input" type="checkbox" name="checkbox-test"  value="true" label="Checkbox input"}}}
+          {{/content}}
+        {{/embed}}
+
+        {{{embed "_col" cols=6 partial="_input" type="text" name="placeholder-input-1" value="HERE EHRE"  placeholder="Text input" invalid="true"}}}
+        {{{embed "_col" cols=6 partial="_input" type="text" name="placeholder-input-2" value="THERE THERE" placeholder="Text input 2" invalid=true}}}
+      {{/content}}
+    {{/embed}}
+  {{/content}}
+{{/embed}}
+
+{{#embed "_pages/components/section" id=id title="Form Column"}}
+  {{#content "body"}}
+    {{#embed "_form" id="column-form" layout="col" align="stretch"}}
+      {{#content "body"}}
+        {{{embed "_input" type="text" name="text-input-2" label="Text input" placeholder="Type a text"}}}
+        {{{embed "_input" type="select" name="select-input-2" value="option-3" items=(data "selectOptions") label="Text label 2" placeholder="Text input 2"}}}
+        {{{embed "_input" type="textarea" name="textarea-input-2" label="Textarea input" placeholder="Type some text"}}}
+      {{/content}}
+    {{/embed}}
+  {{/content}}
+{{/embed}}
+
+{{#embed "_pages/components/section" id=id title="Form Row"}}
+  {{#content "body"}}
+    {{#embed "_form"  id="row-form" layout="row" align="stretch"}}
+      {{#content "body"}}
+        {{{embed "_input" type="text" name="username-input" placeholder="Username" class="grow"}}}
+        {{{embed "_input" type="password" name="password-input-2" placeholder="Password"  class="grow"}}}
+      {{/content}}
+    {{/embed}}
+  {{/content}}
+{{/embed}}

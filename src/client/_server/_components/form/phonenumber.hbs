@@ -1,0 +1,8 @@
+{{{embed "form/text"
+   type="text"
+   inputClass="ps-10"
+   pattern=(get "type-phonenumber-pattern" this)
+   placeholder=(get "type-phonenumber-format" this)
+   prefixIcon="call"
+   attributes=(attr data-input-type="phonenumber" data-mask=(get "type-phonenumber-format" this))
+}}}

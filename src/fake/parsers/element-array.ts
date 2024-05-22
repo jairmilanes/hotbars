@@ -1,41 +1,30 @@
 import { faker } from "@faker-js/faker/locale/pt_BR";
-import { RecordKey } from "@faker-js/faker/modules/helpers/unique";
-import { CompareCallbacks, FlowParams, UniqueCompareCallback } from "../types";
+import { FlowParams } from "../types";
+import { logger } from "../../services";
+import { EnforceLimitError } from "enforce-unique";
 
-export let compareCallbacks: CompareCallbacks = {};
-
-const arrayElementUniqueCompare = (maxTries: number): UniqueCompareCallback => {
-  let rotation: RecordKey[] = [];
-  return (store: Record<RecordKey, RecordKey>, key: RecordKey): 0 | -1 => {
-    if (rotation.indexOf(key) === -1) {
-      rotation.push(key);
-      return -1;
-    }
-
-    if (rotation.length === maxTries) {
-      rotation = [key];
-      return -1;
-    }
-
-    return 0;
-  };
-};
-
-export const resetUniqueCallbacks = () => (compareCallbacks = {});
-
-export const parseElementArray = (params: FlowParams) => {
+export const parseElementArray = (params: FlowParams): FlowParams => {
   const { entry, config } = params;
   const { prop, method, args } = config;
 
   if (method === "arrayElement") {
-    if (!compareCallbacks[prop]) {
-      compareCallbacks[prop] = arrayElementUniqueCompare(args.length);
-    }
+    logger.debug(`%p%P arrayElement: %s => %O `, 5, 1, prop, args);
 
-    const options = { compare: compareCallbacks[prop] };
     const fn = faker.helpers.arrayElement;
 
-    entry[prop] = config.unique ? config.unique(fn, [args], options) : fn(args);
+    if (config.unique) {
+      try {
+        entry[prop] = config.unique(fn, [args], { maxRetries: args.length })
+      } catch(e) {
+        if (e instanceof EnforceLimitError) {
+          config.unique(false)
+          return parseElementArray(params)
+        }
+        throw e;
+      }
+    } else {
+      entry[prop] = fn(args)
+    }
   }
 
   return params;

@@ -9,7 +9,6 @@ import {
   HooksConfig,
 } from "./types";
 import {
-  resetUniqueCallbacks,
   parseArgs,
   parseElementArray,
   parseHelper,
@@ -44,7 +43,6 @@ export const generateRecords = (
   propsConfig: PropsConfig,
   hooks: HooksConfig
 ): GeneratedEntry[] => {
-  resetUniqueCallbacks();
 
   const { schema } = schemaConfig;
   const props = _.filter(_.keys(schema), (p) => _.isString(schema[p]));

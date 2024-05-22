@@ -1,0 +1,8 @@
+{{#embed "_card" id=(concat name "-link")}}
+  {{#content "content"}}
+    <div class="flex gap-6">
+      <h3 class="font-bold">{{link.id}}</h3>
+      <div class="text-base-lighter dark:text-base-dark grow">{{link.title}}</div>
+    </div>
+  {{/content}}
+{{/embed}}

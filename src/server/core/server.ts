@@ -53,7 +53,7 @@ export class Server {
   }
 
   static create(): Server {
-    logger.debug(`%p%P HTTP server`, 1, 1);
+    logger.debug(`HTTP server`);
     this.instance = new Server();
     this.instance.serveURL = this.instance.resolveServerUrl(Config.get("port"));
     this.created = true;
@@ -127,7 +127,7 @@ export class Server {
   }
 
   private mountPort(port: number, callback: () => void) {
-    this.httpServer = this._app.listen(port, Config.get("host"), callback);
+    this.httpServer = this._app.listen(port, Config.get<string>("host"), callback);
   }
 
   private clearConnections(force?: boolean): void {
@@ -172,7 +172,7 @@ export class Server {
   }
 
   private resolveServerUrl(port?: number) {
-    const { protocol, host, port: configPort } = Config.get();
+    const { protocol, host, port: configPort } = Config.get<Config>();
     return protocol + "://" + host + ":" + (port || configPort);
   }
 }

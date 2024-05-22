@@ -8,6 +8,7 @@ import { DataManager } from "../data";
 import { split } from "../../utils";
 import { EnhancedJsonDbPayload, RequestEnhanced } from "../types";
 import JsonDbAdaptor from "../data/adaptor/jsonDb.adaptor";
+import { Hooks } from "./hooks";
 
 const PAGES_SIZE = 10;
 
@@ -21,37 +22,100 @@ const getPageSize = (items: Record<string, any>[], qLimit?: string): number => {
   return limit;
 };
 
+
+
 /**
  * Enhances the Json Db payload with totals and paging info.
  */
 const render = (name: string) => {
   return async (req: RequestEnhanced, res: Response, next: NextFunction) => {
+    const manager = DataManager.get(name);
+    const [collection, identifyer] = split(req.path, "/");
+    const typeName = req.path.split("/")[1]
+    const items = res.locals.data
+
+    const type = await manager
+      .from("__types")
+      .eq("name", typeName)
+      .single()
+
     if (_.toLower(req.method) !== "get") {
+      await Hooks.run("hb-record-changed", {
+        url: req.url,
+        params: req.params,
+        query: req.query,
+        body: req.body,
+        method: req.method,
+        type,
+        data: res.locals.data,
+        previousData: res.locals.previousData
+      })
+
       return res.jsonp(res.locals.data);
     }
 
-    const manager = DataManager.get(name);
+    if (type) {
+      for (let i = 0; i < type.fields.length; i++) {
+        const field = type.fields[i]
+        const { type: inputType, name: fieldName} = field
 
-    const [collection, identifyer] = split(req.path, "/");
+        for (let ii = 0; ii < items.length; ii++) {
+          const item = items[ii]
 
-    const items = res.locals.data;
+          if (!item[fieldName]) {
+            continue;
+          }
+
+          if (inputType === "user") {
+            item[fieldName] = await manager
+              .from("profile")
+              .get(item[fieldName])
+          }
+
+          if (inputType === "upload") {
+            item[fieldName] = await manager
+              .from("__files")
+              .get(item[fieldName])
+          }
+
+          if (inputType === "one-to-one") {
+            item[fieldName] = await manager
+              .from(field["type-one-to-one-table"])
+              .eq(field["type-one-to-one-prop"], item[fieldName])
+              .single()
+          }
+        }
+      }
+    }
 
     const { query } = req.original;
 
+    await Hooks.run("hb-before-reponse", {
+      url: req.url,
+      params: req.params,
+      query: req.query,
+      body: req.body,
+      method: req.method,
+      data: items
+    })
+
     if (identifyer) {
-      return res.jsonp(res.locals.data);
+      return res.jsonp(items);
     }
 
     // User is querying a collection because there is
     // no identifier.
     if (items.length === 0) {
-      return res.status(404).jsonp({
-        message: query._page ? "page not found" : "No results for this query",
-      });
+      if (query._page) {
+        return res.status(404).jsonp({
+          message: query._page ? "page not found" : "No results for this query",
+        });
+      }
+      return res.status(404).jsonp(items);
     }
 
-    if (!Array.isArray(res.locals.data)) {
-      return res.status(200).jsonp(res.locals.data)
+    if (!Array.isArray(items)) {
+      return res.status(200).jsonp(items)
     }
 
     const total = await manager.from(collection).size();
@@ -60,7 +124,7 @@ const render = (name: string) => {
     const pages = Math.ceil(total / pageSize);
 
     const response: EnhancedJsonDbPayload = {
-      items: res.locals.data,
+      items,
       total,
       pages,
       page,
@@ -133,6 +197,7 @@ export const createJsonRouter = (
           0,
           Config.relPath("jsonDb")
         );
+
         return Config.relPath("jsonDb");
       }
 

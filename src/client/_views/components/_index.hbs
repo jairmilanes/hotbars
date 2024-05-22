@@ -1,0 +1,22 @@
+{{#extend "_default" title="Components" scroll=false paddingX=0 paddingY=0 }}
+  {{#content "pageHeader"}}
+    {{{embed "_modules/_page-header" title=title description=description paddingX=8 class="border-b border-gray-800"}}}
+  {{/content}}
+  {{#content "main"}}
+    <div id="hbs-components" class="w-full relative flex grow overflow-y-scroll overflow-x-hidden">
+      {{{embed "_modules/_page-menu" items=(i "_hbs.components")}}}
+      <div class="grow">
+        {{#each (i "_hbs.components")}}
+          {{{embed (append "_pages/components/" id)}}}
+        {{/each}}
+      </div>
+    </div>
+  {{/content}}
+  {{#content "styles"}}
+    {{styles (replace "/public/libs/prism-{THEME}.css" "{THEME}" settings.theme)}}
+  {{/content}}
+  {{#content "scripts"}}
+    {{scripts "/public/libs/prism.js,
+               /app/components.js"}}
+  {{/content}}
+{{/extend}}

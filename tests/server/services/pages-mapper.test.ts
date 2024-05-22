@@ -1,3 +1,4 @@
+import {expect, jest, test} from '@jest/globals';
 import { CliOptions, SafeObject } from "#server/types";
 import { Config } from "#server/core";
 import { mapPages } from "#server/services";

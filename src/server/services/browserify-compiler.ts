@@ -10,7 +10,7 @@ import { getServerFilePath } from "../utils/get-server-data-dir";
 export class BrowserifyCompiler {
 
   static create(): void {
-    logger.debug(`%p%P Runtime compiler`, 1, 1);
+    logger.debug(`Runtime compiler`);
     EventManager.i.on(
       ServerEvent.USER_RUNTIME_CHANGED,
       this.compileUserRuntime
@@ -22,15 +22,16 @@ export class BrowserifyCompiler {
   }
 
   static compileDashboardRuntime(data?: WatcherChange): Promise<void> {
-    logger.debug(`%p%P Dashboard's runtime`, 1, 1);
+
     const runtime = DashboardConfig.fullPath(
       "public",
       "bundles",
       "dashboard.runtime.js"
     );
-    const writeStream = createWriteStream(
-      DashboardConfig.fullPath("public", "bundles", "dashboard.bundle.js") // .replace("src", "dist")
-    );
+    const result = DashboardConfig.fullPath("public", "bundles", "dashboard.bundle.js")
+    logger.debug(`%p%P --> %s`, -1, -1, runtime);
+    logger.debug(`%p%P <-- %s`, -1, -1, result);
+    const writeStream = createWriteStream(result);
 
     return new Promise((resolve) => {
       compiler()
@@ -54,14 +55,13 @@ export class BrowserifyCompiler {
   }
 
   static async compileUserRuntime(data?: WatcherChange): Promise<void> {
-    logger.debug(`%p%P Users's runtime`, 1, 1);
-
     const userHelpersPath = Config.fullPath("helpers");
     const defaults = DashboardConfig.fullPath(
       "public",
       "bundles",
       "defaults.runtime.js"
     );
+
     const runtime = DashboardConfig.fullPath(
       "public",
       "bundles",
@@ -78,9 +78,12 @@ export class BrowserifyCompiler {
 
     writeFileSync(runtimeDestPath, userRuntime);
 
-    const writeStream = createWriteStream(
-      getServerFilePath("public", "user.bundle.js")
-    );
+    const userFilePath = getServerFilePath("public", "user.bundle.js")
+
+    logger.debug(`%p%P --> %s`, 1, -1, runtime);
+    logger.debug(`%p%P <-- %s`, 1, -1, userFilePath);
+
+    const writeStream = createWriteStream(userFilePath);
 
     return new Promise((resolve) => {
       compiler()
@@ -88,14 +91,12 @@ export class BrowserifyCompiler {
         .bundle()
         .pipe(writeStream)
         .on("finish", () => {
-          if (data) {
-            EventManager.i.emit(ServerEvent.HOT_RELOAD, data);
-          }
-
           if (Config.is("env", Env.Prod)) {
             logger.debug(`%p%P minifying output...`, 3, 0);
 
             const minFilename = runtimeDestPath.replace(".js", "min.js")
+
+            logger.debug(`%p%P <-- %s`, 1, -1, minFilename);
 
             writeFileSync(
               minFilename,
@@ -109,6 +110,10 @@ export class BrowserifyCompiler {
               ).code,
               "utf-8"
             );
+          }
+
+          if (data) {
+            EventManager.i.emit(ServerEvent.HOT_RELOAD, data);
           }
 
           resolve();

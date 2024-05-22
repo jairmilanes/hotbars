@@ -1,0 +1,31 @@
+<div class="relative {{#if cols}}col-span-{{cols}}{{/if}} {{class}}">
+  {{#if label}}
+    <label for="{{default id name}}" class="{{_label spacing="bottomLeft" block=true}}">{{label}} {{required}} {{#if required}}(<span class="material-symbols-outlined text-xs">emergency</span>){{/if}}</label>
+  {{else}}
+    <label for="simple-search" class="sr-only">{{titleize name}}</label>
+  {{/if}}
+  <div class="relative w-full">
+    <div data-list-container="true"></div>
+    <input id="{{default id name}}"
+           type="{{default type "text"}}"
+           name="{{name}}"
+           value="{{default value (value (default name id))}}"
+      {{{attr maxLength=maxLength
+              minLength=minLength
+              max=max
+              min=min
+              pattern=pattern
+              required=required
+              disabled=disabled
+              pattern=pattern
+              placeholder=placeholder}}}
+           class="{{_input invalid=invalid disabled=disabled size=size}} {{inputClass}}"
+      {{#if autofocus}}autofocus{{/if}}
+      {{#if readonly}}readonly{{/if}}
+      {{{default attributes ""}}}>
+  </div>
+  {{#not (eq type "hidden")}}
+    {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+    {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
+  {{/not}}
+</div>

@@ -2,7 +2,12 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "paths": {}
+    "paths": {},
+    "allowJs": true,
+    "types": [
+      // ... your other types
+      "node"
+    ]
   },
   "files": ["src/cli.ts", "src/index.ts", "src/modules.d.ts"],
   "include": ["src/**/*"],

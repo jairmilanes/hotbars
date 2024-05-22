@@ -1,0 +1,29 @@
+<div data-input-container="{{name}}" class="relative {{#if cols}}col-span-{{cols}}{{/if}} flex {{#eq layout "row"}}items-center {{#if gap}}gap-{{gap}}{{/if}}{{else}}flex-col{{/eq}} {{class}}">
+  {{{embed "_input-label" spacing=(iIf (eq layout "row") "none" null) }}}
+  <select id="{{default id name}}"
+          name="{{name}}"
+          class="{{_input invalid=invalid size=size}}"
+          {{{attr
+            required=required
+            disabled=disabled
+            readonly=readonly
+            autofocus=autofocus}}}
+          {{{default attributes ""}}}>
+    {{#if (isObject items)}}
+      {{#forIn items}}
+        <optgroup label="{{@key}}">
+            {{#each this}}
+              <option value="{{default value ""}}" {{#eq value (default ../value (value ../name))}}selected{{/eq}}>{{label}}</option>
+            {{/each}}
+        </optgroup>
+      {{/forIn}}
+    {{/if}}
+    {{#if (isArray items)}}
+      {{#each items}}
+        <option value="{{default value ""}}" {{#eq value (default ../value (value ../name))}}selected{{/eq}}>{{label}}</option>
+      {{/each}}
+    {{/if}}
+  </select>
+  {{{embed "_input-hint" id=(append (default id name) "-invalid") invalid=true}}}
+  {{{embed "_input-hint" id=(append (default id name) "-valid") invalid=false}}}
+</div>

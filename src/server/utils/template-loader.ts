@@ -6,7 +6,7 @@ const templateName = (templatePath: string, key?: string): string => {
   const ext = templatePath.split(".").pop();
 
   if (key) {
-    const configKey = key === "partials" ? "shared" : "precompile"
+    const configKey = "shared"
     const basePath = Config.fullPath(configKey)
     const baseDashPath = DashboardConfig.fullPath(configKey)
 
@@ -30,7 +30,7 @@ export const loadTemplate = async (
   key?: string
 ): Promise<{ name: string; template: string }> => {
   const template = await readFile(path, {
-    encoding,
+    encoding
   });
 
   return {

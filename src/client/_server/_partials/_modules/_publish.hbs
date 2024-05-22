@@ -1,0 +1,23 @@
+<div class="flex flex-col gap-2 p-4 bg-base-bright dark:bg-gray-850 border border-base-light dark:border-base-dark rounded-lg">
+  {{{embed "_heading" size="h4" text="Publish"}}}
+  {{#embed "_form"
+     id="hb-publish-form"
+     ajax=true
+     submit="change"
+     action=(concat "/_api/" collection "/" id)
+     method="PATCH"
+     successMessage="Status updated successfully!"
+  }}
+    {{#content "body"}}
+      <div class="grid grid-cols-3 gap-2 w-full">
+        <span class="font-bold col-span-1">Status</span>
+        {{{embed "_input" type="select" name="status" size="sm" class="col-span-2" items=(JSONparse '[{"label": "Draft", "value": "draft"}, {"label": "Published", "value": "published"}]')}}}
+      </div>
+      <div class="grid grid-cols-3 gap-2 w-full">
+        <span class="font-bold col-span-1">Visibility</span>
+        {{{embed "_input" type="select" name="visibility" size="sm" class="col-span-2" items=(JSONparse '[{"label": "Public", "value": "public"}, {"label": "Private", "value": "private"}]')}}}
+      </div>
+    {{/content}}
+    {{#content "submit"}}{{/content}}
+  {{/embed}}
+</div>

@@ -11,14 +11,18 @@ export const secureMiddleware = (
   if (ContextConfig.init(req).enabled("auth")) {
     const config = ContextConfig.init(req);
     const authRoutesMap = config.get<Record<string, any>>("auth.views")
+
     // need this to include the index page in the check
-    const authRoutesValues = Object.values(authRoutesMap)
-      .filter(v => v !== "_index" && v !== "_hotbars/_index");
+    const authRoutesValues = Object.keys(authRoutesMap)
+      .filter(k => ["signInRedirect", "signUpRedirect"].indexOf(k) === -1)
+      .map(k => authRoutesMap[k])
 
     const isAuthRoute = authRoutesValues
       .some(v => req.originalUrl.indexOf(v) >= 0)
 
-    const isByPassed = ["/_emails"].indexOf(req.url) > -1
+    const byPassed = [/\/_emails.+/, /\/components\/.+/]
+
+    const isByPassed = byPassed.some(rg => rg.test(req.url))
 
     if (!isAuthRoute && !isByPassed) {
       if (!req.isAuthenticated()) {

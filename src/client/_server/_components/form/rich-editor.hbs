@@ -1,0 +1,13 @@
+<div data-input-container="{{name}}" class="relative flex flex-col min-h-64 {{#if cols}}col-span-{{cols}}{{/if}} {{class}}">
+  {{{embed "_input-label" }}}
+  <div id="{{default id name}}"
+       data-rich-editor="{{name}}"
+       data-auto-init="{{default autoInit true}}"
+       class="text-gray-300 bg-gray-800">
+    {{default value (value (default name id))}}
+  </div>
+  {{#with (default id name) as | fId |}}
+    {{{embed "_input-hint" id=(append fId "-invalid") invalid=true}}}
+    {{{embed "_input-hint" id=(append fId "-valid") invalid=false}}}
+  {{/with}}
+</div>

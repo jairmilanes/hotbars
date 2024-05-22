@@ -8,6 +8,7 @@ import { getServerDataDir } from "../server/utils/get-server-data-dir";
 
 interface Logger {
   log: Debugger;
+  silly: Debugger;
   debug: Debugger;
   info: Debugger;
   warn: Debugger;
@@ -41,27 +42,31 @@ createLogger.formatters.S = (str: string) => {
 
 const levelNames: { [level: number]: string } = {
   0: ":log:2",
-  1: ":debug:8",
-  2: ":info:4",
-  3: ":warn:11",
-  4: ":error:1",
-  5: ":request:202",
-  6: "method:get:63",
-  7: "method:post:35",
-  8: "method:put:132",
-  9: "method:patch:94",
-  10: "method:delete:197",
-  11: "method:options:75",
-  12: "method:head:75",
-  13: "method:params:111",
+  1: ":silly:7",
+  2: ":debug:8",
+  3: ":info:4",
+  4: ":warn:11",
+  5: ":error:1",
+  6: ":success:2",
+  7: ":request:202",
+  8: "method:get:63",
+  9: "method:post:35",
+  10: "method:put:132",
+  11: "method:patch:94",
+  12: "method:delete:197",
+  13: "method:options:75",
+  14: "method:head:75",
+  15: "method:params:111",
 };
 
 // @ts-ignore
 export const logger: Logger = {
   log: createLogger("hotbars"),
   update: (level: number) => {
-    if (level < _.get(createLogger, "_startLevel", 1)) {
-      level = _.get(createLogger, "_startLevel", 1);
+    const startLevel = _.get(createLogger, "_startLevel", 1)
+
+    if (level < startLevel) {
+      level = startLevel;
     }
 
     let enabledStr = "hotbars";
@@ -83,6 +88,7 @@ export const logger: Logger = {
       }
     }
 
+    // enabledStr += ',simple-git,simple-git:*'
     createLogger.enable(enabledStr);
   },
 };
@@ -155,17 +161,17 @@ const wrap = (logFn: any, parts: string[], toFile: boolean) => {
   }
 }
 
-export const initLogger = (level: number, toFile = true) => {
-  _.set(createLogger, "_startLevel", level);
+export const initLogger = (startLevel: number, toFile = true) => {
+  _.set(createLogger, "_startLevel", startLevel);
 
   iniFileLogger();
 
   for (const level in levelNames) {
-    const parts: string[] = split(levelNames[level], ":");
-
-    const color = parts.pop();
-
     if (parseInt(level, 10) > 0) {
+      const parts: string[] = split(levelNames[level], ":");
+
+      const color = parts.pop();
+
       let logFn;
 
       if (_.first(parts) === "method") {
@@ -185,5 +191,5 @@ export const initLogger = (level: number, toFile = true) => {
     }
   }
 
-  logger.update(level);
+  logger.update(startLevel);
 };

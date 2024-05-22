@@ -23,6 +23,13 @@ program
     new Option("--schemaDir <schemaDir>", "The json db schema files directory.")
   )
   .addOption(
+    new Option("--schemaName <schemaName>", "A schema to process, otherwise all schemas will be processed.")
+  )
+  .addOption(
+    new Option("-O, --overwrite", "Overwrite the db file, otherwise data is merged.")
+      .default(false)
+  )
+  .addOption(
     new Option(
       "--logLevel <number>",
       "The log level to use 1 is the lowest starting with debug messages."
@@ -34,6 +41,7 @@ program
     new Option("--verbose", "Will log more data than usual.").default(false)
   )
   .action((dest, argv) => {
+
     Config.create(
       _.omitBy(
         {
@@ -47,7 +55,7 @@ program
       )
     );
 
-    generateDb();
+    generateDb(argv.schemaName, argv.overwrite);
   });
 
 program.parse(process.argv);

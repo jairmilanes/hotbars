@@ -1,0 +1,53 @@
+{{#embed "form/form-group"
+   id=name
+   title=title
+   name=name
+   paddingX=0
+   paddingY=0
+   attributes=(attr data-list-group=name) }}
+
+  {{#content "body"}}
+    {{#embed "form/text"
+       type="text"
+       cols=12
+       inputClass="ps-10 pe-28 rounded-none !border-t-0 !border-e-0 !border-s-0 !focus:ring-0"
+       prefixIcon="search"
+       autocomplete="off"
+       placeholder=(concat "Search " title)
+       label=null
+       name=(concat name "-autocomplete")
+       attributes=(attr
+         data-link-input=name
+         data-link-group-autocomplete=name
+         data-table=(get "type-one-to-many-table" this)
+         data-prop="id"
+         data-display-prop=(get "type-one-to-many-display" this)
+         data-auto-init=(default autoInit true)
+       )
+    }}
+      {{#content "suffixIcon"}}
+        {{{embed "_button" type="button" style="link" size="link" iconSize="2xl" icon="close" prefixIcon="" class="hidden" attributes=(attr data-autocomplete-clear=../name)}}}
+      {{/content}}
+      {{#content "suffixCustom"}}
+        {{{embed "_input" type="hidden" name=../name}}}
+        <ul data-autocomplete-list="{{default id name}}" class="block absolute left-0 right-0 min-h-32 z-10 rounded-b-lg bg-base-light dark:bg-base-pitch">
+
+        </ul>
+        {{{embed "_table"
+           id=(concat name "-table")
+           ssr=false
+           compact=true
+           class="col-span-12 z-0"
+           collection=(get "type-one-to-many-table" this)
+           headers=(JSONparse (concat "[" '"id","' (get "type-one-to-many-display" this) '"]'))
+           rows=(get name values)
+           attributes=(attr data-group=id)
+           maxHeight=64
+        }}}
+        <div data-loader="true" class="hidden flex justify-center items-center absolute top-[100%] left-0 right-0 min-h-32">
+          {{{embed "_spinner" size="14" backdropColor="gray"}}}
+        </div>
+      {{/content}}
+    {{/embed}}
+  {{/content}}
+{{/embed}}

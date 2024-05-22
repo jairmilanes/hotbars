@@ -15,6 +15,10 @@
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint"],
-  "ignorePatterns": ["**/*.js"],
+  "ignorePatterns": [
+    "**/*.js",
+    "**/*.hbs",
+    "**/*.md"
+  ],
   "rules": {}
 }

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import "passport"
 import { Router } from "express-ws";
 import { Socket } from "node:net";
 import Handlebars, { HelperDeclareSpec, HelperDelegate } from "handlebars";
@@ -43,12 +44,26 @@ export type AnymatchPattern = string | RegExp | AnymatchFn;
 
 export type JsonDb = Record<string, Record<string, any>[] | Record<string, any>>;
 
+
+export interface UploadFile {
+  fieldName?: string;
+  entryId?: string;
+  type?: string;
+  fileName: string;
+  extension?: string;
+  mime: string;
+  url: string;
+  path: string;
+  userId: string;
+}
+
 export interface RequestEnhanced extends Request {
   original: {
     params: ParamsDictionary;
     query: ParsedQs;
     env?: App;
   };
+  ___uploads?: UploadFile[];
 }
 
 export interface EnhancedJsonDbPayload {
@@ -121,9 +136,22 @@ export type AuthDoneCallback<T> = (
   info?: T
 ) => void;
 
+export interface Language {
+  name: string;
+  code: string;
+  date: {
+    format: string;
+  }
+  currency: {
+    sign: string;
+    code: string;
+  };
+}
+
 export interface LanguageConfig extends OptionalFeature {
-  languages: string[];
-  default: string;
+  options: Language[];
+  default: Language;
+
 }
 
 export interface SMTPConfig {
@@ -179,6 +207,7 @@ export interface PrivateOptions {
 
 export interface CliOptions {
   env?: string;
+  dev?: boolean;
   port?: number;
   source?: string;
   jsonSchema?: string;
@@ -190,10 +219,17 @@ export interface CliOptions {
   root?: string;
 }
 
+export interface CacheConfig {
+  enabled: boolean;
+  type: "file" | "redis"
+  expire: number;
+}
+
 export interface BaseOptions extends PrivateOptions {
   env: string;
   debug: boolean;
   language: LanguageConfig;
+  cache: CacheConfig;
   extname: string;
   source: string;
   data: string;

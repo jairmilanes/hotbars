@@ -1,0 +1,17 @@
+[
+  {
+    "confirmed": false,
+    "provider": "local",
+    "username": "jmilanes",
+    "email": "jmilanes@dashfy.ca",
+    "password": "$2a$10$sw//1X3mLisi28E4.s8GoeFWsdOsQaU4/3jMYK1DIf5WBkNrrMobC",
+    "id": "IvKGKeS",
+    "remember": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJJdktHS2VTIiwicmQiOjE3MTE2NDgzMjIzOTgsImlhdCI6MTcxMTY0ODMyMn0.JHvNuvYDLpR54VOFqwGvX4wVd6FH-ZKujwnlOlHAHo4",
+    "meta": {
+      "status": "draft",
+      "visibility": "public",
+      "createdAt": 1711580495111,
+      "updatedAt": 1711580495111
+    }
+  }
+]

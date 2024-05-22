@@ -1,0 +1,21 @@
+{{#if label}}
+  <label for="{{default id name}}" class="relative {{_label spacing=(default spacing "bottomLeft") block=true}} text-nowrap">
+    {{label}} {{#if required}}<span class="material-symbols-outlined text-xs text-red-500">emergency</span>{{/if}}
+
+    {{#if hint}}
+      {{{embed "_button"
+               type="button"
+               icon="help"
+               size="link"
+               style="link"
+               iconSize="lg"
+               color="gray"
+               class="absolute z-10 right-0 top-0"
+               attributes=(attr data-popover-target="popover-default")
+      }}}
+      {{{embed "_popover" id="popover-default" title=null text=hint}}}
+    {{/if}}
+  </label>
+{{else}}
+  <label for="simple-search" class="sr-only">{{titleize name}}</label>
+{{/if}}

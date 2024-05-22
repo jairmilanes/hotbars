@@ -13,6 +13,7 @@ import { logger } from "../../services";
 import { joinPath, loadDashboardData, loadData } from "../utils";
 import { Config, DashboardConfig, EventManager, ServerEvent } from "../core";
 import { existsSync } from "fs";
+import { Language } from "../types";
 
 export class Mailer {
   static instance: Mailer;
@@ -22,7 +23,6 @@ export class Mailer {
   private renderer: typeof Handlebars;
 
   private constructor() {
-    logger.debug(`%p%P Mailer`, 1, 1);
     this.renderer = this.configureRenderer();
 
     const transportOptions: SMTPTransport.Options = {
@@ -35,7 +35,7 @@ export class Mailer {
       },
     };
 
-    logger.debug("%p%P Options %o", 3, 0, transportOptions);
+    logger.silly("%p%P Options %o", 1, 1, transportOptions);
 
     this.transport = nodemailer.createTransport(transportOptions);
 
@@ -46,6 +46,8 @@ export class Mailer {
   }
 
   static create() {
+    logger.debug(`Mailer`);
+
     if (Config.enabled("mailer")) {
       this.instance = new Mailer();
     }
@@ -117,9 +119,19 @@ export class Mailer {
 
   private getFromContext(key: string, context?: Record<string, any>) {
     if (Config.enabled("language")) {
-      const lang =
-        context?.lang || context?.language || Config.get("currentLanguage");
-      const value = _.get(this.renderer, `context.${lang}.${key}`);
+      const { lang,  language } = context || {}
+      const langOrLangObj = lang || language || Config.get<Language>("currentLanguage")
+      let langName = "";
+
+      if (_.isObject(langOrLangObj)) {
+        langName = (langOrLangObj as Record<string, any>).name
+      } else if (_.isString(langOrLangObj)) {
+        langName = langOrLangObj
+      } else {
+        throw new Error("Invalid language configuration.")
+      }
+
+      const value = _.get(this.renderer, `context.${langName}.${key}`);
       if (value) return value;
     }
 
@@ -165,7 +177,7 @@ export class Mailer {
   }
 
   private configureRenderer(): typeof Handlebars {
-    logger.debug(`%p%P Configuring renderer...`, 3, 0);
+    logger.silly(`%p%P Configuring renderer...`, 1, 1);
 
     const handlebars = Handlebars.create();
 

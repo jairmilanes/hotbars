@@ -26,7 +26,7 @@ export class BootstrapData {
     const config = Config.get<Options>();
     const extensions = [".js", ".cjs"];
     const bootstrapFile = joinPath(config.source, config.bootstrapName);
-    logger.debug(`%p%P from %s`, 3, 0, bootstrapFile);
+    logger.silly(`%p%P from %s`, 3, 0, bootstrapFile);
     const userBootstrapCallback = loadFile<UserBootstrapCallback>(
       bootstrapFile,
       false,

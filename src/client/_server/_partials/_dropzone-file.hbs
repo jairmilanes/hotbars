@@ -1,0 +1,15 @@
+<li class="relative flex items-center gap-4 group-[.hb-sidebar]:gap-0 py-2 text-sm border-b border-base-light dark:border-base-dark last:border-b-0" data-filename="{{name}}">
+  <span class="material-symbols-outlined mr-1 self-start">draft</span>
+  <div class="grow flex group-[.hb-sidebar]:flex-col">
+    <span class="grow font-bold group-[.hb-sidebar]:w-full text-ellipsis">
+      {{name}}
+    </span>
+    <div class="grow flex items-center gap-4">
+      <span class="opacity-75 text-sm">{{type}}</span>
+      <span class="opacity-75 text-xs">{{bytesToSize size}}</span>
+    </div>
+  </div>
+  <div class="ml-2 self-start">
+    {{{embed "_button" type="button" style="link" size="link" icon="close" class="remove" attributes=(attr data-filename=name)}}}
+  </div>
+</li>
